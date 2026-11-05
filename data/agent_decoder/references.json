@@ -1,0 +1,38 @@
+{
+  "d5-hetero": {
+    "nominal": 0.00127,
+    "nominal_corr": 0.00099,
+    "true": 0.00101,
+    "true_corr": 0.00081
+  },
+  "d5-crosstalk": {
+    "nominal": 0.04106,
+    "nominal_corr": 0.03162,
+    "true": 0.03445,
+    "true_corr": 0.02662
+  },
+  "d5-both": {
+    "nominal": 0.01711,
+    "nominal_corr": 0.01236,
+    "true": 0.01199,
+    "true_corr": 0.00889
+  },
+  "d7-hetero": {
+    "nominal": 0.00081,
+    "nominal_corr": 0.00048,
+    "true": 0.0006,
+    "true_corr": 0.00033
+  },
+  "d7-crosstalk": {
+    "nominal": 0.04084,
+    "nominal_corr": 0.02556,
+    "true": 0.02838,
+    "true_corr": 0.01731
+  },
+  "d7-both": {
+    "nominal": 0.02627,
+    "nominal_corr": 0.01686,
+    "true": 0.01549,
+    "true_corr": 0.00913
+  }
+}

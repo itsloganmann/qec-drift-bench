@@ -1,0 +1,5 @@
+# Model registry for the agent arms. Prices per million tokens live in llm/pricing.py;
+# add or override rows under `pricing:` (model id -> {input, output}).
+frontier:
+  anthropic: {model: claude-sonnet-5-5, subset_model: claude-opus-5-5}
+pricing: {}

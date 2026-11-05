@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# qec-drift data and results (regenerable; large); the reference tables are kept
+data/*/*
+!data/*/references.json
+results/
+.cache/
+*.npy
+*.parquet
+checkpoints/
+
+# Serena's project index
+.serena/
+
+# scaffold trial episodes
+trajectories/agent_trial/

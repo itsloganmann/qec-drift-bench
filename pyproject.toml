@@ -1,0 +1,43 @@
+[project]
+name = "qec-drift"
+version = "0.2.0"
+description = "QEC-Drift: can an AI agent tell when a quantum chip's noise model is wrong, say what broke, and fix the error correction? Agents write decoders under controlled mismatch and drift; Stim and PyMatching grade them."
+readme = "README.md"
+authors = [
+    { name = "Logan Mann", email = "loganmann@ucsb.edu" },
+    { name = "Pranav Reddy" },
+]
+license = "Apache-2.0"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.0",
+    "scipy>=1.14",
+    "stim>=1.14",
+    "pymatching>=2.2",
+    "pandas>=2.2",
+    "pyarrow>=17",
+    "pyyaml>=6",
+    "tenacity>=9",
+    "anthropic>=0.40",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+agent = ["torch>=2.8"]  # what the sandbox offers the agent beyond the core stack
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+addopts = "-p no:cacheprovider -q"
+testpaths = ["tests"]
+markers = ["slow: needs a model or network"]
+filterwarnings = ["ignore::SyntaxWarning"]
+
+[build-system]
+requires = ["uv_build>=0.10.12,<0.11.0"]
+build-backend = "uv_build"
