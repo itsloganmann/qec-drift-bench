@@ -1,7 +1,8 @@
 #!/bin/bash
 # Refresh the grid's analysis every hour while the grids run, with no Claude session:
 # relabel every arm, rebuild the legitimacy report, run the blinded judge on new episodes
-# (it uses the ChatGPT quota), refresh the README table, then commit and push what changed.
+# (it uses the ChatGPT quota), refresh the README table, commit and push what changed, then
+# refresh the public snapshot (scripts/publish_snapshot.sh: no transcripts, secret scan first).
 # Usage: scripts/auto_tick.sh   (run in the background; stop it with kill)
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
@@ -18,6 +19,7 @@ while true; do
     if ! git diff --cached --quiet; then
       git commit -q -m "docs: grid refresh $(date '+%Y-%m-%d %H:%M %Z')" && git push -q
     fi
+    scripts/publish_snapshot.sh
   } >> "$log" 2>&1
   sleep 3600
 done
