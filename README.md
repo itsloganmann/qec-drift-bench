@@ -5,7 +5,7 @@ This is a public snapshot of the benchmark: the tasks, the harness, the scoring,
 <!-- grid:start -->
 ## Live results
 
-Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2026-11-02.md). Arms still running show their done count. Episodes labelled `invalid_run` (the harness failed them; docs/failure-taxonomy.md) are left out. Updated 2026-11-06 12:27 PST.
+Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2026-11-02.md). Arms still running show their done count. Episodes labelled `invalid_run` (the harness failed them; docs/failure-taxonomy.md) are left out. Updated 2026-11-06 13:28 PST.
 
 ### v2 launch set (40 tasks gated; the core is 23)
 
