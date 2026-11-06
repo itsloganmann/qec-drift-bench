@@ -39,8 +39,10 @@ def scored(path: Path) -> pd.DataFrame:
         "ref_adaptive_corr",
         "ref_pij_corr",
         "gap_drift",
+        "passed",
+        "diagnosis_correct",
     ):
-        if col not in df.columns:  # an arm with only adequate tasks so far
+        if col not in df.columns:  # only adequate tasks so far, or no scored episode yet
             df[col] = float("nan")
     span = df.ref_stale_corr - df.ref_true_corr
     known = df.ref_adaptive_corr.fillna(df.ref_pij_corr)  # stationary faults: the refit
