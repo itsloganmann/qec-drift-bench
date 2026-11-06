@@ -5,7 +5,9 @@
 # - the Codex grid runs while the Codex week is below CODEX_MAX percent (100: the window reads
 #   exhausted, and every episode then ends in "Throttled: gave up");
 # - the Claude grid runs from CLAUDE_FROM on and while the Claude week is below CLAUDE_MAX
-#   percent: Logan keeps the last 10% for himself.
+#   percent: Logan keeps the last 10% for himself. Fable 5.1 has its own week: at FABLE_MAX the
+#   Claude grid runs without the Fable arms (scripts/grid_v2.sh, SKIP_FABLE=1), which then wait
+#   for the Fable reset instead of failing every episode after three hours of retries.
 # Above its cap, a grid and its episodes are stopped (found by the scaffold's own command line,
 # never by a model name) and start again after the weekly reset. A grid that has finished
 # ("exit 0" in its log) is left alone.
@@ -17,6 +19,8 @@ LOG=data/agent_launch2/supervise.out
 CLAUDE_FROM="2026-11-07 01:05"
 CLAUDE_MAX=90
 CODEX_MAX=100
+FABLE_MAX=100
+SKIPPED=75  # scripts/grid_v2.sh's exit code after a Claude grid without the Fable arms
 
 if [ "${1:-}" = --detach ]; then
   exec uv run python -c 'import subprocess, sys
@@ -26,10 +30,17 @@ fi
 
 say() { echo "$(date '+%Y-%m-%d %H:%M') $*"; }
 running() { pgrep -f "run_grid.py --backend $1" > /dev/null; }
-finished() { [ "$(tail -1 "data/agent_launch2/grid_$1.out" 2> /dev/null)" = "exit 0" ]; }
+# the grid process (found by the scaffold's own command line) has Fable arms in its arm list
+running_fable() { pgrep -f 'run_grid.py --backend claude .*claude-fable' > /dev/null; }
+last() { tail -1 "data/agent_launch2/grid_$1.out" 2> /dev/null; }
+finished() { [ "$(last "$1")" = "exit 0" ]; }
+# start <scaffold> [VAR=value ...]: the variables go to scripts/grid_v2.sh
 start() {
-  say "starting the $1 grid"
-  (scripts/grid_v2.sh "$1"; echo "exit $?" >> "data/agent_launch2/grid_$1.out") > /dev/null 2>&1 &
+  local scaffold=$1
+  shift
+  say "starting the $scaffold grid $*"
+  (env "$@" scripts/grid_v2.sh "$scaffold"; echo "exit $?" >> "data/agent_launch2/grid_$scaffold.out") \
+    > /dev/null 2>&1 &
 }
 killtree() {
   local child
@@ -40,7 +51,7 @@ stop_grid() {
   local pid
   for pid in $(pgrep -f "run_grid.py --backend $1"); do killtree "$pid"; done
 }
-# gate <scaffold> <week percent, or empty when unreadable> <cap>
+# gate <scaffold> <week percent, or empty when unreadable> <cap> [VAR=value ...]
 gate() {
   if finished "$1"; then return; fi
   if [ -z "$2" ]; then
@@ -50,7 +61,7 @@ gate() {
     stop_grid "$1"
   elif [ "$2" -lt "$3" ] && ! running "$1"; then
     say "$1 week at $2%"
-    start "$1"
+    start "$1" "${@:4}"
   fi
 }
 
@@ -66,7 +77,20 @@ while true; do
     usage=$(uv run python scripts/usage.py)
     gate codex "$(sed -n 's/.*codex [a-z]* weekly \([0-9]*\)%.*/\1/p' <<< "$usage")" "$CODEX_MAX"
     if [ "$(date +%s)" -ge "$from" ]; then
-      gate claude "$(sed -n 's/.*claude weekly all \([0-9]*\)%.*/\1/p' <<< "$usage")" "$CLAUDE_MAX"
+      fable=$(sed -n 's/.*weekly fable \([0-9]*\)%.*/\1/p' <<< "$usage")
+      skip=1
+      if [ -n "$fable" ] && [ "$fable" -lt "$FABLE_MAX" ]; then skip=0; fi
+      if [ -n "$fable" ] && [ "$skip" -eq 1 ] && running_fable; then
+        say "Fable week at $fable%: stopping the claude grid to run it without the Fable arms"
+        stop_grid claude
+        sleep 5  # let the grid's wrapper log its exit before the restart below
+      fi
+      if [ "$skip" -eq 1 ] && [ "$(last claude)" = "exit $SKIPPED" ]; then
+        :  # every other arm is done; the Fable arms wait for the Fable week to reset
+      else
+        gate claude "$(sed -n 's/.*claude weekly all \([0-9]*\)%.*/\1/p' <<< "$usage")" \
+          "$CLAUDE_MAX" "SKIP_FABLE=$skip"
+      fi
     fi
   fi
   tick=$((tick + 1))
