@@ -131,3 +131,9 @@ def test_pages_show_the_one_label_of_the_last_attempt(tmp_path):
     assert '"try": 2' in page
     index = (folder / "README.md").read_text()
     assert index.count("[t1](t1.md)") == 1 and "nominal_unchanged" in index
+
+
+def test_a_fetch_of_the_public_source_is_a_probe():
+    rec = {"events": [{"type": "item.completed", "item": {"type": "command_execution",
+           "command": "git clone https://github.com/itsloganmann/qec-drift-bench"}}]}  # fmt: skip
+    assert tx.features(rec).flags()["probe"]

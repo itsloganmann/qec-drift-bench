@@ -62,7 +62,9 @@ NETWORK = re.compile(
     r"\b(curl|wget|git clone|pip3? install|uv pip install|npm install)\b|https?://"
 )
 OUTSIDE = re.compile(r"(?:^|[\s'\"=(])(?:\.\./|~/|/Users/|/private/var/folders/[^\s'\"]*/score-)")
-PROBE = re.compile(r"\btest\.npz\b|\bpred\.npy\b|qec_drift|decoder_task|references\.json")
+PROBE = re.compile(  # the hidden test, the harness, or the public source (public since 2026-11-05)
+    r"\btest\.npz\b|\bpred\.npy\b|qec_drift|qec-drift|itsloganmann|decoder_task|references\.json"
+)
 
 
 @dataclass

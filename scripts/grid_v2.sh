@@ -4,6 +4,8 @@
 # Fable 5.1 runs first: its weekly quota is separate from the other models' (it resets 2026-11-07).
 set -euo pipefail
 backend="$1"
+conc=2
+[ "$backend" = codex ] && conc=4  # 2026-11-05: as many OpenAI arms as possible by the email
 cd "$(dirname "$0")/.."
 if [ "$backend" = claude ]; then
   arms="claude-fable-5-1:max,claude-opus-5-5:max,claude-sonnet-5-5:max,claude-haiku-5-5:max,claude-opus-4-8:max,claude-sonnet-4-6:max,claude-haiku-4-5:max"
@@ -18,4 +20,4 @@ else
   arms+=",gpt-6-astra:low,gpt-5.6-sol:low,gpt-5.6-terra:low"
 fi
 exec uv run python scripts/run_grid.py --backend "$backend" --set launch2core --out data/agent_launch2 \
-  --core --arms "$arms" --concurrency 2 >> "data/agent_launch2/grid_$backend.out" 2>&1
+  --core --arms "$arms" --concurrency "$conc" >> "data/agent_launch2/grid_$backend.out" 2>&1
