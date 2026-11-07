@@ -5,15 +5,15 @@ This is a public snapshot of the benchmark: the tasks, the harness, the scoring,
 <!-- grid:start -->
 ## Live results
 
-Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2026-11-02.md). Arms still running show their done count. Episodes labelled `invalid_run` (the harness failed them; docs/failure-taxonomy.md) are left out. Updated 2026-11-07 19:45 GMT.
+Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2026-11-02.md). Arms still running show their done count. Episodes labelled `invalid_run` (the harness failed them; docs/failure-taxonomy.md) are left out. Updated 2026-11-07 20:55 GMT.
 
 ### v2 launch set (40 tasks gated; the core is 23)
 
 | model | low | medium | high | xhigh | max | ultra |
 |---|---|---|---|---|---|---|
-| GPT-5.6-Luna (Codex) | 0% / 0% (core) |  | 0% / 4% (core) | 4% / 9% (core) | 13% / 13% (core) |  |
-| GPT-5.6-Sol (Codex) |  | 25% / 38% (16/23) | 35% / 35% (core) | 30% / 30% (core) | 48% / 48% (core) | 30% / 30% (core) |
-| GPT-5.6-Terra (Codex) |  |  | 4% / 13% (core) | 9% / 17% (core) | 26% / 26% (core) | 30% / 35% (core) |
+| GPT-5.6-Luna (Codex) | 0% / 0% (core) | 0% / 0% (12/23) | 0% / 4% (core) | 4% / 9% (core) | 13% / 13% (core) |  |
+| GPT-5.6-Sol (Codex) |  | 17% / 26% (core) | 35% / 35% (core) | 30% / 30% (core) | 48% / 48% (core) | 30% / 30% (core) |
+| GPT-5.6-Terra (Codex) |  | 0% / 0% (core) | 4% / 13% (core) | 9% / 17% (core) | 26% / 26% (core) | 30% / 35% (core) |
 | GPT-6-Astra (Codex) |  | 57% / 57% (core) | 57% / 61% (core) | 43% / 48% (core) | 65% / 70% (core) | 61% / 65% (core) |
 | Opus 5.5 (Claude Code) |  |  |  |  | 100% / 100% (4/23) |  |
 
