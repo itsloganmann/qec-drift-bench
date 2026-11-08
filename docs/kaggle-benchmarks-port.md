@@ -92,9 +92,9 @@ and probe results with each runner version. A local test does not certify the ho
 
 1. Confirm the hosted isolation boundary and resource limits with Kaggle. Prepare exporter
    fixtures locally while this is pending; do not launch scored model episodes.
-2. `scripts/export_kaggle_tasks.py`: write visible files and a separate scorer-only bundle of
-   hidden files and references. Check: every task loads, and no hidden field enters a visible
-   bundle. Choose encryption and storage after the trusted scoring boundary is established.
+2. Local fixture export is implemented in `scripts/export_kaggle_tasks.py`: visible files and
+   a separate scorer-only bundle of hidden files and references. All 23 core tasks load with
+   exact visible field checks. Choose hosted storage after the scoring boundary is established.
 3. `kaggle/qec_drift_task.py`: the task function, built from `decoder_run.py` (work folder, two
    tools, loop, scorer, metrics). Check: one local run against the model proxy.
 4. A Linux runner for `run_python` and a self-test: model code must fail to read the key, the
@@ -105,6 +105,44 @@ and probe results with each runner version. A local test does not certify the ho
    then group the task in the Kaggle web UI.
 7. Trajectories: set `WRITE_ATIF=True`; run the failure taxonomy on the ATIF files, and use the
    same files for the Harbor package.
+
+## Local exporter
+
+`scripts/export_kaggle_tasks.py` prepares fixtures without calling a model or the Kaggle API:
+
+```sh
+uv run python scripts/export_kaggle_tasks.py \
+  --references data/agent_launch2/references.json \
+  --visible-out .cache/kaggle-visible \
+  --scorer-out .cache/kaggle-scorer
+```
+
+The default is the 23-task development core. Both output paths must be new, distinct
+directories; neither may contain the other. Existing outputs are never replaced.
+The exporter checks every selected reference row before writing files and applies the
+same gap and known-method gate as `run_grid.py`.
+
+The visible root contains random task IDs, each holding exactly `nominal.stim`, `train.npz`,
+`val.npz` and `deploy.npz`. Train and validation have `det` and `obs`; deployment has `det`
+only. The scorer root uses the same IDs and holds `test.npz` (`det`, `obs`, `regime`),
+`task.json` (identity and truth), and `references.json`. Only the scorer root has a manifest,
+with file hashes, sizes, generator source hashes, library versions, shot counts and seeds.
+The manifest is written last; a directory without it is an incomplete export.
+
+The generator preserves shot order and uses the existing seeds. The exporter checks exact
+array keys, dimensions and dtypes, rejects extra visible files and links, and removes outputs
+from a failed export. A process killed before cleanup can leave incomplete directories.
+On November 8, all 23 core fixtures passed the schema and file-hash checks: 162 files,
+including the private manifest, with 6.9 million hidden shots. The visible bundle is about
+34 MB and the scorer bundle about 84 MB. All 24 exporter tests passed, including both
+directions of case-aliased path nesting on the local filesystem and failure cleanup.
+These fixtures use the disclosed development tasks, not fresh held-out tasks. Reference rates
+are copied from the named cache and are explicitly marked as not recomputed. They need parity
+validation on the exported shots before use as scored benchmark evidence.
+
+Separate directories are a packaging rule, not an execution sandbox. Keep the scorer bundle
+and manifest out of any dataset or filesystem visible to model code. Do not attach the parent
+directory of both bundles. Hosted deployment still requires the boundary tests above.
 
 ## Questions for the Kaggle Benchmarks team
 

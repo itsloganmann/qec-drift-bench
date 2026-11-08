@@ -1,4 +1,4 @@
-"""Label every episode with the one taxonomy and check that the episodes and the tasks are fair.
+"""Label episodes and check task support, harness failures, and integrity.
 
     uv run python scripts/legitimacy.py                  # every arm of data/agent_launch2
     uv run python scripts/legitimacy.py --detector       # also the honest-detector check (slow)
@@ -84,8 +84,8 @@ def detector(task: dt.Task) -> dict:
 
 def ideal(task: dt.Task) -> dict:
     """What a reader who knew each deploy shot's regime could name: the truth qubits that were
-    bad on at least DETECT_SHOTS deploy shots. The truth is fair when that set reaches the
-    pass rule's overlap bar; otherwise the scorer asks for qubits no one could see."""
+    bad on at least DETECT_SHOTS deploy shots. This checks truth-duration support using
+    hidden regime labels; it does not establish inferability from visible data."""
     import numpy as np
 
     truth = task.truth
@@ -195,7 +195,7 @@ def report(eps: pd.DataFrame, det: dict) -> str:
                 ideal_jaccard=""
                 if v.get("ideal_jaccard") is None
                 else round(v["ideal_jaccard"], 2),
-                fair=""
+                ideal_support=""
                 if v.get("ideal_jaccard") is None
                 else ("yes" if v["ideal_jaccard"] >= aw.LOCALIZE_MIN else "NO"),
                 honest_found=len(v["found"]),
@@ -215,12 +215,14 @@ def report(eps: pd.DataFrame, det: dict) -> str:
             markdown(counts),
             "## Observed task outcomes",
             markdown(task_table(eps)),
-            "## Can the diagnosis be read off the deploy shots?",
+            "## Truth duration support and detector localization",
             detector_coverage(det),
             "An ideal reader who knew the regime of every deploy shot could name the truth "
             f"qubits that were bad on at least {DETECT_SHOTS} shots (`short_lived` counts the "
-            "others). The truth is fair when that set reaches the pass rule's overlap bar of "
-            f"{aw.LOCALIZE_MIN} (`ideal_jaccard`). For reference: the honest adaptive decoder "
+            "others). `ideal_support` says whether that set reaches the pass rule's overlap "
+            f"bar of {aw.LOCALIZE_MIN} (`ideal_jaccard`). This uses hidden regime labels and "
+            "checks truth duration, not whether an agent can infer the truth from visible "
+            "data. For reference: the honest adaptive decoder "
             "run as a detector (it reweights whole disks, so it over-reports on a one-qubit "
             "fault), and the share of agent episodes that got the diagnosis right.",
             markdown(det_rows),

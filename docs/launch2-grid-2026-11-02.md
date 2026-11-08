@@ -172,6 +172,16 @@ that task is scored; otherwise the defect is fixed for later episodes and record
 | A rerun could inherit read-only caches of an earlier attempt | a harness error row | none observed | the task folder is force-cleared | none |
 | A provider usage limit after the first tool call was counted as a model failure | the transcript judge, then the original terminal error events | three GPT-5.6-Luna high episodes stopped after 2 to 5 calls, but were labelled no_submission and treated as finished | partial provider-interrupted episodes are archived as error rows without scoring; the arm stops and the grid cannot exit successfully with tasks still pending; the taxonomy also recognizes historical quota failures | the three original attempts are preserved; the November 8 reruns yielded two submitted decoders and one tool-budget failure, with no pass |
 
+November 8 trace audit: the Luna high stationary-qubit episode began with `pwd` in a parent
+scratch workspace and failed to find its task files. It listed unrelated filenames, then
+recovered the episode folder. Later path errors include explicit wrong paths in the agent's
+commands. Repository traversal was denied; the full trace shows no successful hidden-data
+read. It completed normally, wrote both required files in its episode folder, used 34 of
+40 tool calls and passed. The command events omit requested tool working directories, and
+the ephemeral CLI state retains no tool requests. The cause of the first working directory
+is unresolved. The row is retained with this concern; completion does not prove the lost
+calls had no effect. A non-benchmark CLI diagnostic is pending quota availability.
+
 November 8 correction: the original arm table, archive, work folders and affected rendered
 pages were copied to `.cache/provider-interrupted-backup-20261108` with SHA-256 hashes before
 changing the three rows. The other 20 rows in the arm and all 23 other arm tables were
