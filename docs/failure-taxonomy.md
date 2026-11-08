@@ -32,6 +32,12 @@ reruns remain ambiguous. Rows without stored source or size metadata
 retain the old work-folder fallback; an explicit zero-byte decoder never uses that fallback.
 The legacy rescoring scripts refuse rows with IDs, since they cannot preserve this linkage.
 
+Two v1 archives have damaged gzip members. The reader recovers complete JSON records before
+compression errors, but cannot verify their checksums. On November 8, the 27 selected records
+in those two arms matched the stored decoder source and parsed report fields, including ten
+records the previous reader had dropped. All 545 records in the 24 v2 archives also matched
+strict gzip decoding. The raw archives and scored rows were preserved.
+
 ## The tree
 
 An episode takes the first gate that applies.
@@ -66,7 +72,7 @@ Whether the diagnosis was also wrong on a G7 to G9 episode is the attribute
 - **The verdict under the relative rule** (`agent/awareness.py` and the same file): the
   diagnosis (scope right, the stationary flag right, at least half the changed qubits named)
   and the fix (half the plain gap closed, half the drift loss recovered, and at least 0.75 of
-  what the honest baseline recovers on that task: the adaptive decoder for a moving fault, the
+  what the honest baseline recovers on that task: the adaptive decoder for a non-stationary fault, the
   pairwise refit for a stationary one).
 - **Two run facts from the transcript**: whether the agent acted at all, and whether the
   episode ended at the budget (the harness note "tool-call limit" or "time limit").

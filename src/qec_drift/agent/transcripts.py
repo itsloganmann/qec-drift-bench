@@ -238,11 +238,33 @@ def _scores(parquet: Path, df: pd.DataFrame) -> dict[str, dict]:
     return out
 
 
+def _damaged_member_prefix(raw: bytes) -> bytes:
+    """Keep decoded output before an error, including output from the failing chunk."""
+    decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
+    out = bytearray()
+    for start in range(0, len(raw), 65536):
+        chunk = raw[start : start + 65536]
+        checkpoint = decoder.copy()
+        try:
+            out.extend(decoder.decompress(chunk))
+        except zlib.error:
+            decoder = checkpoint
+            for byte in chunk:
+                try:
+                    out.extend(decoder.decompress(bytes([byte])))
+                except zlib.error:
+                    return bytes(out)
+        if decoder.eof:
+            break
+    return bytes(out)
+
+
 def records(archive: Path) -> Iterator[dict]:
     """Read concatenated gzip members using their actual decompressor boundaries.
 
-    Complete JSON lines in a truncated final member are retained. After an invalid member,
-    scan for another header; header bytes inside a valid member never split that member.
+    Complete JSON lines before truncation or a compression error are retained as best-effort
+    recovery, without checksum verification. After an invalid member, scan for another header;
+    header bytes inside a valid member never split that member.
     """
     raw = archive.read_bytes()
     offset = 0
@@ -251,9 +273,10 @@ def records(archive: Path) -> Iterator[dict]:
         try:
             text = d.decompress(raw[start:]).decode("utf-8", "replace")
         except zlib.error:
+            text = _damaged_member_prefix(raw[start:]).decode("utf-8", "replace")
             offset = start + 1
-            continue
-        offset = len(raw) - len(d.unused_data) if d.eof else start + 1
+        else:
+            offset = len(raw) - len(d.unused_data) if d.eof else start + 1
         for line in text.splitlines():
             if line.startswith("{"):
                 try:
