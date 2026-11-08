@@ -152,6 +152,14 @@ that task is scored; otherwise the defect is fixed for later episodes and record
 | The sandbox hides the repository and secret stores but not the rest of the home folder | the secret scan before publishing | a GPT-5.6-Terra max episode ran `find /Users/logan ... -iname '*drift*'` and printed 200 paths from other projects; no copy of the benchmark source exists outside the hidden repository, so no answer was reachable | the public snapshot leaves out the transcripts, which can hold such listings | none |
 | The benchmark source is public from 2026-11-05 (github.com/itsloganmann/qec-drift-bench), and episodes have network access | publishing | an agent could fetch the task generator | the `probe` flag now matches the public repository's name; any such episode is set aside | none so far |
 | A rerun could inherit read-only caches of an earlier attempt | a harness error row | none observed | the task folder is force-cleared | none |
+| A provider usage limit after the first tool call was counted as a model failure | the transcript judge, then the original terminal error events | three GPT-5.6-Luna high episodes stopped after 2 to 5 calls, but were labelled no_submission and treated as finished | partial provider-interrupted episodes are archived as error rows without scoring; the arm stops and the grid cannot exit successfully with tasks still pending; the taxonomy also recognizes historical quota failures | the three original rows and trajectories are preserved before correction and a targeted rerun; rerun results are reported only after they finish |
+
+November 8 correction: the original arm table, archive, work folders and affected rendered
+pages were copied to `.cache/provider-interrupted-backup-20261108` with SHA-256 hashes before
+changing the three rows. The other 20 rows in the arm and all 23 other arm tables were
+unchanged. The original archive is unchanged. The grid now reports 20 valid episodes out of
+23 for Luna high; exactly the three interrupted episodes are pending. Their fresh attempts
+will run at a later time than the original grid, so provider revision drift remains possible.
 
 Checked, not a harness defect: in 8 of 13 clean GPT-5.6-Luna low episodes some shell calls could not find `nominal.stim` or the `.npz` files, while the calls before and after them in the same episode could (failures at calls 1, 3, 5, 9 and 15 of one episode). The harness starts the CLI in one folder for the whole episode, and no other arm shows it (GPT-6-Astra, GPT-5.6-Sol and GPT-5.6-Terra: none), so the folder changes with the model's own calls; Codex lets a model name a working folder per call, which its event stream does not record. Luna low stops on its own after 7 to 17 calls, far from the 40-call cap.
 

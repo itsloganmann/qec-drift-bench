@@ -5,7 +5,8 @@
 
 Absolute rule: diagnosis correct, gap_closed >= 0.5 and, on a drift task, gap_drift >= 0.5.
 Relative rule (the headline): also gap_drift >= 0.75 of what the honest adaptive decoder
-recovers on that task. Error rows (no episode) count as failures and are reported apart.
+recovers on that task. Error rows are excluded from capability rates and reported apart;
+cost and timing include all attempts.
 """
 
 from __future__ import annotations
@@ -54,18 +55,20 @@ def scored(path: Path) -> pd.DataFrame:
 
 
 def arm_row(name: str, df: pd.DataFrame) -> dict:
+    attempts = df
+    df = df[df.outcome != "error"]
     drift = df[~df.adequate_truth]
     return dict(
         arm=name,
         tasks=len(df),
-        errors=int((df.outcome == "error").sum()),
-        absolute=f"{int(df.passed.sum())} ({df.passed.mean():.0%})",
-        relative=f"{int(df.pass_rel.sum())} ({df.pass_rel.mean():.0%})",
-        diagnosis=f"{df.diagnosis_correct.fillna(False).mean():.0%}",
+        errors=int((attempts.outcome == "error").sum()),
+        absolute=f"{int(df.passed.sum())} ({df.passed.mean():.0%})" if len(df) else "0 (n/a)",
+        relative=f"{int(df.pass_rel.sum())} ({df.pass_rel.mean():.0%})" if len(df) else "0 (n/a)",
+        diagnosis=f"{df.diagnosis_correct.fillna(False).mean():.0%}" if len(df) else "n/a",
         median_gap_drift=round(float(drift.gap_drift.median()), 2) if len(drift) else float("nan"),
         moving_said=int((drift.report_scope == "moving").sum()),
-        seconds=int(df.seconds.median()) if "seconds" in df else 0,
-        cost=round(float(df.cost_usd.sum()), 2),
+        seconds=int(attempts.seconds.median()) if "seconds" in attempts else 0,
+        cost=round(float(attempts.cost_usd.sum()), 2),
         _rel=float(df.pass_rel.mean()),
         _abs=float(df.passed.mean()),
     )

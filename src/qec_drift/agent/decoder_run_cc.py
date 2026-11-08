@@ -46,17 +46,14 @@ from qec_drift.agent import awareness as aw
 from qec_drift.agent import decoder_run as dr
 from qec_drift.agent import decoder_task as dt
 from qec_drift.agent import isolation, transcripts
+from qec_drift.agent.provider_limits import LIMIT
+from qec_drift.agent.provider_limits import interrupted as provider_interrupted
 from qec_drift.scoring import taxonomy
 from qec_drift.scoring.failure_modes_decoder import analyze_decoder
 
 CLAUDE = Path.home() / ".local" / "bin" / "claude"
 EPISODE_USD = 25.0  # the CLI's own estimate; the subscription pays, this only ends an episode
 TOOLS = "Bash,Read,Write,Edit"
-LIMIT = re.compile(
-    r"usage limit|hit your limit|rate limit|rate_limit|too many requests|\b429\b|\b529\b|"
-    r"overloaded|out of extra usage|weekly limit|limit resets|capacity",
-    re.I,
-)
 THROTTLE_WAIT = 15 * 60  # seconds between tries while the subscription is at its limit
 THROTTLE_TRIES = 12
 REPORT_NOTE = (
@@ -69,6 +66,7 @@ REPORT_NOTE = (
 )
 LOGIN_LOST = re.compile(r"not logged in|failed to authenticate|oauth session expired|/login", re.I)
 EXIT_LOGIN_LOST = 3  # the arm's exit code when the subscription login is gone: the grid stops
+EXIT_THROTTLED = 4
 
 
 def prompt() -> str:
@@ -370,7 +368,11 @@ def _episode(
         raise LoginLost(ended["stop"])
     if ended["throttled"] and turns == 0:
         raise Throttled(ended["stop"])
-    err, pred = dr.score_submission(workdir, task, test_det)
+    interrupted = provider_interrupted(events)
+    err, pred = (
+        ("provider usage limit", None) if interrupted
+        else dr.score_submission(workdir, task, test_det)
+    )
     l_agent = dt.logical_error_rate(pred, test_obs) if pred is not None else float("nan")
     scored = pred is not None
     agree_plain = agree_corr = float("nan")
@@ -395,7 +397,8 @@ def _episode(
             adequate_truth=task.model_adequate,
             reported=report is not None,
             awareness_brier=aw.brier(report, task.model_adequate) if report else float("nan"),
-            outcome="submitted" if scored else "no_decoder",
+            outcome="error" if interrupted else ("submitted" if scored else "no_decoder"),
+            provider_interrupted=interrupted,
             stop=ended["stop"],
             turns=turns,
             n_run_python=0,
@@ -410,7 +413,7 @@ def _episode(
             uses_correlations="enable_correlations" in src,
             agree_nominal_plain=agree_plain,
             agree_nominal_corr=agree_corr,
-            auto_scored=True,
+            auto_scored=not interrupted,
             score_error="" if scored else err,
             decoder_bytes=dr.decoder_size(workdir),
             decoder_src=src,
@@ -550,6 +553,9 @@ def run_arm(args: argparse.Namespace, backend: Backend = CLAUDE_CODE) -> None:
                 )
                 trace.flush()
             pd.DataFrame(rows).to_parquet(table)
+            if any(row.get("provider_interrupted") for row, _ in done):
+                report_arm(table, traj_path)
+                sys.exit(EXIT_THROTTLED)
     df = pd.DataFrame(rows)
     cols = [
         "task",
@@ -571,6 +577,10 @@ def run_arm(args: argparse.Namespace, backend: Backend = CLAUDE_CODE) -> None:
         f"{len(df)}), diagnosis correct {df.diagnosis_correct.fillna(False).mean():.3f}, "
         f"CLI cost estimate ${df.cost_usd.sum():.2f} (subscription)"
     )
+    report_arm(table, traj_path)
+
+
+def report_arm(table: Path, traj_path: Path) -> None:
     try:
         analyze_decoder(table, traj_path)
         labels = taxonomy.analyze_arm(table, traj_path)  # before rendering: pages show the label

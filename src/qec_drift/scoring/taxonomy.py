@@ -37,6 +37,7 @@ from pathlib import Path
 import pandas as pd
 
 from qec_drift import paths
+from qec_drift.agent import provider_limits
 from qec_drift.agent.transcripts import records
 from qec_drift.scoring import failure_modes_decoder as fm
 
@@ -74,6 +75,7 @@ class Features:
     commands: list[str] = field(default_factory=list)  # what the agent ran or wrote
     outputs: list[str] = field(default_factory=list)  # what the tools answered
     notes: list[str] = field(default_factory=list)  # harness notes and CLI errors
+    provider_interrupted: bool = False
 
     @property
     def budget_hit(self) -> bool:
@@ -107,7 +109,7 @@ class Features:
 
 def features(rec: dict) -> Features:
     """The commands, outputs and notes of one archived episode, in any archive format."""
-    f = Features()
+    f = Features(provider_interrupted=provider_limits.interrupted(rec.get("events", [])))
     for m in rec.get("messages", []):  # the API harness
         body = m.get("body") if m.get("role") == "assistant" else None
         body = json.loads(body) if isinstance(body, str) else (body or {})
@@ -188,7 +190,10 @@ def analyze_arm(table: Path, archive: Path | None) -> pd.DataFrame:
         f = features(last[task]) if task in last else Features()
         turns = int(r.get("turns") or 0)
         acted = turns > 0 or r.get("stop") == "completed"
-        ran = r.get("outcome") != "error" and acted and not f.env_missing and not f.login_lost
+        ran = (
+            r.get("outcome") != "error" and acted and not f.env_missing
+            and not f.login_lost and not f.provider_interrupted
+        )
         budget = f.budget_hit or turns >= TOOL_CALLS or r.get("stop") in ("exit -9",)
         leaf, verdict_rel = modes.loc[task, "leaf"], modes.loc[task, "verdict_rel"]
         lab, gate = label(leaf, verdict_rel, ran=ran, budget_hit=budget and leaf != "harness_error")
@@ -198,6 +203,7 @@ def analyze_arm(table: Path, archive: Path | None) -> pd.DataFrame:
                 ("never_acted", not acted),
                 ("env_missing", f.env_missing),
                 ("login_lost", f.login_lost),
+                ("provider_limit", f.provider_interrupted),
                 ("error_row", r.get("outcome") == "error"),
             )
             if hit

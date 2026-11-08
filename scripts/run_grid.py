@@ -131,6 +131,8 @@ def main() -> None:
         print(f"{name}: finished, {len(left)} tasks without a valid row", flush=True)
         if run.returncode == EXIT_LOGIN_LOST:
             sys.exit("the subscription login is gone; log in again and rerun this command")
+        if run.returncode or left:
+            sys.exit(run.returncode or 1)
 
 
 if __name__ == "__main__":
