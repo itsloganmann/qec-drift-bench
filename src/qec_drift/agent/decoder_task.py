@@ -186,8 +186,8 @@ def references(
     correlated matching with the pre-drift model: the best a training-time fit can do. With
     deploy shots, `pij_plain` and `pij_corr` use the nominal DEM refit to them
     (decoders/pij.py). Non-stationary tasks add `window_corr` (the window method given the
-    regimes) and `adaptive_corr` (decoders/adaptive.py, given nothing but the stale model and
-    the time series: the honest known method, which the launch gate holds the pass rule to).
+    regimes) and `adaptive_corr` (the custom offline reference in decoders/adaptive.py, given
+    the pre-drift circuit, task seed for hypothesis simulation, and detector time series).
     """
     pre = true_circuit(d, scenario, seed)
     proc = drift.process(pre, drift_kind, d, seed)

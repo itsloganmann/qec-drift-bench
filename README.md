@@ -35,8 +35,10 @@ Every use of a quantum computer waits on fault tolerance, and the error-correcti
 hand: characterize the noise, build the decoder, notice when the chip drifts, do it again. This
 benchmark hands an agent the model a lab believes describes its chip, calibration data from before
 a change, and fresh data from after it. The agent must diagnose the change and ship a decoder.
-Ground truth is physical: Stim and PyMatching on the true noise, with the known methods from the
-literature as the baseline on every task.
+Ground truth comes from Stim simulations of the specified noise. Reference decoders include
+the pairwise-correlation refit and a benchmark-specific adaptive hypothesis search, with
+their inputs and limits recorded in the
+[baseline audit](docs/launch2-grid-2026-11-02.md#adaptive-reference-provenance-november-8).
 
 Status (2026-11-02): the stationary tiers are built and measured, and the launch set (moving
 faults: a qubit that switches between good and bad every few hundred shots and moves across the

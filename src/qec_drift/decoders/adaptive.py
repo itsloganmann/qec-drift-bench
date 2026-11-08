@@ -1,21 +1,17 @@
-"""An adaptive decoder that knows nothing about the regimes: the honest known method.
+"""A benchmark-specific adaptive reference decoder for offline batches.
 
-The window method in `decoder_task.window_rate` is given the regimes and only has to read them
-off the time series. This decoder is given only what the agent is given: the stale model (the
-circuit the calibration data fit) and the shots in time order. Its hypotheses are every
-qubit, every disk of neighbours and the two-qubit gate of every CX pair, at every factor in
-MENU, each with the detector rates it would produce (learned once from the stale circuit by
-simulation). For each shot it pools the
-WINDOW shots on each side and computes the log-likelihood ratio of every hypothesis against
-the stale model; the best one wins when it beats a flat prior over the hypotheses, a second one
-on other qubits may join it, and the shot is decoded with correlated matching on the stale
-model with those regions scaled. On a stationary batch it
-should find nothing and match the stale decoder; on a moving fault it should follow it.
+The reference builder supplies the pre-drift circuit and task seed. The seed controls
+simulation of hypothesis detector rates. Actual fault locations, per-shot regime labels and
+test observables are not inputs. Hypotheses cover every qubit, neighbour disk and CX pair at
+the factors in MENU. Each shot uses WINDOW earlier and later shots, so decoding is not causal.
+The likelihood test selects up to MAX_HOT hypotheses with disjoint detector support, then
+uses correlated matching with those regions scaled.
 
-This is adaptive decoding-graph reweighting (Wang et al. 2023, arXiv 2311.16214) with a
-likelihood test over one-qubit, one-disk and one-gate faults, the structures every drift
-kind here shares. It is the ceiling that a pass rule can demand without any oracle knowledge, so the
-launch gate requires it to recover at least half of the drift loss on every task that counts.
+DGR (Wang et al., arXiv:2311.16214v3, Section IV) is related work: it updates graph weights
+from decoded-edge and edge-pair statistics. This implementation instead uses simulated fault
+hypotheses and a centred-window likelihood test. It is a custom reference, not a reproduction
+of DGR or an optimal decoder. The launch gate requires measured recovery of at least half
+the drift loss. Full diagnosis reachability requires separate evidence.
 """
 
 from __future__ import annotations

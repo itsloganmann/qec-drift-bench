@@ -253,3 +253,24 @@ and an attempted listing of the machine's Claude project directory. The judge fo
 successful hidden-shot or harness access in the submitted excerpts. These flags remain
 visible; identifier masking and matching labels do not establish a clean integrity review.
 The judge sees a rendered transcript with output limits and, for long episodes, a middle cut.
+
+## Adaptive reference provenance (November 8)
+
+`adaptive_corr` is a benchmark-specific reference. DGR learns graph weights from decoded-edge
+occurrences and decoded-edge-pair statistics ([Wang et al., Section IV-A and IV-B](https://arxiv.org/html/2311.16214v3#S4)).
+Our implementation instead simulates detector rates for a fixed bank of one-qubit, disk and
+CX-pair faults, selects hypotheses with a centred-window likelihood test, then runs correlated
+matching. The DGR citation is related work, not evidence that this code reproduces DGR.
+
+The reference builder passes the pre-drift circuit and the private task seed, which controls
+hypothesis simulation. It does not pass the changed locations, regime labels or test
+observables into `Adaptive`. For all 23 current core tasks, the supplied circuit exactly
+matches the visible nominal circuit; this equivalence is specific to that core. Each shot
+can use 50 future shots as well as 50 past shots. This is offline batch decoding.
+
+The reference provides measured decoding recovery, not an optimality bound or a full diagnosis
+pass. Its hypothesis bank shares the benchmark's fault families. The current gate therefore
+does not establish diagnosis reachability or performance on unseen fault structures. A future
+visible-only diagnosis baseline needs a fixed simulation seed, explicit scope and stationarity
+inference, and evaluation separate from the existing truth-assisted detector table. Historical
+reference values and task thresholds are unchanged.
