@@ -52,11 +52,13 @@ Three scaffolds run the same task text and the same scoring:
 The two subscription scaffolds share agent/isolation.py: an allowlisted environment with no API
 keys, a sandbox-exec profile that confines writes to the task folder and the episode's own state
 directory and hides the repository and this machine's secret stores, a login copy without the
-refresh token that is locked at the model's first reply, a 40-minute episode limit. Codex runs
+refresh token that is locked at the model's first reply, and a one-hour outer episode limit.
+The prompt asks for about 50 minutes to leave time for scoring. Codex runs
 with its own sandbox off (the outer one confines it), with browser, computer use, apps,
 memories, plugins, skill search, hooks, code mode and web search off, and with its real binary
 rather than this machine's wrapper. Both scaffolds wait and retry when a subscription refuses
-an episode at its usage limit.
+an episode before any tool call. A provider limit after tool calls archives an invalid attempt
+without scoring and stops the arm; the supervisor can resume it when quota permits.
 
 ## Arms
 
@@ -78,7 +80,8 @@ arm on the v2 core is in the live table.
 
 ## The gate on the v2 pool
 
-`data/agent_launch2/references.json` (versioned) holds 39 tasks; 33 pass the gate (the fixed
+As of November 8, `data/agent_launch2/references.json` holds 48 tasks; 40 pass the gate, including
+all 23 core tasks. The original pool held 39 tasks, of which 33 passed (the fixed
 30x TLS, the ramps at 20x to 40x and the coupler wander at 60x on d5 and d7 leave the stale
 decoder less than 20% to lose). The eight tasks of the supplement were computed on their own;
 the others were
@@ -103,6 +106,11 @@ headroom rather than by any model's results: `d5-none-dwander30d40-s8`, `d5-none
 `d5-none-dwander80d60-s10`, `d7-none-dwander30d30-s2` and `d7-none-dgwander100d60-s1`. Arms extend to the rest of the gated pool
 while the weekly quotas allow (the Claude week was 53% used and the Fable week 68% when the
 grid started; the ChatGPT week 6%).
+
+The expansion decisions followed observed model scores. The core is therefore a development
+set, even though physical dwell and baseline headroom guided the individual additions. Scores
+on it are descriptive; fresh instances and repeated runs are needed to assess generalization
+within these families or differences between effort settings.
 
 ## Results
 
@@ -131,7 +139,7 @@ task's name; these rows are in `data/agent_launch2/name_leak/` and are rerun fro
 ## Fairness log (2026-11-03)
 
 Every defect found in the harness or the task text, what it did, and what was done. The
-checks that found them: `scripts/legitimacy.py` (`docs/legitimacy.md`), the blinded transcript
+checks that found them: `scripts/legitimacy.py` (`docs/legitimacy.md`), the transcript
 judge (`scripts/judge_transcripts.py`, `docs/judge.md`), and reading the transcripts. A row is
 set aside (kept in a folder named for the defect) and rerun when the defect could change how
 that task is scored; otherwise the defect is fixed for later episodes and recorded here.
@@ -152,23 +160,45 @@ that task is scored; otherwise the defect is fixed for later episodes and record
 | The sandbox hides the repository and secret stores but not the rest of the home folder | the secret scan before publishing | a GPT-5.6-Terra max episode ran `find /Users/logan ... -iname '*drift*'` and printed 200 paths from other projects; no copy of the benchmark source exists outside the hidden repository, so no answer was reachable | the public snapshot leaves out the transcripts, which can hold such listings | none |
 | The benchmark source is public from 2026-11-05 (github.com/itsloganmann/qec-drift-bench), and episodes have network access | publishing | an agent could fetch the task generator | the `probe` flag now matches the public repository's name; any such episode is set aside | none so far |
 | A rerun could inherit read-only caches of an earlier attempt | a harness error row | none observed | the task folder is force-cleared | none |
-| A provider usage limit after the first tool call was counted as a model failure | the transcript judge, then the original terminal error events | three GPT-5.6-Luna high episodes stopped after 2 to 5 calls, but were labelled no_submission and treated as finished | partial provider-interrupted episodes are archived as error rows without scoring; the arm stops and the grid cannot exit successfully with tasks still pending; the taxonomy also recognizes historical quota failures | the three original rows and trajectories are preserved before correction and a targeted rerun; rerun results are reported only after they finish |
+| A provider usage limit after the first tool call was counted as a model failure | the transcript judge, then the original terminal error events | three GPT-5.6-Luna high episodes stopped after 2 to 5 calls, but were labelled no_submission and treated as finished | partial provider-interrupted episodes are archived as error rows without scoring; the arm stops and the grid cannot exit successfully with tasks still pending; the taxonomy also recognizes historical quota failures | the three original attempts are preserved; the November 8 reruns yielded two submitted decoders and one tool-budget failure, with no pass |
 
 November 8 correction: the original arm table, archive, work folders and affected rendered
 pages were copied to `.cache/provider-interrupted-backup-20261108` with SHA-256 hashes before
 changing the three rows. The other 20 rows in the arm and all 23 other arm tables were
-unchanged. The original archive is unchanged. The grid now reports 20 valid episodes out of
-23 for Luna high; exactly the three interrupted episodes are pending. Their fresh attempts
-will run at a later time than the original grid, so provider revision drift remains possible.
+unchanged. The archive preserves all 23 original records and appends three fresh attempts.
+The reruns finished on November 8: two submitted decoders and one ended at the 40-call limit
+without a decoder. All three are valid failures; Luna high has 23 valid episodes and no task
+pending. The capped attempt searched outside its folder for nominal.stim, but repository
+traversal was denied; the recorded trace shows no hidden test, task-name or continuation-note
+exposure. The reruns took place later than the original grid, so provider revision drift
+remains possible.
 
 Checked, not a harness defect: in 8 of 13 clean GPT-5.6-Luna low episodes some shell calls could not find `nominal.stim` or the `.npz` files, while the calls before and after them in the same episode could (failures at calls 1, 3, 5, 9 and 15 of one episode). The harness starts the CLI in one folder for the whole episode, and no other arm shows it (GPT-6-Astra, GPT-5.6-Sol and GPT-5.6-Terra: none), so the folder changes with the model's own calls; Codex lets a model name a working folder per call, which its event stream does not record. Luna low stops on its own after 7 to 17 calls, far from the 40-call cap.
 
 Checked and fair: GPT-6-Astra max beats the per-shot true-model oracle on 6 of 13 clean core tasks (up to 11 standard errors on the same test shots). Its decoders are stronger than matching, not informed by anything hidden: an approximate maximum-likelihood search that sums fault covers over candidates from perturbed correlated matchings, compiled in C++, and a learned reranker over several matchings. They read only their own folder and embedded weights fitted on the calibration and deploy files. The oracle is matching with the true model, not the best possible decoder, so `gap_drift` above 1 is possible.
 
-Checked and fair: every truth set of the core can be read off the deploy shots (each truth
-qubit was bad on at least 50 deploy shots; `docs/legitimacy.md`); every core task is passed
-by at least one arm and failed by at least one; no write outside a task folder landed (the
-sandbox refused each attempt, and none of the paths the judge named exists); no agent reached
-for the hidden test shots or the scorer. Installing extra libraries from the network (ldpc,
-tesseract-decoder, beliefmatching) is allowed to every arm alike and is recorded per episode
-as the `network` flag.
+The saved detector cache covered only 11 of the current 21 non-adequate core tasks on November
+8. The ten later additions lacked saved detector evidence; the earlier whole-core claim was
+unsupported. The report now shows cache coverage explicitly, and the missing checks are being
+regenerated. An ideal-reader check concerns truth-qubit support in the deploy sequence; it
+does not prove that an evaluated agent can infer those qubits. After the three reruns,
+533 valid episodes covered the 23 core tasks: four tasks had no absolute-rule pass and five
+had no relative-rule pass. No task was passed by every arm. The totals were 159 absolute-rule
+passes and 144 relative-rule passes. The three provider-interrupted attempts remain archived
+and excluded; their replacements count. The earlier statement that every task had been passed was
+incorrect. The simulation gate and known-method baselines establish the inclusion criterion;
+model success is measured separately.
+
+The earlier trajectory review found no successful write at the outside paths flagged by the
+judge and no access to hidden test shots or the scorer. This is evidence from the reviewed
+traces, not a proof covering arbitrary code. The subscription scaffolds allow package installs
+from the network (including ldpc, tesseract-decoder and beliefmatching), recorded per episode
+as the `network` flag. The API harness blocks network access.
+
+November 8 judge audit: the current review payloads retain model and effort in filesystem
+paths, so the earlier blinded-review claim was incorrect. Of 533 valid scored rows, 532 have
+archived transcripts and 515 have a matching judgment. The other 17 were skipped because the
+cache deduplicates by arm and an incomplete content key, without the task. One valid row
+lacks an archived transcript. These are review-coverage gaps, not evidence of clean episodes.
+The judge report now states the limitation; anonymization, cache repair and re-audit remain
+pending. Original judgments and transcripts are preserved.

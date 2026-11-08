@@ -43,7 +43,7 @@ The SDK source and launch post describe:
 | 40 turns, two nudges, a countdown, three failed submits | The same loop in the task function, with manual tool calls through the OpenAI-compatible path |
 | Scoring on 300,000 hidden shots in a throwaway copy (the harness makes them with `decoder_task`) | Trusted scoring outside the model-code runtime; test data and decoder execution need separate access controls |
 | `gap_closed`, `gap_drift`, the relative pass rule (`references.json`) | Numbers that the task returns, plus one assertion for the pass |
-| Failure taxonomy and blinded judge | Offline, on the downloaded runs (ATIF) |
+| Failure taxonomy and transcript judge | Offline, on the downloaded runs (ATIF) |
 | One table per model and effort | One Kaggle benchmark that groups the 23 core tasks |
 
 ## The integrity problem

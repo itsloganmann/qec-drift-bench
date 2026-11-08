@@ -5,13 +5,13 @@ This is a public snapshot of the benchmark: the tasks, the harness, the scoring,
 <!-- grid:start -->
 ## Live results
 
-Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2026-11-02.md). Arms still running show their done count. Episodes labelled `invalid_run` (the harness failed them; docs/failure-taxonomy.md) are left out. Updated 2026-11-08 00:23 GMT.
+Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2026-11-02.md). Arms still running show their done count. Episodes labelled `invalid_run` (the harness failed them; docs/failure-taxonomy.md) are left out. Updated 2026-11-08 00:32 GMT.
 
 ### v2 launch set (40 tasks gated; the core is 23)
 
 | model | low | medium | high | xhigh | max | ultra |
 |---|---|---|---|---|---|---|
-| GPT-5.6-Luna (Codex) | 0% / 0% (core) | 0% / 0% (core) | 0% / 5% (20/23) | 4% / 9% (core) | 13% / 13% (core) |  |
+| GPT-5.6-Luna (Codex) | 0% / 0% (core) | 0% / 0% (core) | 0% / 4% (core) | 4% / 9% (core) | 13% / 13% (core) |  |
 | GPT-5.6-Sol (Codex) | 17% / 17% (core) | 17% / 26% (core) | 35% / 35% (core) | 30% / 30% (core) | 48% / 48% (core) | 30% / 30% (core) |
 | GPT-5.6-Terra (Codex) | 0% / 4% (core) | 0% / 0% (core) | 4% / 13% (core) | 9% / 17% (core) | 26% / 26% (core) | 30% / 35% (core) |
 | GPT-6-Astra (Codex) | 61% / 65% (core) | 57% / 57% (core) | 57% / 61% (core) | 43% / 48% (core) | 65% / 70% (core) | 61% / 65% (core) |
@@ -54,18 +54,29 @@ another: `docs/benchmark-gap-survey-2026-11-01.md`.
 1. The agent gets `nominal.stim` (the surface-code circuit with the noise the team believes),
    `train.npz` and `val.npz` (labeled shots from the true noise, taken before any change),
    `deploy.npz` (recent detection events, no labels, in the order they were taken), Python with
-   numpy, scipy, stim and pymatching, no network, no test labels, and 40 tool calls.
+   numpy, scipy, stim and pymatching, no test labels, and 40 tool calls.
 2. It writes `decoder.py` with `decode(det) -> obs_flips` and calls `submit` with its diagnosis:
-   `model_adequate`, `confidence`, `scope` (none, local, global), `changed_qubits`, `mechanism`,
+   `model_adequate`, `confidence`, `scope` (none, local, moving, global), `changed_qubits`, `mechanism`,
    `stationary`, `what_is_wrong`, `evidence`.
 3. The harness scores the decoder on 300,000 hidden shots. `gap_closed` is the share of the gap
    from nominal matching to the oracle (correlated matching with the true, per-regime noise) that
    the decoder closes. `gap_drift` is the share of the stale calibration's loss it recovers. The
    diagnosis is correct when the scope and the stationary flag are right and, for a local fault,
    the reported qubits overlap the true ones. A task is **passed** when the diagnosis is correct,
-   `gap_closed` is at least 0.5, and on a drift task `gap_drift` is at least 0.5.
+   `gap_closed` is at least 0.5, and on a drift task `gap_drift` is at least 0.5. This is the
+   absolute rule. The relative headline also requires at least 0.75 of the honest baseline's
+   drift recovery on that task.
 4. Every API response is archived as returned (`trajectories/`), and every episode gets one
    failure-mode leaf (`docs/failure-taxonomy.md`).
+
+The API harness blocks network access. The subscription CLI scaffolds keep it open for the
+provider connection and package installs; they use an outer filesystem sandbox and write
+`report.json` instead of calling `submit`. These scaffold differences are part of the reported
+conditions, not a controlled comparison of model identity alone.
+
+The current 23-task core is a development set expanded after interim model results. Its scores
+describe that selected set. Fresh held-out instances and repeated runs are still needed before
+claiming generalization or a causal effect of reasoning effort.
 
 ## Task sets
 

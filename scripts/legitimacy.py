@@ -161,6 +161,19 @@ def markdown(df: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
+def detector_coverage(det: dict) -> str:
+    expected = {t.name for t in dt.launch2core_tasks() if not t.model_adequate}
+    missing = sorted(expected - det.keys())
+    text = (
+        f"Detector checks cover {len(expected) - len(missing)} of {len(expected)} "
+        "non-adequate core tasks."
+    )
+    if missing:
+        text += " Missing checks: " + ", ".join(f"`{name}`" for name in missing) + ". "
+        text += "Run `uv run python scripts/legitimacy.py --detector` to refresh these checks."
+    return text
+
+
 def report(eps: pd.DataFrame, det: dict) -> str:
     diag_rate = (
         eps[eps.label != "invalid_run"]
@@ -200,9 +213,10 @@ def report(eps: pd.DataFrame, det: dict) -> str:
             "`invalid_run` episodes are set aside and rerun; they never count.",
             "## Labels per arm",
             markdown(counts),
-            "## Tasks: solvable, not trivial, diagnosable",
+            "## Observed task outcomes",
             markdown(task_table(eps)),
             "## Can the diagnosis be read off the deploy shots?",
+            detector_coverage(det),
             "An ideal reader who knew the regime of every deploy shot could name the truth "
             f"qubits that were bad on at least {DETECT_SHOTS} shots (`short_lived` counts the "
             "others). The truth is fair when that set reaches the pass rule's overlap bar of "

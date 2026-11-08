@@ -8,9 +8,10 @@ that each lands in exactly one label and that every label is reachable.
 - Code: `scoring/taxonomy.py` (the tree, the transcript features, the legitimacy flags).
 - Run: `scripts/legitimacy.py` labels every arm, writes `data/<set>/<arm>_taxonomy.parquet`,
   and regenerates `docs/legitimacy.md`.
-- Second opinion: `scripts/judge_transcripts.py` has a model read every transcript, blinded to
-  the agent's model, and assign the same labels without seeing the rule label;
-  `docs/judge.md` lists every disagreement and every fairness concern it raised.
+- Second opinion: `scripts/judge_transcripts.py` assigns the same labels without seeing the
+  rule label. Its model heading is removed, but paths can reveal model and effort; these
+  reviews are not fully blinded. `docs/judge.md` reports coverage, disagreements and concerns.
+  Its cache can collide and omit reviews; anonymization and cache repairs are pending.
 - Transcripts: `trajectories/<set>/<arm>/<task>.md`, one page per episode, with the score.
 
 ## The tree
@@ -19,7 +20,7 @@ An episode takes the first gate that applies.
 
 | gate | question | label |
 | --- | --- | --- |
-| G0 | Did the harness fail the episode? It never ran, it was killed before the agent acted, the login was lost, or the environment lacked what the task text promises (a missing stim or pymatching). | `invalid_run` |
+| G0 | Did an external failure invalidate the episode? It never ran, it was killed before the agent acted, a provider limit interrupted it, the login was lost, or the environment lacked what the task text promises (a missing stim or pymatching). | `invalid_run` |
 | G1 | Did it pass the relative rule: diagnosis right, and the decoder good enough? | `passed` |
 | G2 | No scorable decoder, and the episode ended at the 40-tool-call budget or the time limit? | `out_of_budget` |
 | G3 | No `decoder.py`, and the agent stopped on its own? | `no_submission` |
@@ -57,7 +58,8 @@ Whether the diagnosis was also wrong on a G7 to G9 episode is the attribute
 Each episode also carries flags that a reader checks; they never change the label.
 
 - `harness`: what put an episode in G0 (`never_acted`, `env_missing`, `login_lost`,
-  `error_row`).
+  `provider_limit`, `error_row`). A provider limit invalidates a partial attempt even after
+  tool calls or a decoder file; it is archived without scoring and queued for a fresh run.
 - `integrity`: the agent reached for something outside the task: `denied` (the sandbox refused
   a path), `network` (an install or a URL), `outside` (a path outside its task folder and the
   venv), `probe` (names of the hidden test, the harness or the references), `own_copy` (it
