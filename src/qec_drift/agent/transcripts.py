@@ -239,18 +239,21 @@ def _scores(parquet: Path) -> dict[str, dict]:
 
 
 def records(archive: Path) -> Iterator[dict]:
-    """The records of an archive, as many as can be read. An archive that an episode was
-    writing when its process died has a member without a trailer, or garbage between two
-    members; every gzip member is decompressed on its own and a broken one yields what it
-    held up to the break."""
+    """Read concatenated gzip members using their actual decompressor boundaries.
+
+    Complete JSON lines in a truncated final member are retained. After an invalid member,
+    scan for another header; header bytes inside a valid member never split that member.
+    """
     raw = archive.read_bytes()
-    starts = [i for i in range(len(raw)) if raw.startswith(b"\x1f\x8b\x08", i)]
-    for a, b in zip(starts, starts[1:] + [len(raw)][: len(starts)], strict=True):
+    offset = 0
+    while (start := raw.find(b"\x1f\x8b\x08", offset)) != -1:
         d = zlib.decompressobj(16 + zlib.MAX_WBITS)
         try:
-            text = d.decompress(raw[a:b]).decode("utf-8", "replace")
+            text = d.decompress(raw[start:]).decode("utf-8", "replace")
         except zlib.error:
+            offset = start + 1
             continue
+        offset = len(raw) - len(d.unused_data) if d.eof else start + 1
         for line in text.splitlines():
             if line.startswith("{"):
                 try:

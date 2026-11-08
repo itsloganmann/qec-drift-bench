@@ -195,10 +195,40 @@ traces, not a proof covering arbitrary code. The subscription scaffolds allow pa
 from the network (including ldpc, tesseract-decoder and beliefmatching), recorded per episode
 as the `network` flag. The API harness blocks network access.
 
-November 8 judge audit: the current review payloads retain model and effort in filesystem
-paths, so the earlier blinded-review claim was incorrect. Of 533 valid scored rows, 532 have
-archived transcripts and 515 have a matching judgment. The other 17 were skipped because the
-cache deduplicates by arm and an incomplete content key, without the task. One valid row
-lacks an archived transcript. These are review-coverage gaps, not evidence of clean episodes.
-The judge report now states the limitation; anonymization, cache repair and re-audit remain
-pending. Original judgments and transcripts are preserved.
+November 8 audit of the old judge: its review payloads retained model and effort in filesystem
+paths, so the earlier blinded-review claim was incorrect. Of 533 valid scored rows, the old
+reader exposed 532 transcripts and 515 had a matching judgment. The other 17 were skipped
+because the cache deduplicated by arm and an incomplete content key, without the task. One
+transcript appeared missing. These were review-coverage gaps, not evidence of clean episodes.
+Original judgments and transcripts are preserved. The repairs and current coverage follow.
+
+November 8 repair: the apparently missing transcript was present in the unchanged gzip
+archive. The reader split a valid compressed member at bytes that resembled a gzip header.
+It now follows decompressor boundaries and can recover later members after a damaged header.
+All 24 current archives match strict gzip decoding (545 historical records); all 533 valid
+rows now have an archived transcript. The recovered record matches its decoder, report,
+21 tool calls, tokens and cost. No record was reconstructed or changed.
+
+The judge now uses protocol `identifier-masked-v2`. Known model identifiers and arm paths are
+masked throughout facts and transcript text, preserving path relationships and outside-file
+evidence. Scaffold and tool syntax still provide clues, so this is not complete blinding.
+The cache hashes the exact submitted input, rubric, schema and judge settings and uses arm,
+task and key together. Legacy judgments stay archived and do not count under the new
+protocol. The hourly publisher takes at most eight pending reviews per tick. Its coverage
+report must be read with every partial result. Rows and raw attempts still lack shared attempt
+IDs; no mismatch was found in the current rows, but a crash between archive append and table
+replacement could create one. That recovery risk remains open.
+
+November 8 protocol pilot: before the calls, the plan predicted identifier masking, distinct
+request keys, preserved legacy records and report coverage for three selected cases. The
+cases covered the recovered archive, a provider-limit rerun and an old cache collision.
+All 533 submitted inputs passed the identifier and key preflight. The three live reviews
+completed, matched their rule labels and preserved every legacy log prefix. The report now
+counts 3 current reviews, 530 awaiting review and no missing transcripts; 687 older judgment
+records remain excluded. This selected smoke test is not a performance estimate.
+
+Two pilot reviews flagged outside-folder probes: an attempted scratch write under `/tmp`
+and an attempted listing of the machine's Claude project directory. The judge found no
+successful hidden-shot or harness access in the submitted excerpts. These flags remain
+visible; identifier masking and matching labels do not establish a clean integrity review.
+The judge sees a rendered transcript with output limits and, for long episodes, a middle cut.

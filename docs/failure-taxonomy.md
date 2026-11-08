@@ -9,9 +9,12 @@ that each lands in exactly one label and that every label is reachable.
 - Run: `scripts/legitimacy.py` labels every arm, writes `data/<set>/<arm>_taxonomy.parquet`,
   and regenerates `docs/legitimacy.md`.
 - Second opinion: `scripts/judge_transcripts.py` assigns the same labels without seeing the
-  rule label. Its model heading is removed, but paths can reveal model and effort; these
-  reviews are not fully blinded. `docs/judge.md` reports coverage, disagreements and concerns.
-  Its cache can collide and omit reviews; anonymization and cache repairs are pending.
+  rule label. Protocol `identifier-masked-v2` masks known model identifiers and arm paths
+  throughout its input while retaining path relationships. Scaffold and tool syntax remain
+  clues; this is not complete blinding. Its cache hashes the exact input, rubric, schema and
+  judge settings, keyed by arm and task. Earlier judgments remain archived and excluded.
+  `docs/judge.md` separates valid rows, available transcripts, current reviews and gaps.
+  The hourly publisher evaluates at most eight pending episodes per tick.
 - Transcripts: `trajectories/<set>/<arm>/<task>.md`, one page per episode, with the score.
 
 ## The tree

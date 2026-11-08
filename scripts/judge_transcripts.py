@@ -4,7 +4,7 @@
     uv run python scripts/judge_transcripts.py --report-only   # the agreement report only
 
 For each valid episode of data/agent_launch2 (the latest attempt in the arm's archive), the
-judge gets a transcript with its model heading removed and a sheet of facts: the
+judge gets a transcript with explicit model identifiers masked and a sheet of facts: the
 true fault, the scores, the honest baseline's recovery, and what ended the episode. It does
 not get the rule label of scoring/taxonomy.py or the decoder leaf: it reads the decoder and the
 transcript itself. It returns, as JSON under a schema: one label of the same taxonomy, the
@@ -13,10 +13,11 @@ environment fail the agent, was the task text unclear, is the task fair, did the
 outside the task). The judge is GPT-6-Astra at medium effort through Codex, on the ChatGPT
 subscription, in a read-only sandbox; Claude's weekly quota is left to the grid.
 
-Results go to data/agent_launch2/judge/<arm>.jsonl. The current cache key does not hash the
-full transcript and can collide; coverage is reported explicitly. Filesystem paths can reveal
-model and effort, so these judgments are not fully blinded. docs/judge.md compares the
-judge's labels with the rule labels and lists every legitimacy concern.
+Results append to data/agent_launch2/judge/<arm>.jsonl under a versioned protocol. The key
+hashes the exact submitted payload, rubric, schema and judge settings. Legacy judgments stay
+archived but do not count under the new protocol. Identifier masking preserves path evidence;
+scaffold and tool syntax still provide clues, so this is not complete blinding. docs/judge.md
+reports valid rows, available transcripts, current judgments and missing archives.
 """
 
 from __future__ import annotations
@@ -25,9 +26,11 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
+from functools import cache
 from pathlib import Path
 
 import pandas as pd
@@ -43,6 +46,7 @@ OUT = DATA / "judge"
 DOC = ROOT / "docs" / "judge.md"
 CODEX = Path.home() / ".codex" / "packages" / "standalone" / "current" / "bin" / "codex"
 MODEL, EFFORT = "gpt-6-astra", "medium"
+PROTOCOL = "identifier-masked-v2"
 HEAD, TAIL = 40_000, 110_000  # characters of a long transcript kept from each end
 SECONDS = 900
 SKIP = ("_failure_modes", "_taxonomy")
@@ -120,9 +124,14 @@ SCHEMA = {
 }
 
 
+@cache
+def task_facts(name: str) -> tuple[dt.Task, dt.drift.Truth]:
+    task = dt.tasks_by_name(name)[0]
+    return task, task.truth
+
+
 def facts(r: pd.Series) -> str:
-    task = dt.tasks_by_name(r["task"])[0]
-    truth = task.truth
+    task, truth = task_facts(r["task"])
     span = r.get("ref_stale_corr", float("nan")) - r.get("ref_true_corr", float("nan"))
     known = r.get("ref_adaptive_corr")
     known = r.get("ref_pij_corr") if known is None or known != known else known
@@ -146,19 +155,38 @@ def facts(r: pd.Series) -> str:
     return "\n".join(lines)
 
 
-def blinded(rec: dict) -> str:
-    rec = dict(rec, model="the agent", effort=None)
-    text = transcripts.render_record(rec)
-    for name in (str(rec.get("model")),):
-        text = text.replace(name, "the agent")
+def mask_identifiers(text: str, rec: dict, arm: str) -> str:
+    """Mask known explicit identifiers, retaining path structure and outside-path evidence."""
+    model = str(rec.get("model") or "")
+    names = {arm, model, re.sub(r"[-.]", "_", model)} - {""}
+    pattern = "|".join(re.escape(name) for name in sorted(names, key=len, reverse=True))
+    return re.sub(pattern, "agent", text, flags=re.IGNORECASE) if pattern else text
+
+
+def payload(row: pd.Series, rec: dict, arm: str) -> str:
+    anonymous = dict(rec, model="the agent", effort=None)
+    text = mask_identifiers(transcripts.render_record(anonymous), rec, arm)
     if len(text) > HEAD + TAIL:
         text = text[:HEAD] + "\n\n[... middle of the transcript cut ...]\n\n" + text[-TAIL:]
-    return text
+    sheet = mask_identifiers(facts(row), rec, arm)
+    return f"FACTS\n{sheet}\n\nTRANSCRIPT\n{text}"
 
 
-def key(rec: dict) -> str:
-    blob = json.dumps([rec.get("decoder_src"), rec.get("report"), len(rec.get("events", []))])
-    return hashlib.sha1(blob.encode()).hexdigest()[:16]
+def key(episode: str) -> str:
+    """Cache exactly the request being evaluated, including the rubric and judge version."""
+    blob = json.dumps(
+        dict(
+            protocol=PROTOCOL,
+            episode=episode,
+            prompt=PROMPT,
+            schema=SCHEMA,
+            model=MODEL,
+            effort=EFFORT,
+        ),
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(blob.encode()).hexdigest()
 
 
 def judge_one(episode: str) -> dict:
@@ -187,23 +215,31 @@ def judge_one(episode: str) -> dict:
         return json.loads(out.read_text())
 
 
-def episodes() -> list[tuple[str, str, str, pd.Series, dict]]:
-    """(arm, task, key, row, record) for every valid episode that counts now: the last attempt
-    of a task with a row in its arm's table. A set-aside attempt has no row and is left out."""
+def valid_tables() -> list[tuple[Path, pd.DataFrame]]:
+    """Current valid rows, including ones whose transcript is missing."""
     out = []
     for table in sorted(p for p in DATA.glob("*.parquet") if not p.stem.endswith(SKIP)):
-        arm = table.stem
-        archive = paths.trajectories_dir() / DATA.name / f"decoder_{arm}.jsonl.gz"
-        labels = table.with_name(f"{arm}_taxonomy.parquet")
-        if not archive.is_file() or not labels.is_file():
+        labels = table.with_name(f"{table.stem}_taxonomy.parquet")
+        if not labels.is_file():
             continue
         valid = set(pd.read_parquet(labels).query("label != 'invalid_run'").task)
-        rows = pd.read_parquet(table).set_index("task")
+        rows = pd.read_parquet(table).set_index("task", drop=False)
+        out.append((table, rows.loc[rows.index.intersection(valid)]))
+    return out
+
+
+def episodes() -> list[tuple[str, str, str, str]]:
+    """(arm, task, key, exact payload) for each current valid row with an archived attempt."""
+    out = []
+    for table, rows in valid_tables():
+        arm = table.stem
+        archive = paths.trajectories_dir() / DATA.name / f"decoder_{arm}.jsonl.gz"
+        if not archive.is_file():
+            continue
         last = {rec["task"]: rec for rec in transcripts.records(archive)}
-        for task in sorted(valid & set(last) & set(rows.index)):
-            row = rows.loc[task].copy()
-            row["task"] = task
-            out.append((arm, task, key(last[task]), row, last[task]))
+        for task in sorted(set(last) & set(rows.index)):
+            text = payload(rows.loc[task], last[task], arm)
+            out.append((arm, task, key(text), text))
     return out
 
 
@@ -214,12 +250,8 @@ def judged() -> list[dict]:
 
 def pending() -> list[tuple[str, str, str, str]]:
     """(arm, task, key, episode text) for every valid episode not judged yet."""
-    done = {(r["arm"], r["key"]) for r in judged()}
-    return [
-        (arm, task, k, f"FACTS\n{facts(row)}\n\nTRANSCRIPT\n{blinded(rec)}")
-        for arm, task, k, row, rec in episodes()
-        if (arm, k) not in done
-    ]
+    done = {(r["arm"], r["task"], r["key"]) for r in judged() if r.get("protocol") == PROTOCOL}
+    return [episode for episode in episodes() if episode[:3] not in done]
 
 
 def run(work: list[tuple[str, str, str, str]], concurrency: int) -> None:
@@ -231,20 +263,43 @@ def run(work: list[tuple[str, str, str, str]], concurrency: int) -> None:
             print(f"{arm} {task}: {exc}", flush=True)
             return
         with (OUT / f"{arm}.jsonl").open("a") as f:
-            f.write(json.dumps({"arm": arm, "task": task, "key": k} | verdict) + "\n")
+            f.write(json.dumps(verdict | dict(arm=arm, task=task, key=k, protocol=PROTOCOL)) + "\n")
         print(f"{arm} {task}: {verdict['label']}", flush=True)
 
+    OUT.mkdir(parents=True, exist_ok=True)
     with ThreadPoolExecutor(concurrency) as pool:
         list(pool.map(one, work))
 
 
 def report() -> str:
-    current = {(arm, task, k) for arm, task, k, _, _ in episodes()}
+    current = {episode[:3] for episode in episodes()}
+    saved = judged()
     latest = {
-        (r["arm"], r["task"]): r for r in judged() if (r["arm"], r["task"], r["key"]) in current
+        (r["arm"], r["task"]): r
+        for r in saved
+        if r.get("protocol") == PROTOCOL and (r["arm"], r["task"], r["key"]) in current
     }
+    valid = {(table.stem, task) for table, rows in valid_tables() for task in rows.index}
+    missing = sorted(valid - {(arm, task) for arm, task, _ in current})
+    legacy = sum(r.get("protocol") != PROTOCOL for r in saved)
+    intro = [
+        "# Transcript judge",
+        f"Protocol `{PROTOCOL}`: {len(latest)} of {len(current)} current episodes with archived "
+        f"transcripts judged by {MODEL} at {EFFORT} effort. {len(valid)} valid scored rows; "
+        f"{len(missing)} missing transcripts; "
+        f"{len(current) - len(latest)} awaiting current review.",
+        "Explicit model identifiers and arm paths are masked throughout the submitted facts "
+        "and transcript. Path relationships and outside-path evidence are retained. Scaffold "
+        "and tool syntax remain clues, so this is not complete blinding. Long transcripts "
+        "retain only the first and last sections, marked where cut.",
+        f"{legacy} saved judgments use older protocols and are excluded from this report. "
+        "They remain archived. Cache identity includes task, exact submitted input, rubric, "
+        "schema and judge settings; a missing judgment is not evidence of a clean episode.",
+    ]
+    if missing:
+        intro += ["Missing transcripts: " + "; ".join(f"`{a}` / `{t}`" for a, t in missing)]
     if not latest:
-        return "# Transcript judge\n\n(nothing judged yet)\n"
+        return "\n\n".join(intro + ["No judgments under the current protocol yet."]) + "\n"
     j = pd.DataFrame(list(latest.values()))
     rule = pd.concat(
         [pd.read_parquet(p)[["arm", "task", "label"]] for p in DATA.glob("*_taxonomy.parquet")]
@@ -287,15 +342,9 @@ def report() -> str:
     return (
         "\n\n".join(
             [
-                "# Transcript judge",
-                "Generated by `scripts/judge_transcripts.py`. "
-                f"{len(m)} of {len(current)} current episodes with archived transcripts judged by "
-                f"{MODEL} at {EFFORT} effort. The judge's label agrees with the "
-                f"rule label of `scoring/taxonomy.py` on {agree:.0%} of them.",
-                "The model heading is removed, but filesystem paths can reveal model and effort. "
-                "These judgments are not fully blinded. The current cache key can also collide; "
-                "missing judgments do not imply a clean review. Anonymization and cache repairs "
-                "are pending.",
+                *intro,
+                f"The judge's label agrees with the rule label of `scoring/taxonomy.py` "
+                f"on {agree:.0%} of the current judgments.",
                 "## Where the judge and the rules disagree",
                 md(disagree),
                 "## Fairness by task (the judge's verdict per episode)",
