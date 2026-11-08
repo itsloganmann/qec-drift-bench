@@ -5,7 +5,7 @@ This is a public snapshot of the benchmark: the tasks, the harness, the scoring,
 <!-- grid:start -->
 ## Live results
 
-Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2026-11-02.md). Arms still running show their done count. Episodes labelled `invalid_run` (the harness failed them; docs/failure-taxonomy.md) are left out. Updated 2026-11-08 02:34 GMT.
+Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2026-11-02.md). Arms still running show their done count. Episodes labelled `invalid_run` (the harness failed them; docs/failure-taxonomy.md) are left out. Updated 2026-11-08 03:40 GMT.
 
 ### v2 launch set (40 tasks gated; the core is 23)
 
@@ -19,12 +19,11 @@ Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2
 
 ### v1 launch set (21 tasks)
 
-| model | medium | high | max |
-|---|---|---|---|
-| Fable 5.1 (Claude Code) |  |  | 33% / 33% (6/21) |
-| GPT-6-Astra (Codex) |  |  | 67% / 67% (12/21) |
-| Opus 5.5 (Claude Code) | 33% / 33% (6/21) |  |  |
-| Sonnet 5.5 (API) |  | 0% / 25% (12/21) |  |
+| model | high | max |
+|---|---|---|
+| Fable 5.1 (Claude Code) |  | 0% / 0% (2/21) |
+| GPT-6-Astra (Codex) |  | 67% / 67% (12/21) |
+| Sonnet 5.5 (API) | 0% / 25% (12/21) |  |
 
 <!-- grid:end -->
 
