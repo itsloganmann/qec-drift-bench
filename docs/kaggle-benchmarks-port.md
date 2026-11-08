@@ -1,28 +1,33 @@
-# Porting QEC-Drift to Kaggle Benchmarks (plan, 2026-11-07)
+# Porting QEC-Drift to Kaggle Benchmarks (plan, updated 2026-11-08)
 
-**Outcome.** The API harness (`src/qec_drift/agent/decoder_run.py`) maps almost one to one onto
-a `kaggle-benchmarks` task: two tools, a tool-call budget, and scoring in a throwaway folder.
-Two points need an answer from Kaggle before we build:
+**Status: scored deployment is blocked on isolation and run limits.** The API harness
+(`src/qec_drift/agent/decoder_run.py`) can supply the tool loop and score rules. Two points
+need an answer from Kaggle before running model-written code against hidden data:
 
 1. How to keep the hidden test shots, their labels and the true noise away from model-written
    code that runs inside the same Kaggle notebook as the scorer.
 2. Whether an agent episode of up to 40 tool calls, 23 times per model, fits the run limits.
 
-Nothing in this plan changes the tasks. A Kaggle leaderboard on the same 23 core tasks is
-comparable with the API-harness column of our own grid.
+Nothing in this plan changes the tasks. Comparison with the API-harness column requires
+verified isolation, matching budgets, and the parity check below. The 23 core tasks are a
+development set selected during the earlier grid; reusing them does not create a held-out set.
 
 ## What Kaggle Benchmarks gives
 
-From the SDK source (`Kaggle/kaggle-benchmarks`, v0.6.2, 2026-10-21) and the launch post:
+Source checked on November 8: `Kaggle/kaggle-benchmarks` commit
+`5ffefc57696e26b172fc3626392731ebecbb1195` (November 6; changelog latest release v0.6.2).
+The SDK source and launch post describe:
 
 - A task is a Python function with the `@kbench.task` decorator. It gets an `llm` object and
   calls `llm.prompt(...)`. Kaggle runs it for each model through its model proxy and builds a
   leaderboard from the stored runs.
 - Tool calls: automatic through the `genai` API path, manual through the OpenAI-compatible path
   (the task code runs the loop). `prompt()` takes `tools`, `reasoning` and `include_thoughts`.
-- Code execution: `tools.python.script_runner` (a subprocess per script) and `IPythonREPL` (a
-  second kernel). `envs.DockerEnvironment` exists, but it needs a Docker daemon, which a Kaggle
-  notebook does not appear to have.
+- Code execution: `tools.python.script_runner` uses `envs.current`, whose default is
+  `InternalUnsafeLocalEnvironment`. Its source explicitly says it provides no sandboxing.
+  `IPythonREPL` starts another kernel, with no confinement configured in that constructor.
+  `DockerEnvironment` requires a Docker client and creates a container with caller-supplied
+  options. Its existence does not establish that the hosted benchmark runner permits it.
 - Data: Kaggle datasets attach to a task (`kaggle b t push <task> -f task.py -d owner/dataset`).
 - Runs: `kaggle b t run`, `status`, `log`, `download`. With `WRITE_ATIF=True` each run also
   writes an ATIF trajectory and a result file, the formats that Harbor reads.
@@ -33,10 +38,10 @@ From the SDK source (`Kaggle/kaggle-benchmarks`, v0.6.2, 2026-10-21) and the lau
 | QEC-Drift (API harness) | Kaggle Benchmarks |
 |---|---|
 | Task files: `nominal.stim`, `train.npz`, `val.npz`, `deploy.npz` | Files in an attached dataset, copied into a fresh work folder for each run |
-| `run_python(code)` in a macOS `sandbox-exec` profile | A function tool that runs the code in a subprocess: work folder as cwd, a clean environment, 120 s timeout, 5,000-character output |
+| `run_python(code)` in a macOS `sandbox-exec` profile | A function tool backed by a verified isolated worker, with the same 120 s timeout and 5,000-character output limit; hosted worker not yet available |
 | `submit()` with the report fields | A function tool with the same schema; it ends the episode |
 | 40 turns, two nudges, a countdown, three failed submits | The same loop in the task function, with manual tool calls through the OpenAI-compatible path |
-| Scoring on 300,000 hidden shots in a throwaway copy (the harness makes them with `decoder_task`) | The same scorer code, called after `submit`, on test shots made in advance and shipped hidden |
+| Scoring on 300,000 hidden shots in a throwaway copy (the harness makes them with `decoder_task`) | Trusted scoring outside the model-code runtime; test data and decoder execution need separate access controls |
 | `gap_closed`, `gap_drift`, the relative pass rule (`references.json`) | Numbers that the task returns, plus one assertion for the pass |
 | Failure taxonomy and blinded judge | Offline, on the downloaded runs (ATIF) |
 | One table per model and effort | One Kaggle benchmark that groups the 23 core tasks |
@@ -53,22 +58,25 @@ the agent's code would run as the same user as the scorer. Without changes it co
 - read the notebook's tokens from the environment;
 - fetch the public repository if the run has internet.
 
-Options, best first:
+Use a Kaggle-managed scoring boundary if one is supported, or run model code in a separate
+confined worker. The worker must receive only the visible files during the episode. During
+scoring, the decoder may receive hidden detector inputs, but never their labels or the true
+noise. Do not mount scorer state, its credentials, a Docker socket, or the benchmark source
+into that worker. Restrict the worker's network separately from the model proxy connection.
 
-1. **Encrypted hidden files.** The dataset carries the test shots, the labels and the true
-   circuit encrypted. The scorer reads the key from a Kaggle secret into memory. The agent's
-   subprocess starts with an empty environment, so it cannot fetch the key, and the notebook
-   does not install the task generator: the test shots are made in advance, so the scorer needs
-   only numpy, and the agent's decoder brings stim and pymatching. The tasks stay exactly the
-   same. Open point: are secrets available when Kaggle runs a task?
-2. **A test set that Kaggle holds.** If Kaggle Benchmarks can keep a held-out file away from the
-   task code, or score on its side, use that.
-3. **Fresh instances at run time.** Make each instance from a secret seed and relabel the
-   qubits, so nothing hidden is on disk. The cost: the references (oracle and honest adaptive
-   decoder) must be computed again for each instance, and scores are no longer on fixed tasks.
+Encryption at rest can supplement this boundary. It cannot replace it: clearing a child's
+environment does not prevent same-user filesystem access or establish process isolation.
+Kaggle's public secret client reads an authorization token from the environment, so clearing
+it removes that direct inheritance route. This does not prove that a child cannot recover
+credentials from another accessible surface. Whether hosted benchmark runs support secrets,
+Docker, or separate trusted scoring remains unverified. Fresh secret seeds also do not solve
+access to the scorer that holds them.
 
-Recommendation: option 1, or option 2 if Kaggle offers it. With any option, runs need internet
-off, and the legitimacy check (`scripts/legitimacy.py`) runs on the downloaded trajectories.
+Before scored deployment, test the actual hosted worker against canary labels and credentials:
+reads outside its work folder, imports of the task generator, access to scorer processes and
+environment, network access to private services, and links left for the scorer. These checks
+must fail while a known-method decoder still runs and scores correctly. Keep the configuration
+and probe results with each runner version. A local test does not certify the hosted boundary.
 
 ## Time and size
 
@@ -82,17 +90,20 @@ off, and the legitimacy check (`scripts/legitimacy.py`) runs on the downloaded t
 
 ## Build steps (each with its check)
 
-1. `scripts/export_kaggle_tasks.py`: write the 23 core tasks as a dataset folder (visible files,
-   encrypted hidden files, the reference numbers). Check: a dry-run task loads every task.
-2. `kaggle/qec_drift_task.py`: the task function, built from `decoder_run.py` (work folder, two
+1. Confirm the hosted isolation boundary and resource limits with Kaggle. Prepare exporter
+   fixtures locally while this is pending; do not launch scored model episodes.
+2. `scripts/export_kaggle_tasks.py`: write visible files and a separate scorer-only bundle of
+   hidden files and references. Check: every task loads, and no hidden field enters a visible
+   bundle. Choose encryption and storage after the trusted scoring boundary is established.
+3. `kaggle/qec_drift_task.py`: the task function, built from `decoder_run.py` (work folder, two
    tools, loop, scorer, metrics). Check: one local run against the model proxy.
-3. A Linux runner for `run_python` and a self-test: model code must fail to read the key, the
+4. A Linux runner for `run_python` and a self-test: model code must fail to read the key, the
    hidden files in clear, and the environment tokens. Check: the self-test passes on Kaggle.
-4. Parity: one model on the 23 tasks through our API harness and through Kaggle. Check: pass
+5. Parity: one model on the 23 tasks through our API harness and through Kaggle. Check: pass
    rates agree within sampling noise.
-5. Push and group: `kaggle b t push qec-drift -f kaggle/qec_drift_task.py -d <owner>/qec-drift-core --wait`,
+6. Push and group: `kaggle b t push qec-drift -f kaggle/qec_drift_task.py -d <owner>/qec-drift-core --wait`,
    then group the task in the Kaggle web UI.
-6. Trajectories: set `WRITE_ATIF=True`; run the failure taxonomy on the ATIF files, and use the
+7. Trajectories: set `WRITE_ATIF=True`; run the failure taxonomy on the ATIF files, and use the
    same files for the Harbor package.
 
 ## Questions for the Kaggle Benchmarks team
@@ -111,6 +122,11 @@ off, and the legitimacy check (`scripts/legitimacy.py`) runs on the downloaded t
 
 ## Sources
 
+- [Default local environment](https://github.com/Kaggle/kaggle-benchmarks/blob/5ffefc57696e26b172fc3626392731ebecbb1195/src/kaggle_benchmarks/envs/__init__.py#L18-L22)
+- [Local executor and its isolation warning](https://github.com/Kaggle/kaggle-benchmarks/blob/5ffefc57696e26b172fc3626392731ebecbb1195/src/kaggle_benchmarks/envs/local.py#L22-L91)
+- [Python execution tools](https://github.com/Kaggle/kaggle-benchmarks/blob/5ffefc57696e26b172fc3626392731ebecbb1195/src/kaggle_benchmarks/tools/python.py#L105-L149)
+- [Docker client and container configuration](https://github.com/Kaggle/kaggle-benchmarks/blob/5ffefc57696e26b172fc3626392731ebecbb1195/src/kaggle_benchmarks/envs/docker.py#L35-L82)
+- [Secret client's environment credential](https://github.com/Kaggle/docker-python/blob/main/patches/kaggle_web_client.py#L20-L36), checked November 8
 - SDK repository: https://github.com/Kaggle/kaggle-benchmarks (README, `CHANGELOG.md`,
   `atif_mapping.md`, `src/kaggle_benchmarks/tools/`, `src/kaggle_benchmarks/envs/`,
   `documentation/examples/prompt_with_tools.py`, `documentation/examples/code_generation.py`)
