@@ -36,8 +36,8 @@ from pathlib import Path
 import pandas as pd
 
 from qec_drift import paths
+from qec_drift.agent import attempts, transcripts
 from qec_drift.agent import decoder_task as dt
-from qec_drift.agent import transcripts
 from qec_drift.scoring import taxonomy as tx
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -222,21 +222,30 @@ def valid_tables() -> list[tuple[Path, pd.DataFrame]]:
         labels = table.with_name(f"{table.stem}_taxonomy.parquet")
         if not labels.is_file():
             continue
-        valid = set(pd.read_parquet(labels).query("label != 'invalid_run'").task)
         rows = pd.read_parquet(table).set_index("task", drop=False)
-        out.append((table, rows.loc[rows.index.intersection(valid)]))
+        matched = attempts.select(
+            pd.read_parquet(labels).to_dict("records"), rows.to_dict("records")
+        )
+        valid = {
+            task: rec["label"] for task, rec in matched.items() if rec["label"] != "invalid_run"
+        }
+        rows = rows.loc[rows.index.intersection(valid)].copy()
+        rows["rule_label"] = rows.index.map(valid)
+        out.append((table, rows))
     return out
 
 
-def episodes() -> list[tuple[str, str, str, str]]:
+def episodes(
+    tables: list[tuple[Path, pd.DataFrame]] | None = None,
+) -> list[tuple[str, str, str, str]]:
     """(arm, task, key, exact payload) for each current valid row with an archived attempt."""
     out = []
-    for table, rows in valid_tables():
+    for table, rows in valid_tables() if tables is None else tables:
         arm = table.stem
         archive = paths.trajectories_dir() / DATA.name / f"decoder_{arm}.jsonl.gz"
         if not archive.is_file():
             continue
-        last = {rec["task"]: rec for rec in transcripts.records(archive)}
+        last = transcripts.matching_records(archive, rows)
         for task in sorted(set(last) & set(rows.index)):
             text = payload(rows.loc[task], last[task], arm)
             out.append((arm, task, key(text), text))
@@ -272,14 +281,15 @@ def run(work: list[tuple[str, str, str, str]], concurrency: int) -> None:
 
 
 def report() -> str:
-    current = {episode[:3] for episode in episodes()}
+    tables = valid_tables()
+    current = {episode[:3] for episode in episodes(tables)}
     saved = judged()
     latest = {
         (r["arm"], r["task"]): r
         for r in saved
         if r.get("protocol") == PROTOCOL and (r["arm"], r["task"], r["key"]) in current
     }
-    valid = {(table.stem, task) for table, rows in valid_tables() for task in rows.index}
+    valid = {(table.stem, task) for table, rows in tables for task in rows.index}
     missing = sorted(valid - {(arm, task) for arm, task, _ in current})
     legacy = sum(r.get("protocol") != PROTOCOL for r in saved)
     intro = [
@@ -302,8 +312,9 @@ def report() -> str:
         return "\n\n".join(intro + ["No judgments under the current protocol yet."]) + "\n"
     j = pd.DataFrame(list(latest.values()))
     rule = pd.concat(
-        [pd.read_parquet(p)[["arm", "task", "label"]] for p in DATA.glob("*_taxonomy.parquet")]
-    ).rename(columns={"label": "rule_label"})
+        [rows[["task", "rule_label"]].assign(arm=table.stem) for table, rows in tables],
+        ignore_index=True,
+    )
     m = j.merge(rule, on=["arm", "task"], how="left")
     agree = (m.label == m.rule_label).mean()
     disagree = m[m.label != m.rule_label][["arm", "task", "rule_label", "label", "cause"]]

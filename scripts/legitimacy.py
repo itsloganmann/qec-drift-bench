@@ -49,7 +49,7 @@ def label_all() -> pd.DataFrame:
         if rows.empty:
             continue  # an arm whose every row was set aside for a rerun
         archive = paths.trajectories_dir() / DATA.name / f"decoder_{table.stem}.jsonl.gz"
-        out = tx.analyze_arm(table, archive if archive.is_file() else None)
+        out = tx.analyze_arm(table, archive if archive.is_file() else None, rows)
         # reindex: an arm with no scored episode yet (every row a harness error) lacks a column
         scored = rows.reindex(columns=["task", "diagnosis_correct", "gap_closed", "gap_drift"])
         frames.append(out.merge(scored, on="task", how="left"))

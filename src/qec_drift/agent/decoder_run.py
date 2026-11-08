@@ -12,8 +12,6 @@ Example:
 from __future__ import annotations
 
 import argparse
-import gzip
-import json
 import os
 import shutil
 import stat
@@ -28,9 +26,9 @@ import numpy as np
 import pandas as pd
 
 from qec_drift import paths
+from qec_drift.agent import attempts, sandbox
 from qec_drift.agent import awareness as aw
 from qec_drift.agent import decoder_task as dt
-from qec_drift.agent import sandbox
 from qec_drift.llm import pricing
 from qec_drift.llm.anthropic_client import AnthropicClient, build_kwargs
 from qec_drift.llm.types import Request
@@ -435,7 +433,7 @@ def main() -> None:
     traj_path = paths.trajectories_dir() / args.out.name / f"decoder_{args.arm}.jsonl.gz"
     traj_path.parent.mkdir(parents=True, exist_ok=True)
     with (
-        gzip.open(traj_path, "wt", encoding="utf-8") as trace,
+        traj_path.open("ab") as trace,
         ThreadPoolExecutor(args.concurrency) as pool,
     ):
         for start in range(0, len(tasks), args.concurrency):
@@ -449,11 +447,9 @@ def main() -> None:
                 ),
                 batch,
             ):
-                rows.append(row | {"arm": args.arm})
-                trace.write(json.dumps(trajectory, ensure_ascii=False) + "\n")
-                trace.flush()
+                rows.append(attempts.append_attempt(trace, row, trajectory, args.arm))
                 spent += row["cost_usd"]
-            pd.DataFrame(rows).to_parquet(args.out / f"{args.arm}.parquet")  # after every batch
+            attempts.write_table(args.out / f"{args.arm}.parquet", rows)
     df = pd.DataFrame(rows)
     cols = ["task", "outcome", "stop", "turns", "gap_closed", "uses_correlations", "cost_usd"]
     if args.awareness:

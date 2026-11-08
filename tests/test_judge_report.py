@@ -17,9 +17,10 @@ def test_report_separates_current_legacy_and_missing_archive(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, current_review: bool
 ) -> None:
     monkeypatch.setattr(judge, "DATA", tmp_path)
-    rows = pd.DataFrame([dict(task=t) for t in ("a", "b", "missing")]).set_index("task")
+    rows = pd.DataFrame([dict(task=t, rule_label="passed") for t in ("a", "b", "missing")])
+    rows = rows.set_index("task", drop=False)
     monkeypatch.setattr(judge, "valid_tables", lambda: [(tmp_path / "arm.parquet", rows)])
-    monkeypatch.setattr(judge, "episodes", lambda: [("arm", t, t, "payload") for t in ("a", "b")])
+    monkeypatch.setattr(judge, "episodes", lambda _: [("arm", t, t, "payload") for t in ("a", "b")])
     verdict = dict(
         arm="arm",
         task="a",

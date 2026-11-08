@@ -37,9 +37,10 @@ from pathlib import Path
 import pandas as pd
 
 from qec_drift import paths
+from qec_drift.agent import attempts
 from qec_drift.agent import awareness as aw
 from qec_drift.agent import decoder_task as dt
-from qec_drift.agent.transcripts import records
+from qec_drift.agent.transcripts import matching_records, records
 
 RELATIVE = 0.75  # of the honest adaptive decoder's recovery, the relative rule's bar
 NO_SCORE = ("harness_error", "no_decoder", "unscored")
@@ -169,38 +170,41 @@ def classify_decoder(
     return f"{model}_{'correlated' if correlated else 'plain'}", "D4"
 
 
-def agent_code(trajectory: Path | None) -> dict[str, str]:
+def agent_code(trajectory: Path | None, rows: pd.DataFrame | None = None) -> dict[str, str]:
     """Task -> all code the agent ran, from the archived trajectory. Empty when there is none."""
     if trajectory is None or not Path(trajectory).is_file():
         return {}
     out = {}
-    for rec in records(Path(trajectory)):  # every readable record, a cut archive included
-        if True:
-            chunks = []
-            for m in rec.get("messages", []):  # the API harness: run_python calls
-                body = m.get("body") if m.get("role") == "assistant" else None
-                body = json.loads(body) if isinstance(body, str) else (body or {})
-                for b in body.get("content", []):
-                    if b.get("type") == "tool_use" and b.get("name") == "run_python":
-                        chunks.append(str(b.get("input", {}).get("code", "")))
-            for e in rec.get("events", []):  # Claude Code tool calls; Codex shell commands
-                item = e.get("item") or {}
-                if e.get("type") == "item.completed" and item.get("type") == "command_execution":
-                    chunks.append(str(item.get("command") or ""))
-                if e.get("type") != "assistant":
-                    continue
-                for b in (e.get("message") or {}).get("content", []):
-                    if b.get("type") == "tool_use":
-                        inp = b.get("input") or {}
-                        text = inp.get("command") or inp.get("content") or inp.get("new_string")
-                        chunks.append(str(text or ""))
-            out[rec["task"]] = "\n".join(chunks)
+    selected = (
+        records(Path(trajectory)) if rows is None else matching_records(trajectory, rows).values()
+    )
+    for rec in selected:
+        chunks = []
+        for m in rec.get("messages", []):  # the API harness: run_python calls
+            body = m.get("body") if m.get("role") == "assistant" else None
+            body = json.loads(body) if isinstance(body, str) else (body or {})
+            for b in body.get("content", []):
+                if b.get("type") == "tool_use" and b.get("name") == "run_python":
+                    chunks.append(str(b.get("input", {}).get("code", "")))
+        for e in rec.get("events", []):  # Claude Code tool calls; Codex shell commands
+            item = e.get("item") or {}
+            if e.get("type") == "item.completed" and item.get("type") == "command_execution":
+                chunks.append(str(item.get("command") or ""))
+            if e.get("type") != "assistant":
+                continue
+            for b in (e.get("message") or {}).get("content", []):
+                if b.get("type") == "tool_use":
+                    inp = b.get("input") or {}
+                    text = inp.get("command") or inp.get("content") or inp.get("new_string")
+                    chunks.append(str(text or ""))
+        out[rec["task"]] = "\n".join(chunks)
     return out
 
 
 def _source(row: pd.Series, work: Path) -> str:
-    src = str(row.get("decoder_src") or "")
-    if src:
+    stored = row.get("decoder_src")
+    src = stored if isinstance(stored, str) else ""
+    if src or not attempts.is_legacy(row) or _number(row, "decoder_bytes") == 0:
         return src
     path = work / str(row["task"]) / "decoder.py"  # rows from before the size limit was raised
     return path.read_text(errors="replace") if path.is_file() else ""
@@ -256,7 +260,8 @@ def classify_arm(df: pd.DataFrame, work: Path, code: dict[str, str]) -> pd.DataF
         verdict, verdict_rel = verdicts(r, leaf)
         ran = code.get(str(r["task"]))
         rows.append(dict(
-            arm=r.get("arm"), task=r["task"], outcome=r["outcome"], stop=r.get("stop"),
+            arm=r.get("arm"), task=r["task"], attempt_id=r.get("attempt_id"),
+            outcome=r["outcome"], stop=r.get("stop"),
             turns=r["turns"], gap_closed=gap, leaf=leaf, gate=gate,
             verdict=verdict, verdict_rel=verdict_rel,
             score_error=r.get("score_error"),
@@ -273,8 +278,10 @@ def analyze_decoder(parquet: Path, trajectory: Path | None = None) -> pd.DataFra
     arm = str(df["arm"].iloc[0]) if "arm" in df and len(df) else parquet.stem
     if trajectory is None:
         trajectory = paths.trajectories_dir() / f"decoder_{arm}.jsonl.gz"
-    out = classify_arm(df, parquet.parent / "work" / arm, agent_code(trajectory))
-    out.to_parquet(parquet.with_name(f"{parquet.stem}_failure_modes.parquet"))
+    out = classify_arm(df, parquet.parent / "work" / arm, agent_code(trajectory, df))
+    attempts.write_table(
+        parquet.with_name(f"{parquet.stem}_failure_modes.parquet"), out.to_dict("records")
+    )
     return out
 
 

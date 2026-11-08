@@ -17,6 +17,18 @@ that each lands in exactly one label and that every label is reachable.
   The hourly publisher evaluates at most eight pending episodes per tick.
 - Transcripts: `trajectories/<set>/<arm>/<task>.md`, one page per episode, with the score.
 
+New runs store the same `attempt_id` in the score and its archived transcript. The archive
+record is flushed to disk before the score table is replaced atomically. Archives keep prior
+attempts. Readers use one score snapshot and match transcripts and derived labels by attempt;
+an uncommitted rerun cannot replace the evidence for a committed score. Missing matches are
+reported, and stale labels wait for regeneration. This protects process-crash recovery with
+one writer per arm; it does not coordinate concurrent writers.
+
+Historical rows without IDs use the last untagged transcript for the task. Older ambiguous
+reruns remain ambiguous. Rows without stored source or size metadata
+retain the old work-folder fallback; an explicit zero-byte decoder never uses that fallback.
+The legacy rescoring scripts refuse rows with IDs, since they cannot preserve this linkage.
+
 ## The tree
 
 An episode takes the first gate that applies.

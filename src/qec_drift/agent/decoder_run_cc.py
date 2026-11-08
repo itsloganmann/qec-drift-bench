@@ -24,7 +24,6 @@ Example:
 from __future__ import annotations
 
 import argparse
-import gzip
 import json
 import os
 import re
@@ -42,10 +41,10 @@ import numpy as np
 import pandas as pd
 
 from qec_drift import paths
+from qec_drift.agent import attempts, isolation, transcripts
 from qec_drift.agent import awareness as aw
 from qec_drift.agent import decoder_run as dr
 from qec_drift.agent import decoder_task as dt
-from qec_drift.agent import isolation, transcripts
 from qec_drift.agent.provider_limits import LIMIT
 from qec_drift.agent.provider_limits import interrupted as provider_interrupted
 from qec_drift.scoring import taxonomy
@@ -523,10 +522,9 @@ def run_arm(args: argparse.Namespace, backend: Backend = CLAUDE_CODE) -> None:
     rows = []
     table = args.out / f"{args.arm}.parquet"
     if args.append and table.exists():
-        rerun = {t.name for t in tasks}
-        rows = [r for r in pd.read_parquet(table).to_dict("records") if r["task"] not in rerun]
+        rows = pd.read_parquet(table).to_dict("records")
     with (
-        traj_path.open("ab" if args.append else "wb") as trace,
+        traj_path.open("ab") as trace,
         ThreadPoolExecutor(args.concurrency) as pool,
     ):
         for start in range(0, len(tasks), args.concurrency):
@@ -543,16 +541,12 @@ def run_arm(args: argparse.Namespace, backend: Backend = CLAUDE_CODE) -> None:
             except LoginLost as exc:
                 print(f"login lost: {exc}; the arm stops here", flush=True)
                 if rows:
-                    pd.DataFrame(rows).to_parquet(table)
+                    attempts.write_table(table, rows)
                 sys.exit(EXIT_LOGIN_LOST)
             for row, trajectory in done:
-                rows.append(row | {"arm": args.arm})
-                # one gzip member per episode: a killed arm leaves every finished one readable
-                trace.write(
-                    gzip.compress((json.dumps(trajectory, ensure_ascii=False) + "\n").encode())
-                )
-                trace.flush()
-            pd.DataFrame(rows).to_parquet(table)
+                saved = attempts.append_attempt(trace, row, trajectory, args.arm)
+                rows = [r for r in rows if r["task"] != row["task"]] + [saved]
+            attempts.write_table(table, rows)
             if any(row.get("provider_interrupted") for row, _ in done):
                 report_arm(table, traj_path)
                 sys.exit(EXIT_THROTTLED)

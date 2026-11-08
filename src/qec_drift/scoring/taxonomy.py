@@ -37,8 +37,8 @@ from pathlib import Path
 import pandas as pd
 
 from qec_drift import paths
-from qec_drift.agent import provider_limits
-from qec_drift.agent.transcripts import records
+from qec_drift.agent import attempts, provider_limits
+from qec_drift.agent.transcripts import matching_records
 from qec_drift.scoring import failure_modes_decoder as fm
 
 LABELS = (
@@ -176,14 +176,14 @@ def anomalies(r: pd.Series) -> list[str]:
     return out
 
 
-def analyze_arm(table: Path, archive: Path | None) -> pd.DataFrame:
+def analyze_arm(table: Path, archive: Path | None, df: pd.DataFrame | None = None) -> pd.DataFrame:
     """One row per episode: the label, its gate, and the legitimacy flags. Writes
     <arm>_taxonomy.parquet next to the arm's table."""
-    df = pd.read_parquet(table)
+    df = pd.read_parquet(table) if df is None else df
     arm = table.stem
-    code = fm.agent_code(archive) if archive else {}
+    code = fm.agent_code(archive, df) if archive else {}
     modes = fm.classify_arm(df, table.parent / "work" / arm, code).set_index("task")
-    last = {rec["task"]: rec for rec in records(archive)} if archive and archive.is_file() else {}
+    last = matching_records(archive, df)
     rows = []
     for _, r in df.iterrows():
         task = r["task"]
@@ -219,6 +219,7 @@ def analyze_arm(table: Path, archive: Path | None) -> pd.DataFrame:
             dict(
                 arm=arm,
                 task=task,
+                attempt_id=r.get("attempt_id"),
                 label=lab,
                 gate=gate,
                 leaf=leaf,
@@ -231,5 +232,5 @@ def analyze_arm(table: Path, archive: Path | None) -> pd.DataFrame:
             )
         )
     out = pd.DataFrame(rows)
-    out.to_parquet(table.with_name(f"{arm}_taxonomy.parquet"))
+    attempts.write_table(table.with_name(f"{arm}_taxonomy.parquet"), out.to_dict("records"))
     return out

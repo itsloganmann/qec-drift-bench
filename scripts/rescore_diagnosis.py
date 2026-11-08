@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from qec_drift.agent import attempts
 from qec_drift.agent import awareness as aw
 from qec_drift.agent import decoder_task as dt
 
@@ -19,6 +20,7 @@ REPORT = ("report_adequate", "report_confidence", "report_scope", "report_qubits
 
 def main(parquet: Path) -> None:
     df = pd.read_parquet(parquet)
+    attempts.require_legacy(df)
     out = []
     for _, row in df.iterrows():
         task = dt.tasks_by_name(str(row["task"]))[0]
@@ -32,7 +34,7 @@ def main(parquet: Path) -> None:
         out.append(verdict)
     for key in out[0]:
         df[key] = [v[key] for v in out]
-    df.to_parquet(parquet)
+    attempts.write_table(parquet, df)
     print(f"{parquet.name}: passed {int(df.passed.sum())} of {len(df)}, "
           f"diagnosis {df.diagnosis_correct.mean():.0%}")  # fmt: skip
 

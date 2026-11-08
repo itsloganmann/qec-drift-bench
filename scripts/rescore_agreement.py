@@ -15,12 +15,14 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from qec_drift.agent import attempts
 from qec_drift.agent import decoder_run as dr
 from qec_drift.agent import decoder_task as dt
 
 
 def main(parquet: Path) -> None:
     df = pd.read_parquet(parquet)
+    attempts.require_legacy(df)
     arm = str(df["arm"].iloc[0])
     work = parquet.parent / "work" / arm
     plain_col, corr_col = [], []
@@ -45,7 +47,7 @@ def main(parquet: Path) -> None:
         corr_col.append(b)
     df["agree_nominal_plain"] = plain_col
     df["agree_nominal_corr"] = corr_col
-    df.to_parquet(parquet)
+    attempts.write_table(parquet, df)
 
 
 if __name__ == "__main__":

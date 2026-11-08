@@ -174,8 +174,9 @@ def test_arm_persists_interruption_and_stops_before_starting_more_tasks(
     monkeypatch.setattr(cc, "safe_episode", episode)
 
     def report(table: Path, archive: Path) -> None:
-        assert pd.read_parquet(table).iloc[0].provider_interrupted
-        assert list(transcripts.records(archive)) == [rec]
+        saved = pd.read_parquet(table).iloc[0]
+        assert saved.provider_interrupted
+        assert list(transcripts.records(archive)) == [rec | {"attempt_id": saved.attempt_id}]
         reports.append(True)
 
     monkeypatch.setattr(cc, "report_arm", report, raising=False)
@@ -199,7 +200,7 @@ def test_arm_persists_interruption_and_stops_before_starting_more_tasks(
     saved = pd.read_parquet(out / "test.parquet")
     assert saved.iloc[0].provider_interrupted
     archive = cc.paths.trajectories_dir() / out.name / "decoder_test.jsonl.gz"
-    assert list(transcripts.records(archive)) == [rec]
+    assert list(transcripts.records(archive)) == [rec | {"attempt_id": saved.iloc[0].attempt_id}]
 
 
 def test_grid_does_not_report_success_with_pending_episodes(

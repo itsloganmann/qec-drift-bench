@@ -20,6 +20,7 @@ from pathlib import Path
 import pandas as pd
 
 from qec_drift import paths
+from qec_drift.agent import attempts
 
 RESULT_CHARS = 3000  # of each tool result or command output
 CODE_CHARS = 20000  # of a file the agent wrote
@@ -214,11 +215,8 @@ def render_record(rec: dict, score: dict | None = None) -> str:
     return "\n".join(lines)
 
 
-def _scores(parquet: Path) -> dict[str, dict]:
+def _scores(parquet: Path, df: pd.DataFrame) -> dict[str, dict]:
     """Task -> score fields from the arm's table, and the failure mode from its modes table."""
-    if not parquet.is_file():
-        return {}
-    df = pd.read_parquet(parquet)
     cols = [c for c in SCORE_COLUMNS if c in df.columns]
     out = {}
     for _, row in df.iterrows():
@@ -227,14 +225,16 @@ def _scores(parquet: Path) -> dict[str, dict]:
         }
     modes = parquet.with_name(f"{parquet.stem}_failure_modes.parquet")
     if modes.is_file():
-        for _, row in pd.read_parquet(modes).iterrows():
-            if row["task"] in out:
-                out[row["task"]].update({c: row[c] for c in MODE_COLUMNS if c in row})
+        selected = attempts.select(pd.read_parquet(modes).to_dict("records"), df.to_dict("records"))
+        for task, row in selected.items():
+            out[task].update({c: row[c] for c in MODE_COLUMNS if c in row})
     labels = parquet.with_name(f"{parquet.stem}_taxonomy.parquet")
     if labels.is_file():
-        for _, row in pd.read_parquet(labels).iterrows():
-            if row["task"] in out:
-                out[row["task"]].update({c: row[c] for c in LABEL_COLUMNS})
+        selected = attempts.select(
+            pd.read_parquet(labels).to_dict("records"), df.to_dict("records")
+        )
+        for task, row in selected.items():
+            out[task].update({c: row[c] for c in LABEL_COLUMNS if c in row})
     return out
 
 
@@ -262,18 +262,36 @@ def records(archive: Path) -> Iterator[dict]:
                     continue
 
 
+def matching_records(archive: Path | None, rows: pd.DataFrame) -> dict[str, dict]:
+    if archive is None or not archive.is_file():
+        return {}
+    return attempts.select(records(archive), rows.to_dict("records"))
+
+
 def render_archive(archive: Path, scores_parquet: Path | None = None) -> Path:
     """Write <set>/<arm>/<task>.md for every record of the archive and the arm's index."""
     arm = archive.name.removesuffix(".jsonl.gz").removeprefix("decoder_")
     folder = archive.parent / arm
     folder.mkdir(exist_ok=True)
-    scores = _scores(scores_parquet) if scores_parquet else {}
+    rows = (
+        pd.read_parquet(scores_parquet)
+        if scores_parquet and scores_parquet.is_file()
+        else pd.DataFrame()
+    )
+    scores = _scores(scores_parquet, rows) if not rows.empty else {}
     index = [f"# {arm}", "", f"Rendered from `{archive.name}`.", ""]
     if scores:
         cols = "task | outcome | passed | gap_closed | gap_drift | diagnosis"
         index += [f"| {cols} | failure mode | verdict |"]
         index += ["|---|---|---|---|---|---|---|---|"]
     last = {rec.get("task", "unknown"): rec for rec in records(archive)}  # a rerun replaces
+    if not rows.empty:
+        matched = matching_records(archive, rows)
+        for task in rows.task:
+            last[task] = matched.get(task) or {
+                "task": task,
+                "error": "No archived transcript matches the scored attempt.",
+            }
     for task, rec in last.items():
         score = scores.get(task)
         (folder / f"{task}.md").write_text(render_record(rec, score))

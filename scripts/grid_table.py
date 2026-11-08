@@ -26,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from launch_scores import scored  # noqa: E402
 from run_grid import TOOL_CALLS, VALID, gate  # noqa: E402
 
+from qec_drift.agent import attempts  # noqa: E402
 from qec_drift.agent.decoder_task import LAUNCH2_CORE  # noqa: E402
 
 EFFORTS = ("low", "medium", "high", "xhigh", "max", "ultra")
@@ -89,9 +90,12 @@ def cells(folder: Path) -> dict[tuple[str, str], dict[str, str]]:
         acted = (df.turns.fillna(0) > 0) | (df.stop == "completed")
         df = df[df.outcome.isin(VALID) & acted & (df.turns.fillna(0) <= TOOL_CALLS + 1)]
         labels = path.with_name(f"{path.stem}_taxonomy.parquet")
-        if labels.is_file():  # the harness failed these episodes; they never count
-            invalid = pd.read_parquet(labels).query("label == 'invalid_run'").task
-            df = df[~df.task.isin(invalid)]
+        if labels.is_file():
+            matched = attempts.select(
+                pd.read_parquet(labels).to_dict("records"), df.to_dict("records")
+            )
+            valid = {task for task, row in matched.items() if row["label"] != "invalid_run"}
+            df = df[df.task.isin(valid)]
         if df.empty:
             continue  # only rows that scripts/run_grid.py will rerun
         n = len(df)

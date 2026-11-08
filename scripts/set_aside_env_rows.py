@@ -15,7 +15,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from qec_drift.agent.transcripts import records
+from qec_drift.agent import attempts
+from qec_drift.agent.transcripts import matching_records
 
 ROOT = Path(__file__).resolve().parents[1]
 MISSING = re.compile(r"No module named '(stim|pymatching|numpy)'")
@@ -45,17 +46,17 @@ def main() -> None:
         table = out / f"{arm}.parquet"
         if not table.is_file():
             continue
-        last = {rec["task"]: rec for rec in records(archive)}
-        bad = sorted(t for t, rec in last.items() if hurt(rec))
         df = pd.read_parquet(table)
+        last = matching_records(archive, df)
+        bad = sorted(t for t, rec in last.items() if hurt(rec))
         moved = df[df.task.isin(bad)]
         if moved.empty:
             print(f"{arm}: none")
             continue
         old = aside / f"{arm}.parquet"
         kept = pd.concat([pd.read_parquet(old), moved]) if old.is_file() else moved
-        kept.to_parquet(old)
-        df[~df.task.isin(bad)].to_parquet(table)
+        attempts.write_table(old, kept)
+        attempts.write_table(table, df[~df.task.isin(bad)])
         print(f"{arm}: set aside {json.dumps(bad)}")
 
 
