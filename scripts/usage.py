@@ -114,7 +114,7 @@ def codex() -> dict:
             out[key.strip().lower().removeprefix("x-codex-")] = value.strip()
     keys = ("plan-type", "primary-used-percent", "primary-window-minutes",
             "primary-reset-after-seconds", "secondary-used-percent")  # fmt: skip
-    return {k: out.get(k) for k in keys}
+    return {k: out.get(k) for k in keys} | {"http-status": status}
 
 
 def probe(read: Callable[[], dict]) -> dict:

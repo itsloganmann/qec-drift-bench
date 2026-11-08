@@ -3,7 +3,10 @@
 The scan covers every version of every file (gzip members are decompressed) and looks for two
 things: the common key formats, and the exact values of this machine's own secrets (the
 secrets file, the Claude Code keychain item, the Codex auth file). It prints where a hit is,
-never the value. The last line is ``hits: N``; a publish step pushes only on ``hits: 0``.
+never file contents. The last line is ``hits: N``; a publish step pushes only on ``hits: 0``.
+Complete credential token fields are collected from text or hex even if their envelope is
+damaged, solely for exact matching. Authentication keeps its strict parser. A present but
+unreadable Keychain item or an unexpected read failure stops the scan.
 
 Usage: uv run python scripts/secret_scan.py <path to a git repository>
 """
@@ -31,6 +34,31 @@ PATTERNS = {
 }
 COMPILED = {name: re.compile(pattern.encode()) for name, pattern in PATTERNS.items()}
 ENV_LINE = re.compile(r"\s*(?:export\s+)?[A-Za-z_][A-Za-z0-9_]*\s*=\s*['\"]?([^'\"#\s]{12,})")
+TOKEN_FIELD = re.compile(
+    r'"(?:accessToken|refreshToken|access_token|refresh_token|id_token)"\s*:\s*'
+)
+KEYCHAIN_ITEM_NOT_FOUND = 44
+
+
+def keychain_tokens(raw: str) -> set[str]:
+    candidates = [raw]
+    try:
+        candidates.append(bytes.fromhex(raw.strip()).decode("utf-8", "replace"))
+    except ValueError:
+        pass
+    values = set()
+    decoder = json.JSONDecoder()
+    for text in candidates:
+        for match in TOKEN_FIELD.finditer(text):
+            try:
+                value, _ = decoder.raw_decode(text, match.end())
+            except json.JSONDecodeError:
+                continue
+            if isinstance(value, str) and len(value) > 20:
+                values.add(value)
+    if not values:
+        raise ValueError("No readable credential token fields in Claude Keychain")
+    return values
 
 
 def machine_secrets() -> set[bytes]:
@@ -43,16 +71,22 @@ def machine_secrets() -> set[bytes]:
             if m:
                 values.add(m.group(1))
     try:
-        raw = subprocess.run(
+        result = subprocess.run(
             ["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
             capture_output=True,
             text=True,
             check=False,
-        ).stdout
-        oauth = json.loads(raw)["claudeAiOauth"]
-        values |= {v for v in oauth.values() if isinstance(v, str) and len(v) > 20}
-    except Exception:  # noqa: BLE001 - the keychain item is optional
+            timeout=10,
+        )
+    except FileNotFoundError:
         pass
+    except (OSError, subprocess.TimeoutExpired):
+        raise RuntimeError("Could not inspect Claude Keychain") from None
+    else:
+        if result.returncode == 0:
+            values |= keychain_tokens(result.stdout)
+        elif result.returncode != KEYCHAIN_ITEM_NOT_FOUND or result.stdout.strip():
+            raise RuntimeError("Could not inspect Claude Keychain")
     codex = Path.home() / ".codex" / "auth.json"
     if codex.is_file():
         _walk(json.loads(codex.read_text()), values)
@@ -60,8 +94,8 @@ def machine_secrets() -> set[bytes]:
 
 
 def _walk(node: object, values: set[str]) -> None:
-    if isinstance(node, dict):
-        for child in node.values():
+    if isinstance(node, (dict, list)):
+        for child in node.values() if isinstance(node, dict) else node:
             _walk(child, values)
     elif isinstance(node, str) and len(node) > 20 and not node.startswith("/"):
         values.add(node)
@@ -121,9 +155,7 @@ def main() -> int:
             m = pattern.search(data)
             if m:
                 hits += 1
-                ctx = data[max(0, m.start() - 60) : m.start()].decode("utf-8", "replace")
-                ctx = ctx.replace("\n", " ")[-60:]
-                print(f"PATTERN {name} in {path} ({sha[:8]}) after: ...{ctx}")
+                print(f"PATTERN {name} in {path} ({sha[:8]})")
         for value in values:
             if value in data:
                 hits += 1

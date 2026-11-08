@@ -114,6 +114,7 @@ def test_codex_status_and_private_headers(
             usage.codex()
     else:
         assert usage.codex()["primary-used-percent"] == "100"
+        assert usage.codex()["http-status"] == status
 
 
 def test_malformed_credential_is_not_salvaged(monkeypatch: pytest.MonkeyPatch) -> None:

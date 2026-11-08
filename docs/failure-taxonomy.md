@@ -14,7 +14,10 @@ that each lands in exactly one label and that every label is reachable.
   clues; this is not complete blinding. Its cache hashes the exact input, rubric, schema and
   judge settings, keyed by arm and task. Earlier judgments remain archived and excluded.
   `docs/judge.md` separates valid rows, available transcripts, current reviews and gaps.
-  The hourly publisher evaluates at most eight pending episodes per tick.
+  The hourly publisher evaluates at most eight pending episodes per tick, in pairs.
+  `scripts/judge_tick.py` checks fresh usage before each pair and starts none if either
+  Codex window is at least 85%, usage is unknown, or the provider reports HTTP 429.
+  Reviews already running can carry usage past the threshold. Report refreshes still run.
 - Transcripts: `trajectories/<set>/<arm>/<task>.md`, one page per episode, with the score.
 
 New runs store the same `attempt_id` in the score and its archived transcript. The archive

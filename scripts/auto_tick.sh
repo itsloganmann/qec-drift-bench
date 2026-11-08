@@ -12,7 +12,7 @@ while true; do
     echo "--- $(date '+%Y-%m-%d %H:%M %Z')"
     uv run python scripts/classify_arms.py | grep agent_launch2
     uv run python scripts/legitimacy.py | tail -1
-    uv run python scripts/judge_transcripts.py --concurrency 2 --limit 8 | tail -1
+    uv run python scripts/judge_tick.py
     uv run python scripts/grid_table.py --readme README.md > /dev/null
     uv run python scripts/usage.py
     git add README.md docs trajectories data/usage_log.jsonl
