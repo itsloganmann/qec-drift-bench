@@ -116,6 +116,16 @@ within these families or differences between effort settings.
 
 (filled in by scripts/launch_scores.py as arms finish)
 
+## Quota monitoring
+
+`scripts/usage.py` reads each subscription independently. A credential, network or response
+error for one provider does not suppress the other provider's reading. Failed reads appear
+as `unknown`, with only the exception type saved in the usage log. The supervisor leaves a
+provider's grid state unchanged when its usage is unknown; unknown is not zero usage.
+HTTP authorization headers pass through stdin, outside process arguments. Requests have
+timeouts, ignore curl config files and do not follow redirects. Malformed credentials are
+rejected without trying to repair them.
+
 ## Results set aside on 2026-11-03 (the task-name leak)
 
 The v2 grid as it stood at 23:16 PST on 2026-11-03, when the task-name leak of the fairness
