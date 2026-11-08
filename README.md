@@ -89,9 +89,11 @@ claiming generalization or a causal effect of reasoning effort.
 | `nonstationary` | a qubit that switches between good and bad every 200 shots or so, fixed or wandering | 22, gate keeps 18 |
 
 A launch script computes every task's references first and refuses to spend if a drift task's
-true model is not at least 20% better than the stale fit. The known methods (`decoders/pij.py`,
-the pairwise-correlation refit; the window method for telegraph noise) are reported per task, so
-the pass rule is reachable by a method in the literature on every task that counts.
+true model is not at least 20% better than the stale fit. The current core also requires a
+known decoder to recover at least half of that loss: the adaptive decoder for non-stationary faults,
+or the pairwise-correlation refit for stationary faults. These gates establish decoding
+recovery, not a full diagnosis-plus-decoding pass. Diagnosis is evaluated separately in the
+[detector checks](docs/legitimacy.md) and the agent results.
 
 ## Layout
 

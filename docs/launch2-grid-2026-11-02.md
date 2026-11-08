@@ -199,9 +199,10 @@ Checked and fair: GPT-6-Astra max beats the per-shot true-model oracle on 6 of 1
 
 The saved detector cache covered only 11 of the current 21 non-adequate core tasks on November
 8. The ten later additions lacked saved detector evidence; the earlier whole-core claim was
-unsupported. The report now shows cache coverage explicitly, and the missing checks are being
-regenerated. An ideal-reader check concerns truth-qubit support in the deploy sequence; it
-does not prove that an evaluated agent can infer those qubits. After the three reruns,
+unsupported. All ten missing checks were completed on November 8, and the current report
+covers 21 of 21 non-adequate core tasks. An ideal-reader check concerns truth-qubit support in
+the deploy sequence; it does not prove that an evaluated agent can infer those qubits.
+After the three reruns,
 533 valid episodes covered the 23 core tasks: four tasks had no absolute-rule pass and five
 had no relative-rule pass. No task was passed by every arm. The totals were 159 absolute-rule
 passes and 144 relative-rule passes. The three provider-interrupted attempts remain archived

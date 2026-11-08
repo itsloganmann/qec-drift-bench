@@ -136,9 +136,16 @@ On November 8, all 23 core fixtures passed the schema and file-hash checks: 162 
 including the private manifest, with 6.9 million hidden shots. The visible bundle is about
 34 MB and the scorer bundle about 84 MB. All 24 exporter tests passed, including both
 directions of case-aliased path nesting on the local filesystem and failure cleanup.
-These fixtures use the disclosed development tasks, not fresh held-out tasks. Reference rates
-are copied from the named cache and are explicitly marked as not recomputed. They need parity
-validation on the exported shots before use as scored benchmark evidence.
+These fixtures use the disclosed development tasks, not fresh held-out tasks. The exporter
+copies reference rates from the named cache and records that it did not recompute them.
+
+A subsequent local check recomputed nominal and pairwise-refit matching, both plain and
+correlated, on all 23 exported test sets. Of 92 rates, 68 matched within the predeclared
+1e-12 tolerance. The other 24 each differed by one error in 300,000 shots and matched the
+cache after rounding to five decimal places. The strict parity check failed; the differences
+are consistent with the stored cache precision, whose original conversion path is unverified.
+The cache and historical scores were preserved. Oracle, stale, adaptive and window reference
+parity remains pending before use as scored benchmark evidence.
 
 Separate directories are a packaging rule, not an execution sandbox. Keep the scorer bundle
 and manifest out of any dataset or filesystem visible to model code. Do not attach the parent
