@@ -160,3 +160,4 @@
 {"at": "2026-11-07T23:58:15+0000", "claude": {}, "codex": {"plan-type": "prolite", "primary-used-percent": "31", "primary-window-minutes": "10080", "primary-reset-after-seconds": "581823", "secondary-used-percent": "0"}}
 {"at": "2026-11-08T00:13:25+0000", "claude": {}, "codex": {"plan-type": "prolite", "primary-used-percent": "38", "primary-window-minutes": "10080", "primary-reset-after-seconds": "580914", "secondary-used-percent": "0"}}
 {"at": "2026-11-08T00:13:56+0000", "claude": {}, "codex": {"plan-type": "prolite", "primary-used-percent": "38", "primary-window-minutes": "10080", "primary-reset-after-seconds": "580883", "secondary-used-percent": "0"}}
+{"at": "2026-11-08T01:29:46+0000", "claude": {"error": "JSONDecodeError"}, "codex": {"plan-type": "prolite", "primary-used-percent": "81", "primary-window-minutes": "10080", "primary-reset-after-seconds": "576333", "secondary-used-percent": "0"}}
