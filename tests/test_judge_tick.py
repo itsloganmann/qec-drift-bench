@@ -18,6 +18,8 @@ def tick(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> ModuleType:
     spec.loader.exec_module(module)
     monkeypatch.setattr(module.judge, "DOC", tmp_path / "report.md")
     monkeypatch.setattr(module.judge, "report", lambda: "current coverage\n")
+    if hasattr(module, "time"):
+        monkeypatch.setattr(module.time, "sleep", lambda seconds: None)
     return module
 
 
@@ -112,3 +114,43 @@ def test_probe_failure_does_not_leak_exception_message(
     monkeypatch.setattr(tick.usage, "codex", fail)
     tick.main()
     assert "private credential" not in capsys.readouterr().out
+
+
+def test_transient_read_failure_retries_before_authorizing_work(
+    tick: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = []
+
+    def probe() -> dict:
+        calls.append(True)
+        if len(calls) == 1:
+            raise TimeoutError("private transport details")
+        return state("82", "0")
+
+    monkeypatch.setattr(tick.usage, "codex", probe)
+    assert tick.quota_available() is True
+    assert len(calls) == 2
+
+
+def test_transient_failures_stop_after_three_reads(
+    tick: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = []
+
+    def probe() -> dict:
+        calls.append(True)
+        raise TimeoutError("private transport details")
+
+    monkeypatch.setattr(tick.usage, "codex", probe)
+    assert tick.quota_available() is False
+    assert len(calls) == 3
+
+
+def test_known_reserve_during_retry_stops_without_more_reads(
+    tick: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    values = iter([{"error": "CalledProcessError"}, state("85")])
+    monkeypatch.setattr(tick.usage, "codex", lambda: next(values))
+    assert tick.quota_available() is False
+    with pytest.raises(StopIteration):
+        next(values)

@@ -108,6 +108,11 @@ and probe results with each runner version. A local test does not certify the ho
 
 ## Local exporter
 
+The synthetic boundary probe is prepared in [kaggle/](../kaggle/README.md). Its local
+controls and process-identity checks passed review. Actual hosted execution, resource
+enforcement, scorer link handling, and known-decoder parity remain unverified. The probe
+never authorizes scored runs by itself.
+
 `scripts/export_kaggle_tasks.py` prepares fixtures without calling a model or the Kaggle API:
 
 ```sh

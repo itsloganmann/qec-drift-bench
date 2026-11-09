@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import time
 
 import judge_transcripts as judge
 import usage
@@ -8,10 +9,21 @@ import usage
 LIMIT = 8
 CONCURRENCY = 2
 MAX_USED = 85
+READ_ATTEMPTS = 3
+READ_RETRY_SECONDS = 3
+TRANSIENT_READ_ERRORS = {"CalledProcessError", "TimeoutExpired", "TimeoutError", "OSError"}
 
 
 def quota_available() -> bool:
-    data = usage.probe(usage.codex)
+    for attempt in range(READ_ATTEMPTS):
+        data = usage.probe(usage.codex)
+        if data.get("error") not in TRANSIENT_READ_ERRORS:
+            break
+        print(
+            f"judge quota read failed: {data['error']} ({attempt + 1}/{READ_ATTEMPTS})", flush=True
+        )
+        if attempt + 1 < READ_ATTEMPTS:
+            time.sleep(READ_RETRY_SECONDS)
     raw = [data.get(f"{window}-used-percent") for window in ("primary", "secondary")]
     try:
         if any(isinstance(value, bool) for value in raw):
