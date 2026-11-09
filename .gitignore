@@ -12,6 +12,7 @@ wheels/
 # qec-drift data and results (regenerable; large); the reference tables are kept
 data/*/*
 !data/*/references.json
+!data/audits/development-closeout-20261109.json
 results/
 .cache/
 *.npy
