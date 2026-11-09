@@ -145,7 +145,10 @@ correlated, on all 23 exported test sets. Of 92 rates, 68 matched within the pre
 cache after rounding to five decimal places. The strict parity check failed; the differences
 are consistent with the stored cache precision, whose original conversion path is unverified.
 The cache and historical scores were preserved. Oracle, stale, adaptive and window reference
-parity remains pending before use as scored benchmark evidence.
+checks are now complete. Across all 197 rates, 140 matched at 1e-12 and all matched at five
+decimal places. Recomputed references changed none of the 533 historical absolute or
+relative verdicts. Strict reference parity still failed. See the
+[November 9 audit](development-audit-20261109.md) for the complete results.
 
 Separate directories are a packaging rule, not an execution sandbox. Keep the scorer bundle
 and manifest out of any dataset or filesystem visible to model code. Do not attach the parent
