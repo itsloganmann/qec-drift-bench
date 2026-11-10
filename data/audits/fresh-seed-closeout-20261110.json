@@ -1,0 +1,172 @@
+{
+  "created_utc": "2026-11-10T05:32:44.362086+00:00",
+  "kind": "fresh_seed_within_family_replication",
+  "method": {
+    "population": "Within-family fresh-seed replication of selected development templates.",
+    "families": 9,
+    "templates": 23,
+    "fresh_candidates": 92,
+    "eligible_candidates": 85,
+    "rejected_candidates": 7,
+    "rejection_reasons": {
+      "no_gap": 4,
+      "no_known_method": 3
+    },
+    "affected_templates": 4,
+    "baseline_source_commit": "58091afb2bfd1e4afcc66ebdd136953d646bbcec",
+    "fresh_protocol_sha256": "e35ac50c6b8b26a287e4290c94603a8da6b84247050cd9eb36d558a0a84c74a7"
+  },
+  "visible_baseline": {
+    "all_candidates": {
+      "denominator": 92,
+      "scored": 74,
+      "score_errors": 18,
+      "scoring_timeouts": 18,
+      "absolute_passes": 27,
+      "relative_passes": 27,
+      "pass_rate": 0.29347826086956524,
+      "hierarchical_interval": [
+        0.11607142857142858,
+        0.6145833333333334
+      ],
+      "adequacy_correct": 92,
+      "diagnosis_correct": 41,
+      "mechanism_correct": 36
+    },
+    "eligible_candidates": {
+      "denominator": 85,
+      "scored": 68,
+      "score_errors": 17,
+      "scoring_timeouts": 17,
+      "absolute_passes": 26,
+      "relative_passes": 26,
+      "pass_rate": 0.3058823529411765,
+      "hierarchical_interval": [
+        0.11841507177033493,
+        0.6756756756756757
+      ],
+      "adequacy_correct": 85,
+      "diagnosis_correct": 39,
+      "mechanism_correct": 34
+    }
+  },
+  "prediction_readout": {
+    "gate_eligibility_changed": {
+      "rejected_candidates": 7,
+      "affected_templates": 4,
+      "reasons": {
+        "no_gap": 4,
+        "no_known_method": 3
+      }
+    },
+    "baseline_over_reporting": {
+      "localized_rows": 80,
+      "predicted_more_qubits": 71,
+      "predicted_equal_qubits": 6,
+      "predicted_fewer_qubits": 3,
+      "mean_predicted_qubits": 27.875,
+      "mean_truth_qubits": 15.9125,
+      "mean_false_positive_qubits": 12.0625
+    },
+    "larger_decoder_timeouts": {
+      "all_candidates_by_distance": {
+        "5": 72,
+        "9": 4,
+        "7": 16
+      },
+      "timeouts_by_distance": {
+        "5": 2,
+        "7": 16
+      },
+      "d7_timeout_fraction": 1.0
+    },
+    "localization_by_explicit_trailing_dwell": {
+      "population": "All fresh visible-baseline rows with non-null localization and a drift string ending in d<dwell>.",
+      "status": "directional_support_confounded",
+      "by_trailing_dwell": {
+        "30": {
+          "rows": 20,
+          "mean_localization": 0.40945989427323576,
+          "median_localization": 0.33392857142857146
+        },
+        "40": {
+          "rows": 8,
+          "mean_localization": 0.6486711400634035,
+          "median_localization": 0.6319444444444444
+        },
+        "60": {
+          "rows": 20,
+          "mean_localization": 0.6304246558987401,
+          "median_localization": 0.7165178571428572
+        }
+      },
+      "note": "Both longer-dwell groups exceed dwell 30. Dwell 40 and dwell 60 are not monotonic across mean and median, and dwell remains confounded with template attributes."
+    }
+  },
+  "model_execution": {
+    "scheduled_pairs": 5336,
+    "eligible_pairs": 4930,
+    "ineligible_pairs": 406,
+    "valid_codex_episodes": 56,
+    "scored_codex_episodes": 53,
+    "codex_score_errors": 3,
+    "codex_absolute_passes": 14,
+    "codex_relative_passes": 13,
+    "represented_codex_arms": 22,
+    "unresolved_pairs": 4874,
+    "latest_codex_usage_percent": 63,
+    "quota_threshold_percent": 85,
+    "stop_reason": "credential_lifetime_preflight",
+    "claude_valid_episodes": 0,
+    "claude_usage_status": "unknown",
+    "claude_probe_error": "JSONDecodeError",
+    "failure_accounting": "All scoring timeouts and score errors count as failures."
+  },
+  "matched_comparisons": {
+    "non_null_comparisons": 38,
+    "paired_denominator_counts": {
+      "1": 19,
+      "2": 8,
+      "3": 7,
+      "4": 3,
+      "6": 1
+    },
+    "largest_paired_denominator": 6,
+    "eligible_denominator": 85,
+    "warning": "Coverage is sparse and availability selected. No arm or model ranking is supported."
+  },
+  "inference": {
+    "numpy_version": "2.5.4",
+    "draws": 10000,
+    "seed": 20261108,
+    "quantile_method": "linear",
+    "statistic": "pooled candidate mean; comparisons use paired differences",
+    "resampling": "families, templates within family, replicates within template",
+    "cluster_size": "Each sampled cluster retains its original member count.",
+    "warning": "Availability selection can bias complete-case comparisons. No unmatched arm ranking.",
+    "population": "Within-family fresh-seed replication of selected development templates.",
+    "limits": "Few families; descriptive intervals; no model-sampling variance estimate."
+  },
+  "limitations": [
+    "This is a within-family replication of selected development templates, not an unseen-family evaluation.",
+    "The hierarchy contains few families, so intervals are descriptive rather than precise population guarantees.",
+    "Dwell is mixed with other template attributes, so its localization readout is confounded.",
+    "Codex coverage stopped at the credential-lifetime safety gate and is unmatched across arms.",
+    "Claude usage was unknown, so missing Claude episodes are omissions rather than capability failures.",
+    "One episode per arm and candidate does not estimate model-sampling variance."
+  ],
+  "provenance": {
+    "analysis_sha256": "1e21ec084fb40fb8b504e754bbbd06c1dc6aa50eaa0e151dff6a88789f978c84",
+    "analysis_source_sha256": {
+      "fresh_seed_analysis.py": "365c08bdbeef2f4ea54aff68fb8e77ffac261e336a8fcb69ac19f271900b3023",
+      "study_statistics.py": "ce3e8939949005625006a762f6180f8637183489deb2645890d7b8224104a663"
+    },
+    "candidate_manifest_sha256": "963ad20aa8bc68aeb68f4cb8b10e403c413e0d4c97e8d247562eda11354d42e0",
+    "reference_results_sha256": "bea1abd7d32ec6c93e413da64d24ba9d84af5e320743b26a3aa43b0947100b0a",
+    "scorer_manifest_sha256": "18595bac557eda959bcaecec53e10984f9fc1b8a068d40f8dbfa3b55fc06f722",
+    "baseline_results_sha256": "38d6b2e24001bf8b55197c861b0bdecb11a44b4162a16b6252f62c4966276783",
+    "model_results_sha256": "46508fd31e8e40a8969eae3645b90db15fea97bb1e7c2a727668b9999ec3ae3f",
+    "model_runner_sha256": "c46bb833911fd780a50815f81400d24a5a6076378479f64c39cfc4eabecc6009",
+    "prediction_correction_sha256": "b87510c2953770b561389f6fbba18bbb8e02d2322bdb96f36e93d80e653ccf84"
+  }
+}
