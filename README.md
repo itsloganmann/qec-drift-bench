@@ -27,6 +27,8 @@ Pass rate under the relative rule / under the absolute rule (docs/launch2-grid-2
 
 <!-- grid:end -->
 
+Fresh-seed replication: [final closeout](docs/fresh-seed-results-20261110.md).
+
 Can an AI agent tell when a quantum chip's noise model is wrong, say what broke, and fix the
 error correction?
 
