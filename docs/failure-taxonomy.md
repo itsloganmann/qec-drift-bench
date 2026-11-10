@@ -1,5 +1,7 @@
 # The failure taxonomy: one label for every episode
 
+The finite audit is complete for all 760 score-selected decoder episodes. See the [failure atlas](failure-atlas-20261110/index.md) for plots, cohort coverage, rule/judge disagreements, and source limits. The legacy recurring launchers remain stopped after this closeout.
+
 Every episode of every arm, on every scaffold (the API harness, Claude Code, Codex), gets
 exactly one label from the tree below. The labels are mutually exclusive and, together,
 exhaustive: `tests/test_taxonomy.py` runs every combination of the tree's inputs and checks
