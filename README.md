@@ -31,6 +31,8 @@ Fresh-seed replication: [final closeout](docs/fresh-seed-results-20261110.md).
 
 Failure analysis: [taxonomy, transcript coverage and plots](docs/failure-atlas-20261110/index.md).
 
+Workshop paper: [five-page PDF](paper/workshop-20261111/QEC_Drift_Workshop_Paper.pdf) and [LaTeX source with literature audit](paper/workshop-20261111/README.md).
+
 Can an AI agent tell when a quantum chip's noise model is wrong, say what broke, and fix the
 error correction?
 

@@ -1,0 +1,58 @@
+{
+  "doi": "10.22331/q-2025-01-20-1600",
+  "title": [
+    "Sparse Blossom: correcting a million errors per core second with minimum-weight matching"
+  ],
+  "published": {
+    "date-parts": [
+      [
+        2025,
+        1,
+        20
+      ]
+    ]
+  },
+  "author": [
+    {
+      "given": "Oscar",
+      "family": "Higgott",
+      "sequence": "first",
+      "affiliation": [
+        {
+          "name": "Google Quantum AI, Santa Barbara, California 93117, USA"
+        },
+        {
+          "name": "Department of Physics & Astronomy, University College London, WC1E 6BT London, United Kingdom"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "given": "Craig",
+      "family": "Gidney",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Google Quantum AI, Santa Barbara, California 93117, USA"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    }
+  ],
+  "container": [
+    "Quantum"
+  ],
+  "volume": "9",
+  "page": "1600",
+  "primary_url": "https://doi.org/10.22331/q-2025-01-20-1600"
+}

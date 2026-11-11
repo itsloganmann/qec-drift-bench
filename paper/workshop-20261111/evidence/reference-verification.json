@@ -1,0 +1,320 @@
+{
+  "stim": {
+    "arxiv_id": "2103.02202",
+    "primary_url": "https://arxiv.org/abs/2103.02202",
+    "title": "Stim: a fast stabilizer circuit simulator",
+    "pdf_downloaded": true,
+    "pdf_bytes": 980894,
+    "doi_record_title": [
+      "Stim: a fast stabilizer circuit simulator"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2103.02202",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "789820e870a064974449cd2a3dcaa2e47062f9e34fcb5d7bfe8f958308162bc9"
+  },
+  "sparse": {
+    "arxiv_id": "2303.15933",
+    "primary_url": "https://arxiv.org/abs/2303.15933",
+    "title": "Sparse Blossom: correcting a million errors per core second with minimum-weight matching",
+    "pdf_downloaded": true,
+    "pdf_bytes": 4871803,
+    "doi_record_title": [
+      "Sparse Blossom: correcting a million errors per core second with minimum-weight matching"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2303.15933",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "706cf03ee388fa418a2cac5275e2b8405512f5478eebd6e850a602d01804baf2"
+  },
+  "dgr": {
+    "arxiv_id": "2311.16214",
+    "primary_url": "https://arxiv.org/abs/2311.16214",
+    "title": "DGR: Tackling Drifted and Correlated Noise in Quantum Error Correction via Decoding Graph Re-weighting",
+    "pdf_downloaded": true,
+    "pdf_bytes": 9568421,
+    "doi_record_title": [
+      "DGR: Tackling Drifted and Correlated Noise in Quantum Error Correction via Decoding Graph Re-weighting"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2311.16214",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "b08bfced7ca4c7c3d2fa6c0f58a03620ba478bdd56bd4c80fa12a38ce43cf258"
+  },
+  "alpha2": {
+    "arxiv_id": "2512.07737",
+    "primary_url": "https://arxiv.org/abs/2512.07737",
+    "title": "A scalable and real-time neural decoder for topological quantum codes",
+    "pdf_downloaded": true,
+    "pdf_bytes": 3001383,
+    "doi_record_title": [
+      "A scalable and real-time neural decoder for topological quantum codes"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2512.07737",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "29460e0c682d5ad49cdab73ae3b1ebee3f9fb4054b5e3afe1bf52684327b6eb9"
+  },
+  "stabilizer": {
+    "arxiv_id": "2604.21287",
+    "primary_url": "https://arxiv.org/abs/2604.21287",
+    "title": "StabilizerBench: A Benchmark for AI-Assisted Quantum Error Correction Circuit Synthesis",
+    "pdf_downloaded": true,
+    "pdf_bytes": 736917,
+    "doi_record_title": [
+      "StabilizerBench: A Benchmark for AI-Assisted Quantum Error Correction Circuit Synthesis"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2604.21287",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "6b7933f0c9b4d4228b35a2db7c43527212dd4335c609aeff950bffd529536f91"
+  },
+  "qcoder": {
+    "arxiv_id": "2510.26101",
+    "primary_url": "https://arxiv.org/abs/2510.26101",
+    "title": "QCoder Benchmark: Bridging Language Generation and Quantum Hardware through Simulator-Based Feedback",
+    "pdf_downloaded": true,
+    "pdf_bytes": 376118,
+    "doi_record_title": [
+      "QCoder Benchmark: Bridging Language Generation and Quantum Hardware through Simulator-Based Feedback"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2510.26101",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "b0112e282292cb70dbdf07dd51f0370d333f7b9df1fab641ca0eddf33f71c700"
+  },
+  "quanbench": {
+    "arxiv_id": "2604.08570",
+    "primary_url": "https://arxiv.org/abs/2604.08570",
+    "title": "QuanBench+: A Unified Multi-Framework Benchmark for LLM-Based Quantum Code Generation",
+    "pdf_downloaded": true,
+    "pdf_bytes": 8535926,
+    "doi_record_title": [
+      "QuanBench+: A Unified Multi-Framework Benchmark for LLM-Based Quantum Code Generation"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2604.08570",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "792b1560244a0cbc8b8e74e4398a26243ce3f451358aa57b5f0a1d1ada69cedf"
+  },
+  "quantumaudit": {
+    "arxiv_id": "2610.28678",
+    "primary_url": "https://arxiv.org/abs/2610.28678",
+    "title": "Benchmarking the Quantum Leap: Auditing LLM Evaluation for Quantum Code Generation",
+    "pdf_downloaded": true,
+    "pdf_bytes": 762225,
+    "doi_record_title": [
+      "Benchmarking the Quantum Leap: Auditing LLM Evaluation for Quantum Code Generation"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2610.28678",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "cae27ded64bf7d78930dfc76ebbf546b61232c3f6cd785dd8fd17ff871477eda"
+  },
+  "apidrift": {
+    "arxiv_id": "2607.04072",
+    "primary_url": "https://arxiv.org/abs/2607.04072",
+    "title": "Benchmarking API Drift in LLM-Generated Quantum Code Across Successive SDK Versions",
+    "pdf_downloaded": true,
+    "pdf_bytes": 947893,
+    "doi_record_title": [
+      "Benchmarking API Drift in LLM-Generated Quantum Code Across Successive SDK Versions"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2607.04072",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "a42dd12aa00abe7af86ca4a3dd6e05d18e37e5ef1c16ba7b7647778f64fb4764"
+  },
+  "scicode": {
+    "arxiv_id": "2407.13168",
+    "primary_url": "https://arxiv.org/abs/2407.13168",
+    "title": "SciCode: A Research Coding Benchmark Curated by Scientists",
+    "pdf_downloaded": true,
+    "pdf_bytes": 1847172,
+    "doi_record_title": [
+      "SciCode: A Research Coding Benchmark Curated by Scientists"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2407.13168",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "29d33f99c87112b3f27eaebe134733d2afcf67bfd3be81df7fa5c9457e252974"
+  },
+  "scienceagent": {
+    "arxiv_id": "2410.05080",
+    "primary_url": "https://arxiv.org/abs/2410.05080",
+    "title": "ScienceAgentBench: Toward Rigorous Assessment of Language Agents for Data-Driven Scientific Discovery",
+    "pdf_downloaded": true,
+    "pdf_bytes": 2011302,
+    "doi_record_title": [
+      "ScienceAgentBench: Toward Rigorous Assessment of Language Agents for Data-Driven Scientific Discovery"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2410.05080",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "da5b44b1d7ff4992127ce32daf5343031a109b7104d743bb18f0803fc904da7b"
+  },
+  "mle": {
+    "arxiv_id": "2410.07095",
+    "primary_url": "https://arxiv.org/abs/2410.07095",
+    "title": "MLE-bench: Evaluating Machine Learning Agents on Machine Learning Engineering",
+    "pdf_downloaded": true,
+    "pdf_bytes": 817725,
+    "doi_record_title": [
+      "MLE-bench: Evaluating Machine Learning Agents on Machine Learning Engineering"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2410.07095",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "1dab9a33edeab25ea359c4d6857d03512ccd47ed5782631031cfe8dcbebe7988"
+  },
+  "paperbench": {
+    "arxiv_id": "2504.01848",
+    "primary_url": "https://arxiv.org/abs/2504.01848",
+    "title": "PaperBench: Evaluating AI's Ability to Replicate AI Research",
+    "pdf_downloaded": true,
+    "pdf_bytes": 1703363,
+    "doi_record_title": [
+      "PaperBench: Evaluating AI's Ability to Replicate AI Research"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2504.01848",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "2f58f1a6581af9d99432422dccf3cf61f5c263377c1e4550e7333c4a22d7184d"
+  },
+  "scigym": {
+    "arxiv_id": "2602.12984",
+    "primary_url": "https://arxiv.org/abs/2602.12984",
+    "title": "SciAgentGym: Benchmarking Multi-Step Scientific Tool-use in LLM Agents",
+    "pdf_downloaded": true,
+    "pdf_bytes": 2616318,
+    "doi_record_title": [
+      "SciAgentGym: Benchmarking Multi-Step Scientific Tool-use in LLM Agents"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2602.12984",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "cc0b63e62f9ac4030420ac52a3ad7c19b66ad997b43eb93f12d38b4d1738af57"
+  },
+  "sciarena": {
+    "arxiv_id": "2606.12736",
+    "primary_url": "https://arxiv.org/abs/2606.12736",
+    "title": "Benchmarking AI Agents for Addressing Scientific Challenges Across Scales",
+    "pdf_downloaded": true,
+    "pdf_bytes": 10526540,
+    "doi_record_title": [
+      "Benchmarking AI Agents for Addressing Scientific Challenges Across Scales"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2606.12736",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "8e4460337aae7be889f6b3ea7807701da465301999b8d78e500b4781e63af02e"
+  },
+  "mast": {
+    "arxiv_id": "2503.13657",
+    "primary_url": "https://arxiv.org/abs/2503.13657",
+    "title": "Why Do Multi-Agent LLM Systems Fail?",
+    "pdf_downloaded": true,
+    "pdf_bytes": 1188307,
+    "doi_record_title": [
+      "Why Do Multi-Agent LLM Systems Fail?"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2503.13657",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "1b9e317a2a421e60ca2b2eda4a30844557a01e63286a790890c0ecef32d25460"
+  },
+  "judge": {
+    "arxiv_id": "2306.05685",
+    "primary_url": "https://arxiv.org/abs/2306.05685",
+    "title": "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena",
+    "pdf_downloaded": true,
+    "pdf_bytes": 1580141,
+    "doi_record_title": [
+      "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2306.05685",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "1574982845157569b85c1214bfa9987000384d7a5e3b5fbdcc5a29afec59cb81"
+  },
+  "spitz": {
+    "arxiv_id": "1712.02360",
+    "primary_url": "https://arxiv.org/abs/1712.02360",
+    "title": "Adaptive weight estimator for quantum error correction",
+    "pdf_downloaded": true,
+    "pdf_bytes": 519081,
+    "doi_record_title": [
+      "Adaptive weight estimator for quantum error correction"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/1712.02360",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": true,
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "5252662f5ccd3821c6be27b8a8dfec6721c0730023eecc27260c4fc9ac26f3b5"
+  },
+  "rl": {
+    "arxiv_id": "2511.08493",
+    "primary_url": "https://arxiv.org/abs/2511.08493",
+    "title": "Reinforcement Learning Control of Quantum Error Correction",
+    "pdf_downloaded": true,
+    "pdf_bytes": 8907691,
+    "doi_record_title": [
+      "Reinforcement Learning Control of Quantum Error Correction"
+    ],
+    "doi_record_url": "https://arxiv.org/abs/2511.08493",
+    "doi_title_matches": true,
+    "pdf_title_match": true,
+    "pdf_first_author_present": false,
+    "author_verification_note": "Collective group on PDF first page; all three individual authors appear in full PDF and publisher Crossref record.",
+    "first_three_authors_verified": true,
+    "verified_pdf_sha256": "d6a52af4d650acd41a01e453e23f75b95749573aa64044ca80bd99fc3a6efc00"
+  },
+  "alpha": {
+    "primary_url": "https://www.nature.com/articles/s41586-024-08148-8",
+    "pdf_url": "https://www.nature.com/articles/s41586-024-08148-8.pdf",
+    "pdf_downloaded": true,
+    "pdf_title_match": true,
+    "first_three_authors_verified": true,
+    "doi": "10.1038/s41586-024-08148-8",
+    "crossref_metadata_matches": true,
+    "publisher_year": 2024,
+    "publisher_volume": "635",
+    "publisher_pages": "834-840",
+    "verified_pdf_sha256": "565794ee61a72c7d62a6e094dbd60ed826ddced241bcb7c7d810ae18cc830e28"
+  }
+}

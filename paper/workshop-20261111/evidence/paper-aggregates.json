@@ -1,0 +1,615 @@
+{
+  "development": {
+    "recorded": 533,
+    "valid": 533,
+    "passes": 144,
+    "labels": {
+      "nominal_unchanged": 44,
+      "plain_matching": 117,
+      "out_of_budget": 36,
+      "harmful_decoder": 72,
+      "passed": 144,
+      "under_adapted": 109,
+      "misdiagnosis": 11
+    },
+    "quadrants": {
+      "diagnosis_1_fix_0": 177,
+      "unscored": 36,
+      "diagnosis_0_fix_0": 165,
+      "diagnosis_1_fix_1": 144,
+      "diagnosis_0_fix_1": 11
+    },
+    "diagnosis_correct": 322,
+    "diagnosis_measured": 533,
+    "agreement": 526,
+    "paired": 533,
+    "confusion": [
+      {
+        "rule": "harmful_decoder",
+        "judge": "harmful_decoder",
+        "count": 72
+      },
+      {
+        "rule": "misdiagnosis",
+        "judge": "misdiagnosis",
+        "count": 11
+      },
+      {
+        "rule": "nominal_unchanged",
+        "judge": "nominal_unchanged",
+        "count": 42
+      },
+      {
+        "rule": "nominal_unchanged",
+        "judge": "plain_matching",
+        "count": 2
+      },
+      {
+        "rule": "out_of_budget",
+        "judge": "out_of_budget",
+        "count": 36
+      },
+      {
+        "rule": "passed",
+        "judge": "passed",
+        "count": 144
+      },
+      {
+        "rule": "plain_matching",
+        "judge": "misdiagnosis",
+        "count": 1
+      },
+      {
+        "rule": "plain_matching",
+        "judge": "passed",
+        "count": 1
+      },
+      {
+        "rule": "plain_matching",
+        "judge": "plain_matching",
+        "count": 114
+      },
+      {
+        "rule": "plain_matching",
+        "judge": "under_adapted",
+        "count": 1
+      },
+      {
+        "rule": "under_adapted",
+        "judge": "misdiagnosis",
+        "count": 1
+      },
+      {
+        "rule": "under_adapted",
+        "judge": "passed",
+        "count": 1
+      },
+      {
+        "rule": "under_adapted",
+        "judge": "under_adapted",
+        "count": 107
+      }
+    ],
+    "judge_labels": {
+      "nominal_unchanged": 42,
+      "plain_matching": 116,
+      "out_of_budget": 36,
+      "harmful_decoder": 72,
+      "passed": 146,
+      "under_adapted": 108,
+      "misdiagnosis": 13
+    },
+    "judge_repair_floor_contradictions": 4,
+    "concerns": {
+      "environment_problem": 31,
+      "instruction_problem": 0,
+      "integrity_problem": 289
+    }
+  },
+  "families": {
+    "adequate nominal": {
+      "valid": 48,
+      "passes": 32,
+      "diagnosis_correct": 45,
+      "diagnosis_measured": 48
+    },
+    "combined faults": {
+      "valid": 69,
+      "passes": 23,
+      "diagnosis_correct": 38,
+      "diagnosis_measured": 69
+    },
+    "local qubit": {
+      "valid": 24,
+      "passes": 16,
+      "diagnosis_correct": 23,
+      "diagnosis_measured": 24
+    },
+    "measurement": {
+      "valid": 24,
+      "passes": 18,
+      "diagnosis_correct": 23,
+      "diagnosis_measured": 24
+    },
+    "moving gates": {
+      "valid": 115,
+      "passes": 14,
+      "diagnosis_correct": 53,
+      "diagnosis_measured": 115
+    },
+    "moving qubits": {
+      "valid": 184,
+      "passes": 16,
+      "diagnosis_correct": 101,
+      "diagnosis_measured": 184
+    },
+    "spatial patch": {
+      "valid": 46,
+      "passes": 14,
+      "diagnosis_correct": 19,
+      "diagnosis_measured": 46
+    },
+    "telegraph noise": {
+      "valid": 23,
+      "passes": 11,
+      "diagnosis_correct": 20,
+      "diagnosis_measured": 23
+    }
+  },
+  "cohort_counts": {
+    "agent_decoder": {
+      "recorded": 30,
+      "valid": 30,
+      "invalid": 0,
+      "reviewed": 30,
+      "passes": 6
+    },
+    "agent_drift": {
+      "recorded": 14,
+      "valid": 14,
+      "invalid": 0,
+      "reviewed": 14,
+      "passes": 11
+    },
+    "agent_hard": {
+      "recorded": 25,
+      "valid": 25,
+      "invalid": 0,
+      "reviewed": 25,
+      "passes": 9
+    },
+    "agent_hard2": {
+      "recorded": 27,
+      "valid": 27,
+      "invalid": 0,
+      "reviewed": 27,
+      "passes": 7
+    },
+    "agent_launch": {
+      "recorded": 74,
+      "valid": 27,
+      "invalid": 47,
+      "reviewed": 74,
+      "passes": 9
+    },
+    "agent_trial": {
+      "recorded": 1,
+      "valid": 1,
+      "invalid": 0,
+      "reviewed": 1,
+      "passes": 0
+    },
+    "agent_launch2": {
+      "recorded": 533,
+      "valid": 533,
+      "invalid": 0,
+      "reviewed": 533,
+      "passes": 144
+    },
+    "fresh": {
+      "recorded": 56,
+      "valid": 56,
+      "invalid": 0,
+      "reviewed": 56,
+      "passes": 13
+    }
+  },
+  "tool_calls_by_rule_label": {
+    "nominal_unchanged": {
+      "7": 1,
+      "9": 3,
+      "10": 1,
+      "11": 3,
+      "12": 3,
+      "13": 3,
+      "14": 1,
+      "15": 3,
+      "16": 2,
+      "17": 5,
+      "18": 2,
+      "20": 2,
+      "21": 1,
+      "22": 1,
+      "25": 1,
+      "27": 1,
+      "28": 2,
+      "29": 1,
+      "30": 2,
+      "32": 3,
+      "35": 1,
+      "39": 1,
+      "40": 1
+    },
+    "plain_matching": {
+      "12": 3,
+      "13": 3,
+      "14": 2,
+      "15": 7,
+      "16": 6,
+      "17": 5,
+      "18": 5,
+      "19": 7,
+      "20": 5,
+      "21": 1,
+      "22": 4,
+      "23": 4,
+      "24": 4,
+      "25": 5,
+      "26": 5,
+      "27": 4,
+      "28": 3,
+      "29": 3,
+      "30": 3,
+      "31": 3,
+      "32": 1,
+      "34": 5,
+      "35": 2,
+      "36": 6,
+      "37": 2,
+      "38": 2,
+      "39": 2,
+      "40": 13,
+      "41": 2
+    },
+    "out_of_budget": {
+      "39": 4,
+      "40": 22,
+      "41": 10
+    },
+    "harmful_decoder": {
+      "8": 1,
+      "9": 1,
+      "10": 1,
+      "11": 2,
+      "12": 1,
+      "13": 3,
+      "14": 2,
+      "15": 2,
+      "16": 1,
+      "17": 4,
+      "18": 5,
+      "19": 5,
+      "20": 6,
+      "21": 1,
+      "22": 4,
+      "23": 3,
+      "24": 1,
+      "25": 1,
+      "26": 3,
+      "27": 2,
+      "28": 3,
+      "29": 2,
+      "30": 1,
+      "32": 1,
+      "33": 1,
+      "35": 2,
+      "38": 1,
+      "39": 1,
+      "40": 9,
+      "41": 2
+    },
+    "passed": {
+      "5": 1,
+      "7": 1,
+      "8": 2,
+      "9": 1,
+      "11": 2,
+      "12": 4,
+      "13": 6,
+      "14": 7,
+      "15": 4,
+      "16": 2,
+      "17": 4,
+      "18": 4,
+      "19": 9,
+      "20": 8,
+      "21": 7,
+      "22": 3,
+      "23": 5,
+      "24": 6,
+      "25": 4,
+      "26": 9,
+      "27": 8,
+      "28": 4,
+      "29": 6,
+      "30": 7,
+      "31": 3,
+      "32": 3,
+      "33": 3,
+      "34": 4,
+      "35": 4,
+      "36": 2,
+      "38": 3,
+      "39": 3,
+      "40": 5
+    },
+    "under_adapted": {
+      "15": 3,
+      "16": 4,
+      "17": 3,
+      "18": 1,
+      "19": 3,
+      "20": 7,
+      "21": 7,
+      "22": 7,
+      "23": 9,
+      "24": 7,
+      "25": 2,
+      "26": 3,
+      "27": 3,
+      "28": 6,
+      "29": 6,
+      "31": 4,
+      "32": 4,
+      "33": 6,
+      "34": 3,
+      "35": 5,
+      "36": 4,
+      "37": 1,
+      "38": 1,
+      "39": 3,
+      "40": 7
+    },
+    "misdiagnosis": {
+      "16": 1,
+      "17": 1,
+      "21": 2,
+      "30": 1,
+      "31": 1,
+      "36": 1,
+      "40": 4
+    }
+  },
+  "episode_seconds_summary": {
+    "nominal_unchanged": {
+      "n": 44,
+      "median": 213.5,
+      "min": 64.0,
+      "max": 1027.0
+    },
+    "plain_matching": {
+      "n": 117,
+      "median": 563.0,
+      "min": 134.0,
+      "max": 1757.0
+    },
+    "out_of_budget": {
+      "n": 36,
+      "median": 758.5,
+      "min": 313.0,
+      "max": 1332.0
+    },
+    "harmful_decoder": {
+      "n": 72,
+      "median": 333.5,
+      "min": 89.0,
+      "max": 1755.0
+    },
+    "passed": {
+      "n": 144,
+      "median": 837.5,
+      "min": 68.0,
+      "max": 2464.0
+    },
+    "under_adapted": {
+      "n": 109,
+      "median": 886.0,
+      "min": 234.0,
+      "max": 2708.0
+    },
+    "misdiagnosis": {
+      "n": 11,
+      "median": 985.0,
+      "min": 479.0,
+      "max": 1527.0
+    }
+  },
+  "fresh_baseline": {
+    "created_utc": "2026-11-10T05:32:44.362086+00:00",
+    "kind": "fresh_seed_within_family_replication",
+    "method": {
+      "population": "Within-family fresh-seed replication of selected development templates.",
+      "families": 9,
+      "templates": 23,
+      "fresh_candidates": 92,
+      "eligible_candidates": 85,
+      "rejected_candidates": 7,
+      "rejection_reasons": {
+        "no_gap": 4,
+        "no_known_method": 3
+      },
+      "affected_templates": 4,
+      "baseline_source_commit": "58091afb2bfd1e4afcc66ebdd136953d646bbcec",
+      "fresh_protocol_sha256": "e35ac50c6b8b26a287e4290c94603a8da6b84247050cd9eb36d558a0a84c74a7"
+    },
+    "visible_baseline": {
+      "all_candidates": {
+        "denominator": 92,
+        "scored": 74,
+        "score_errors": 18,
+        "scoring_timeouts": 18,
+        "absolute_passes": 27,
+        "relative_passes": 27,
+        "pass_rate": 0.29347826086956524,
+        "hierarchical_interval": [
+          0.11607142857142858,
+          0.6145833333333334
+        ],
+        "adequacy_correct": 92,
+        "diagnosis_correct": 41,
+        "mechanism_correct": 36
+      },
+      "eligible_candidates": {
+        "denominator": 85,
+        "scored": 68,
+        "score_errors": 17,
+        "scoring_timeouts": 17,
+        "absolute_passes": 26,
+        "relative_passes": 26,
+        "pass_rate": 0.3058823529411765,
+        "hierarchical_interval": [
+          0.11841507177033493,
+          0.6756756756756757
+        ],
+        "adequacy_correct": 85,
+        "diagnosis_correct": 39,
+        "mechanism_correct": 34
+      }
+    },
+    "prediction_readout": {
+      "gate_eligibility_changed": {
+        "rejected_candidates": 7,
+        "affected_templates": 4,
+        "reasons": {
+          "no_gap": 4,
+          "no_known_method": 3
+        }
+      },
+      "baseline_over_reporting": {
+        "localized_rows": 80,
+        "predicted_more_qubits": 71,
+        "predicted_equal_qubits": 6,
+        "predicted_fewer_qubits": 3,
+        "mean_predicted_qubits": 27.875,
+        "mean_truth_qubits": 15.9125,
+        "mean_false_positive_qubits": 12.0625
+      },
+      "larger_decoder_timeouts": {
+        "all_candidates_by_distance": {
+          "5": 72,
+          "9": 4,
+          "7": 16
+        },
+        "timeouts_by_distance": {
+          "5": 2,
+          "7": 16
+        },
+        "d7_timeout_fraction": 1.0
+      },
+      "localization_by_explicit_trailing_dwell": {
+        "population": "All fresh visible-baseline rows with non-null localization and a drift string ending in d<dwell>.",
+        "status": "directional_support_confounded",
+        "by_trailing_dwell": {
+          "30": {
+            "rows": 20,
+            "mean_localization": 0.40945989427323576,
+            "median_localization": 0.33392857142857146
+          },
+          "40": {
+            "rows": 8,
+            "mean_localization": 0.6486711400634035,
+            "median_localization": 0.6319444444444444
+          },
+          "60": {
+            "rows": 20,
+            "mean_localization": 0.6304246558987401,
+            "median_localization": 0.7165178571428572
+          }
+        },
+        "note": "Both longer-dwell groups exceed dwell 30. Dwell 40 and dwell 60 are not monotonic across mean and median, and dwell remains confounded with template attributes."
+      }
+    },
+    "model_execution": {
+      "scheduled_pairs": 5336,
+      "eligible_pairs": 4930,
+      "ineligible_pairs": 406,
+      "valid_codex_episodes": 56,
+      "scored_codex_episodes": 53,
+      "codex_score_errors": 3,
+      "codex_absolute_passes": 14,
+      "codex_relative_passes": 13,
+      "represented_codex_arms": 22,
+      "unresolved_pairs": 4874,
+      "latest_codex_usage_percent": 63,
+      "quota_threshold_percent": 85,
+      "stop_reason": "credential_lifetime_preflight",
+      "claude_valid_episodes": 0,
+      "claude_usage_status": "unknown",
+      "claude_probe_error": "JSONDecodeError",
+      "failure_accounting": "All scoring timeouts and score errors count as failures."
+    },
+    "matched_comparisons": {
+      "non_null_comparisons": 38,
+      "paired_denominator_counts": {
+        "1": 19,
+        "2": 8,
+        "3": 7,
+        "4": 3,
+        "6": 1
+      },
+      "largest_paired_denominator": 6,
+      "eligible_denominator": 85,
+      "warning": "Coverage is sparse and availability selected. No arm or model ranking is supported."
+    },
+    "inference": {
+      "numpy_version": "2.5.4",
+      "draws": 10000,
+      "seed": 20261108,
+      "quantile_method": "linear",
+      "statistic": "pooled candidate mean; comparisons use paired differences",
+      "resampling": "families, templates within family, replicates within template",
+      "cluster_size": "Each sampled cluster retains its original member count.",
+      "warning": "Availability selection can bias complete-case comparisons. No unmatched arm ranking.",
+      "population": "Within-family fresh-seed replication of selected development templates.",
+      "limits": "Few families; descriptive intervals; no model-sampling variance estimate."
+    },
+    "limitations": [
+      "This is a within-family replication of selected development templates, not an unseen-family evaluation.",
+      "The hierarchy contains few families, so intervals are descriptive rather than precise population guarantees.",
+      "Dwell is mixed with other template attributes, so its localization readout is confounded.",
+      "Codex coverage stopped at the credential-lifetime safety gate and is unmatched across arms.",
+      "Claude usage was unknown, so missing Claude episodes are omissions rather than capability failures.",
+      "One episode per arm and candidate does not estimate model-sampling variance."
+    ],
+    "provenance": {
+      "analysis_sha256": "1e21ec084fb40fb8b504e754bbbd06c1dc6aa50eaa0e151dff6a88789f978c84",
+      "analysis_source_sha256": {
+        "fresh_seed_analysis.py": "365c08bdbeef2f4ea54aff68fb8e77ffac261e336a8fcb69ac19f271900b3023",
+        "study_statistics.py": "ce3e8939949005625006a762f6180f8637183489deb2645890d7b8224104a663"
+      },
+      "candidate_manifest_sha256": "963ad20aa8bc68aeb68f4cb8b10e403c413e0d4c97e8d247562eda11354d42e0",
+      "reference_results_sha256": "bea1abd7d32ec6c93e413da64d24ba9d84af5e320743b26a3aa43b0947100b0a",
+      "scorer_manifest_sha256": "18595bac557eda959bcaecec53e10984f9fc1b8a068d40f8dbfa3b55fc06f722",
+      "baseline_results_sha256": "38d6b2e24001bf8b55197c861b0bdecb11a44b4162a16b6252f62c4966276783",
+      "model_results_sha256": "46508fd31e8e40a8969eae3645b90db15fea97bb1e7c2a727668b9999ec3ae3f",
+      "model_runner_sha256": "c46bb833911fd780a50815f81400d24a5a6076378479f64c39cfc4eabecc6009",
+      "prediction_correction_sha256": "b87510c2953770b561389f6fbba18bbb8e02d2322bdb96f36e93d80e653ccf84"
+    }
+  },
+  "checks": {
+    "independent_parquet_rows": 533,
+    "independent_relative_joint_passes": 144,
+    "independent_diagnoses_correct": 322,
+    "inventory_rows": 760,
+    "available_inputs": 760,
+    "headline_discrepancy": 0,
+    "current_truncated_views": 0
+  },
+  "provenance": {
+    "repository_commit": "eac0f4490cacce3eede90b1ee8aee2ca9d34bb28",
+    "public_snapshot_commit": "c02efe99308605ace6c47cb700382fa9d05af02a",
+    "atlas_sha256": "d1f31e0b482d5d9c14997280548b0ab54cbb1a840bd848bbc324f2d60a020c2a",
+    "frozen_inventory_sha256": "eddad6cb205b4996a13e75ad6b9e7383bd4693626bde68833815ba23daebf1c7",
+    "source": "Frozen score-selected decoder rows; tool counts from exact-input review fact sheets. No per-run identifiers exported."
+  }
+}

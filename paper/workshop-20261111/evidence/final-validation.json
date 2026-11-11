@@ -1,0 +1,77 @@
+{
+  "checked_utc": "2026-11-11T01:43:20.309413+00:00",
+  "status": "complete",
+  "pages": 5,
+  "bibliography_real_papers": 20,
+  "bibliography_entries_cited": 20,
+  "primary_record_pdf_and_doi_verified": true,
+  "separate_labeled_online_project_artifact": 1,
+  "figures": 2,
+  "quantitative_recomputation": "533 development rows,144 relative joint passes; zero verdict mismatches; histogram/family/fresh aggregates match frozen sources",
+  "reviews": {
+    "scientific_claims": "atlas_code_review APPROVED",
+    "quantitative_figures_python": "atlas_python_review APPROVED"
+  },
+  "ruff": "passed",
+  "latex_errors": 0,
+  "latex_warnings": 0,
+  "visual_review": "All five final pages and both exported figures inspected; readable and unclipped.",
+  "all_fonts_embedded": true,
+  "text_extractable": true,
+  "character_bounds": [
+    {
+      "page": 1,
+      "characters": 5098,
+      "min_x": 53.641,
+      "max_x": 559.743837,
+      "min_y": 58.51154159999999,
+      "max_y": 771.5682884
+    },
+    {
+      "page": 2,
+      "characters": 5041,
+      "min_x": 53.392,
+      "max_x": 559.7476076640002,
+      "min_y": 50.933745600000066,
+      "max_y": 771.5682884
+    },
+    {
+      "page": 3,
+      "characters": 4003,
+      "min_x": 53.532,
+      "max_x": 559.6619814080002,
+      "min_y": 57.44963071029997,
+      "max_y": 771.5682884
+    },
+    {
+      "page": 4,
+      "characters": 4264,
+      "min_x": 54.0,
+      "max_x": 559.7424569998002,
+      "min_y": 57.44963071029997,
+      "max_y": 771.5682884
+    },
+    {
+      "page": 5,
+      "characters": 3190,
+      "min_x": 54.0,
+      "max_x": 561.29104,
+      "min_y": 50.84566080000002,
+      "max_y": 771.5682884
+    }
+  ],
+  "external_link_count": 34,
+  "privacy": {
+    "text_files_scanned": 14,
+    "machine_secret_values_checked": 61,
+    "hits": []
+  },
+  "reproduction_versions": {
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4",
+    "tex_engine": "pdfTeX TeX Live2026",
+    "format": "10pt two-column neutral workshop manuscript,5 total pages including references"
+  },
+  "pdf_sha256": "967b17277c69175bdf4763551ee19c062ea0f3f2a9cc503cc52500339054d1da",
+  "pdf_bytes": 240362
+}

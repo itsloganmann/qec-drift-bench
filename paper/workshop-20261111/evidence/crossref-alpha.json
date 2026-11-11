@@ -1,0 +1,77 @@
+{
+  "doi": "10.1038/s41586-024-08148-8",
+  "title": [
+    "Learning high-accuracy error decoding for quantum processors"
+  ],
+  "published": {
+    "date-parts": [
+      [
+        2024,
+        11,
+        20
+      ]
+    ]
+  },
+  "author": [
+    {
+      "ORCID": "https://orcid.org/0000-0003-3189-9162",
+      "authenticated-orcid": false,
+      "given": "Johannes",
+      "family": "Bausch",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0000-0002-2401-5691",
+      "authenticated-orcid": false,
+      "given": "Andrew W.",
+      "family": "Senior",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "given": "Francisco J. H.",
+      "family": "Heras",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0009-0004-0473-3727",
+      "authenticated-orcid": false,
+      "given": "Thomas",
+      "family": "Edlich",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    }
+  ],
+  "container": [
+    "Nature"
+  ],
+  "volume": "635",
+  "page": "834-840",
+  "primary_url": "https://doi.org/10.1038/s41586-024-08148-8"
+}

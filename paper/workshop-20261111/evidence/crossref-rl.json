@@ -1,0 +1,77 @@
+{
+  "doi": "10.1038/s41586-026-10759-2",
+  "title": [
+    "Reinforcement learning control of quantum error correction"
+  ],
+  "published": {
+    "date-parts": [
+      [
+        2026,
+        7,
+        8
+      ]
+    ]
+  },
+  "author": [
+    {
+      "ORCID": "https://orcid.org/0000-0001-5108-4011",
+      "authenticated-orcid": false,
+      "given": "Volodymyr",
+      "family": "Sivak",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0000-0002-9515-6184",
+      "authenticated-orcid": false,
+      "given": "Alexis",
+      "family": "Morvan",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "given": "Michael",
+      "family": "Broughton",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "ORCID": "https://orcid.org/0000-0002-3706-306X",
+      "authenticated-orcid": false,
+      "given": "Rodrigo G.",
+      "family": "Corti\u00f1as",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    }
+  ],
+  "container": [
+    "Nature"
+  ],
+  "volume": "655",
+  "page": "879-884",
+  "primary_url": "https://doi.org/10.1038/s41586-026-10759-2"
+}

@@ -1,0 +1,87 @@
+{
+  "doi": "10.1002/qute.201800012",
+  "title": [
+    "Adaptive Weight Estimator for Quantum Error Correction in a Time\u2010Dependent Environment"
+  ],
+  "published": {
+    "date-parts": [
+      [
+        2018,
+        7,
+        30
+      ]
+    ]
+  },
+  "author": [
+    {
+      "given": "Stephen T.",
+      "family": "Spitz",
+      "sequence": "first",
+      "affiliation": [
+        {
+          "name": "Instituut\u2010Lorentz Universiteit Leiden P.O. Box 9506 2300 RA Leiden The Netherlands"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "given": "Brian",
+      "family": "Tarasinski",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "QuTech Delft University of Technology P.O. Box 5046 2600 GA Delft The Netherlands"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "given": "Carlo W. J.",
+      "family": "Beenakker",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Instituut\u2010Lorentz Universiteit Leiden P.O. Box 9506 2300 RA Leiden The Netherlands"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    },
+    {
+      "given": "Thomas E.",
+      "family": "O'Brien",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Instituut\u2010Lorentz Universiteit Leiden P.O. Box 9506 2300 RA Leiden The Netherlands"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    }
+  ],
+  "container": [
+    "Advanced Quantum Technologies"
+  ],
+  "volume": "1",
+  "page": null,
+  "primary_url": "https://doi.org/10.1002/qute.201800012"
+}

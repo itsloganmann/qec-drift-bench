@@ -1,0 +1,798 @@
+{
+  "stim": {
+    "url": "https://arxiv.org/abs/2103.02202",
+    "id": "2103.02202",
+    "title": [
+      "Stim: a fast stabilizer circuit simulator"
+    ],
+    "authors": [
+      "Gidney, Craig"
+    ],
+    "date": [
+      "2021/03/03"
+    ],
+    "doi": [
+      "10.22331/q-2021-07-06-497"
+    ],
+    "retrieved_utc": "2026-11-11T01:21:54.535274+00:00"
+  },
+  "sparse": {
+    "url": "https://arxiv.org/abs/2303.15933",
+    "id": "2303.15933",
+    "title": [
+      "Sparse Blossom: correcting a million errors per core second with minimum-weight matching"
+    ],
+    "authors": [
+      "Higgott, Oscar",
+      "Gidney, Craig"
+    ],
+    "date": [
+      "2023/03/28"
+    ],
+    "doi": [
+      "10.22331/q-2025-01-20-1600"
+    ],
+    "retrieved_utc": "2026-11-11T01:21:54.467018+00:00"
+  },
+  "dgr": {
+    "url": "https://arxiv.org/abs/2311.16214",
+    "id": "2311.16214",
+    "title": [
+      "DGR: Tackling Drifted and Correlated Noise in Quantum Error Correction via Decoding Graph Re-weighting"
+    ],
+    "authors": [
+      "Wang, Hanrui",
+      "Liu, Pengyu",
+      "Liu, Yilian",
+      "Gu, Jiaqi",
+      "Baker, Jonathan",
+      "Chong, Frederic T.",
+      "Han, Song"
+    ],
+    "date": [
+      "2023/11/27"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.460374+00:00"
+  },
+  "alpha2": {
+    "url": "https://arxiv.org/abs/2512.07737",
+    "id": "2512.07737",
+    "title": [
+      "A scalable and real-time neural decoder for topological quantum codes"
+    ],
+    "authors": [
+      "Senior, Andrew W.",
+      "Edlich, Thomas",
+      "Heras, Francisco J. H.",
+      "Zhang, Lei M.",
+      "Higgott, Oscar",
+      "Spencer, James S.",
+      "Applebaum, Taylor",
+      "Blackwell, Sam",
+      "Ledford, Justin",
+      "\u017demgulyt\u0117, Akvil\u0117",
+      "\u017d\u00eddek, Augustin",
+      "Shutty, Noah",
+      "Cowie, Andrew",
+      "Li, Yin",
+      "Holland, George",
+      "Brooks, Peter",
+      "Beattie, Charlie",
+      "Newman, Michael",
+      "Davies, Alex",
+      "Jones, Cody",
+      "Boixo, Sergio",
+      "Neven, Hartmut",
+      "Kohli, Pushmeet",
+      "Bausch, Johannes"
+    ],
+    "date": [
+      "2025/12/08"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.460172+00:00"
+  },
+  "stabilizer": {
+    "url": "https://arxiv.org/abs/2604.21287",
+    "id": "2604.21287",
+    "title": [
+      "StabilizerBench: A Benchmark for AI-Assisted Quantum Error Correction Circuit Synthesis"
+    ],
+    "authors": [
+      "Paz, Andres",
+      "Tarta, Christian",
+      "Li, Cordelia Yuqiao",
+      "Sun, Mayee",
+      "Patel, Sarju",
+      "Lausier, Sylvie"
+    ],
+    "date": [
+      "2026/04/23"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.579134+00:00"
+  },
+  "qcoder": {
+    "url": "https://arxiv.org/abs/2510.26101",
+    "id": "2510.26101",
+    "title": [
+      "QCoder Benchmark: Bridging Language Generation and Quantum Hardware through Simulator-Based Feedback"
+    ],
+    "authors": [
+      "Mikuriya, Taku",
+      "Ishigaki, Tatsuya",
+      "Kawarada, Masayuki",
+      "Minami, Shunya",
+      "Kadowaki, Tadashi",
+      "Suzuki, Yohichi",
+      "Naito, Soshun",
+      "Takata, Shunya",
+      "Kato, Takumi",
+      "Basseda, Tamotsu",
+      "Yamada, Reo",
+      "Takamura, Hiroya"
+    ],
+    "date": [
+      "2025/10/30"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.577431+00:00"
+  },
+  "quanbench": {
+    "url": "https://arxiv.org/abs/2604.08570",
+    "id": "2604.08570",
+    "title": [
+      "QuanBench+: A Unified Multi-Framework Benchmark for LLM-Based Quantum Code Generation"
+    ],
+    "authors": [
+      "Slim, Ali",
+      "Hamieh, Haydar",
+      "Kotaich, Jawad",
+      "Ghosn, Yehya",
+      "Chehimi, Mahdi",
+      "Mohanna, Ammar",
+      "Hammoud, Hasan Abed Al Kader",
+      "Ghanem, Bernard"
+    ],
+    "date": [
+      "2026/03/25"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.515659+00:00"
+  },
+  "quantumaudit": {
+    "url": "https://arxiv.org/abs/2610.28678",
+    "id": "2610.28678",
+    "title": [
+      "Benchmarking the Quantum Leap: Auditing LLM Evaluation for Quantum Code Generation"
+    ],
+    "authors": [
+      "Seefried, Ethan",
+      "Ghosh, Romit",
+      "Afrose, Sharmin",
+      "Stapleton, Nicholas",
+      "Ortega, Vicente Layton",
+      "Humble, Travis",
+      "Ghosal, Tirthankar"
+    ],
+    "date": [
+      "2026/10/19"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.623071+00:00"
+  },
+  "apidrift": {
+    "url": "https://arxiv.org/abs/2607.04072",
+    "id": "2607.04072",
+    "title": [
+      "Benchmarking API Drift in LLM-Generated Quantum Code Across Successive SDK Versions"
+    ],
+    "authors": [
+      "Rasyidi, Mohammad Arif",
+      "Faiz, Syahirul"
+    ],
+    "date": [
+      "2026/07/05"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.665754+00:00"
+  },
+  "scicode": {
+    "url": "https://arxiv.org/abs/2407.13168",
+    "id": "2407.13168",
+    "title": [
+      "SciCode: A Research Coding Benchmark Curated by Scientists"
+    ],
+    "authors": [
+      "Tian, Minyang",
+      "Gao, Luyu",
+      "Zhang, Shizhuo Dylan",
+      "Chen, Xinan",
+      "Fan, Cunwei",
+      "Guo, Xuefei",
+      "Haas, Roland",
+      "Ji, Pan",
+      "Krongchon, Kittithat",
+      "Li, Yao",
+      "Liu, Shengyan",
+      "Luo, Di",
+      "Ma, Yutao",
+      "Tong, Hao",
+      "Trinh, Kha",
+      "Tian, Chenyu",
+      "Wang, Zihan",
+      "Wu, Bohao",
+      "Xiong, Yanyu",
+      "Yin, Shengzhu",
+      "Zhu, Minhui",
+      "Lieret, Kilian",
+      "Lu, Yanxin",
+      "Liu, Genglin",
+      "Du, Yufeng",
+      "Tao, Tianhua",
+      "Press, Ofir",
+      "Callan, Jamie",
+      "Huerta, Eliu",
+      "Peng, Hao"
+    ],
+    "date": [
+      "2024/07/18"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.623493+00:00"
+  },
+  "scienceagent": {
+    "url": "https://arxiv.org/abs/2410.05080",
+    "id": "2410.05080",
+    "title": [
+      "ScienceAgentBench: Toward Rigorous Assessment of Language Agents for Data-Driven Scientific Discovery"
+    ],
+    "authors": [
+      "Chen, Ziru",
+      "Chen, Shijie",
+      "Ning, Yuting",
+      "Zhang, Qianheng",
+      "Wang, Boshi",
+      "Yu, Botao",
+      "Li, Yifei",
+      "Liao, Zeyi",
+      "Wei, Chen",
+      "Lu, Zitong",
+      "Dey, Vishal",
+      "Xue, Mingyi",
+      "Baker, Frazier N.",
+      "Burns, Benjamin",
+      "Adu-Ampratwum, Daniel",
+      "Huang, Xuhui",
+      "Ning, Xia",
+      "Gao, Song",
+      "Su, Yu",
+      "Sun, Huan"
+    ],
+    "date": [
+      "2024/10/07"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.623293+00:00"
+  },
+  "mle": {
+    "url": "https://arxiv.org/abs/2410.07095",
+    "id": "2410.07095",
+    "title": [
+      "MLE-bench: Evaluating Machine Learning Agents on Machine Learning Engineering"
+    ],
+    "authors": [
+      "Chan, Jun Shern",
+      "Chowdhury, Neil",
+      "Jaffe, Oliver",
+      "Aung, James",
+      "Sherburn, Dane",
+      "Mays, Evan",
+      "Starace, Giulio",
+      "Liu, Kevin",
+      "Maksin, Leon",
+      "Patwardhan, Tejal",
+      "Weng, Lilian",
+      "M\u0105dry, Aleksander"
+    ],
+    "date": [
+      "2024/10/09"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.674481+00:00"
+  },
+  "paperbench": {
+    "url": "https://arxiv.org/abs/2504.01848",
+    "id": "2504.01848",
+    "title": [
+      "PaperBench: Evaluating AI's Ability to Replicate AI Research"
+    ],
+    "authors": [
+      "Starace, Giulio",
+      "Jaffe, Oliver",
+      "Sherburn, Dane",
+      "Aung, James",
+      "Chan, Jun Shern",
+      "Maksin, Leon",
+      "Dias, Rachel",
+      "Mays, Evan",
+      "Kinsella, Benjamin",
+      "Thompson, Wyatt",
+      "Heidecke, Johannes",
+      "Glaese, Amelia",
+      "Patwardhan, Tejal"
+    ],
+    "date": [
+      "2025/04/02"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.681718+00:00"
+  },
+  "scigym": {
+    "url": "https://arxiv.org/abs/2602.12984",
+    "id": "2602.12984",
+    "title": [
+      "SciAgentGym: Benchmarking Multi-Step Scientific Tool-use in LLM Agents"
+    ],
+    "authors": [
+      "Shen, Yujiong",
+      "Yang, Yajie",
+      "Xi, Zhiheng",
+      "Hu, Binze",
+      "Sha, Huayu",
+      "Zhang, Jiazheng",
+      "Peng, Qiyuan",
+      "Shang, Junlin",
+      "Huang, Jixuan",
+      "Fan, Yutao",
+      "Tong, Jingqi",
+      "Dou, Shihan",
+      "Zhang, Ming",
+      "Bai, Lei",
+      "Yin, Zhenfei",
+      "Gui, Tao",
+      "Ma, Xingjun",
+      "Zhang, Qi",
+      "Huang, Xuanjing",
+      "Jiang, Yu-Gang"
+    ],
+    "date": [
+      "2026/02/13"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.665946+00:00"
+  },
+  "sciarena": {
+    "url": "https://arxiv.org/abs/2606.12736",
+    "id": "2606.12736",
+    "title": [
+      "Benchmarking AI Agents for Addressing Scientific Challenges Across Scales"
+    ],
+    "authors": [
+      "Liu, Tianyu",
+      "Wang, Allen Xin",
+      "Panescu, Antonia",
+      "Chen, Lisa Xinyi",
+      "Long, Wenxin",
+      "Wei, Xinyu",
+      "Jing, Yueqian",
+      "Zeng, Ziyao",
+      "Chen, Jihang",
+      "Jiang, Sihan",
+      "Wang, Ziqing",
+      "Gu, Siyi",
+      "Chen, Siyu",
+      "Hu, Xinyang",
+      "Shao, Haoran",
+      "Xu, Leqi",
+      "Zheng, Wangjie",
+      "Cao, Zhiyuan",
+      "Fang, Ada",
+      "Yu, Botao",
+      "Sun, Kunyang",
+      "Ying, Rex",
+      "Cohan, Arman",
+      "Chen, Qingyu",
+      "Xue, Lingzhou",
+      "Ding, Kaize",
+      "Du, Yuanqi",
+      "Jin, Wengong",
+      "Yang, Zhuoran",
+      "Zitnik, Marinka",
+      "Zou, James",
+      "Xu, Hua",
+      "Zhao, Hongyu"
+    ],
+    "date": [
+      "2026/06/10"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.710022+00:00"
+  },
+  "mast": {
+    "url": "https://arxiv.org/abs/2503.13657",
+    "id": "2503.13657",
+    "title": [
+      "Why Do Multi-Agent LLM Systems Fail?"
+    ],
+    "authors": [
+      "Cemri, Mert",
+      "Pan, Melissa Z.",
+      "Yang, Shuyi",
+      "Agrawal, Lakshya A.",
+      "Chopra, Bhavya",
+      "Tiwari, Rishabh",
+      "Keutzer, Kurt",
+      "Parameswaran, Aditya",
+      "Klein, Dan",
+      "Ramchandran, Kannan",
+      "Zaharia, Matei",
+      "Gonzalez, Joseph E.",
+      "Stoica, Ion"
+    ],
+    "date": [
+      "2025/03/17"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.716473+00:00"
+  },
+  "judge": {
+    "url": "https://arxiv.org/abs/2306.05685",
+    "id": "2306.05685",
+    "title": [
+      "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena"
+    ],
+    "authors": [
+      "Zheng, Lianmin",
+      "Chiang, Wei-Lin",
+      "Sheng, Ying",
+      "Zhuang, Siyuan",
+      "Wu, Zhanghao",
+      "Zhuang, Yonghao",
+      "Lin, Zi",
+      "Li, Zhuohan",
+      "Li, Dacheng",
+      "Xing, Eric P.",
+      "Zhang, Hao",
+      "Gonzalez, Joseph E.",
+      "Stoica, Ion"
+    ],
+    "date": [
+      "2023/06/09"
+    ],
+    "doi": [],
+    "retrieved_utc": "2026-11-11T01:21:54.725187+00:00"
+  },
+  "spitz": {
+    "id": "1712.02360",
+    "url": "https://arxiv.org/abs/1712.02360",
+    "title": [
+      "Adaptive weight estimator for quantum error correction"
+    ],
+    "authors": [
+      "Spitz, S. T.",
+      "Tarasinski, B.",
+      "Beenakker, C. W. J.",
+      "O'Brien, T. E."
+    ],
+    "date": [
+      "2017/12/06"
+    ],
+    "doi": [
+      "10.1002/qute.201800012"
+    ]
+  },
+  "rl": {
+    "id": "2511.08493",
+    "url": "https://arxiv.org/abs/2511.08493",
+    "title": [
+      "Reinforcement Learning Control of Quantum Error Correction"
+    ],
+    "authors": [
+      "Sivak, Volodymyr",
+      "Morvan, Alexis",
+      "Broughton, Michael",
+      "Corti\u00f1as, Rodrigo G.",
+      "Bausch, Johannes",
+      "Senior, Andrew W.",
+      "Neeley, Matthew",
+      "Eickbusch, Alec",
+      "Shutty, Noah",
+      "Beni, Laleh Aghababaie",
+      "Spencer, James S.",
+      "Heras, Francisco J. H",
+      "Edlich, Thomas",
+      "Abanin, Dmitry",
+      "Abbas, Amira",
+      "Acharya, Rajeev",
+      "Aigeldinger, Georg",
+      "Alcaraz, Ross",
+      "Alcaraz, Sayra",
+      "Andersen, Trond I.",
+      "Ansmann, Markus",
+      "Arute, Frank",
+      "Arya, Kunal",
+      "Askew, Walt",
+      "Astrakhantsev, Nikita",
+      "Atalaya, Juan",
+      "Ballard, Brian",
+      "Bardin, Joseph C.",
+      "Bates, Hector",
+      "Bengtsson, Andreas",
+      "Karimi, Majid Bigdeli",
+      "Bilmes, Alexander",
+      "Bilodeau, Simon",
+      "Borjans, Felix",
+      "Bourassa, Alexandre",
+      "Bovaird, Jenna",
+      "Bowers, Dylan",
+      "Brill, Leon",
+      "Brooks, Peter",
+      "Browne, David A.",
+      "Buchea, Brett",
+      "Buckley, Bob B.",
+      "Burger, Tim",
+      "Burkett, Brian",
+      "Bushnell, Nicholas",
+      "Busnaina, Jamal",
+      "Cabrera, Anthony",
+      "Campero, Juan",
+      "Chang, Hung-Shen",
+      "Chen, Silas",
+      "Chiaro, Ben",
+      "Chih, Liang-Ying",
+      "Cleland, Agnetta Y.",
+      "Cochrane, Bryan",
+      "Cockrell, Matt",
+      "Cogan, Josh",
+      "Collins, Roberto",
+      "Conner, Paul",
+      "Cook, Harold",
+      "Courtney, William",
+      "Crook, Alexander L.",
+      "Curtin, Ben",
+      "Damyanov, Martin",
+      "Das, Sayan",
+      "Debroy, Dripto M.",
+      "Demura, Sean",
+      "Donohoe, Paul",
+      "Drozdov, Ilya",
+      "Dunsworth, Andrew",
+      "Ehimhen, Valerie",
+      "Elbag, Aviv Moshe",
+      "Ella, Lior",
+      "Elzouka, Mahmoud",
+      "Enriquez, David",
+      "Erickson, Catherine",
+      "Ferreira, Vinicius S.",
+      "Flores, Marcos",
+      "Burgos, Leslie Flores",
+      "Forati, Ebrahim",
+      "Ford, Jeremiah",
+      "Fowler, Austin G.",
+      "Foxen, Brooks",
+      "Fukami, Masaya",
+      "Fung, Alan Wing Lun",
+      "Fuste, Lenny",
+      "Ganjam, Suhas",
+      "Garcia, Gonzalo",
+      "Garrick, Christopher",
+      "Gasca, Robert",
+      "Gehring, Helge",
+      "Geiger, Robert",
+      "Genois, \u00c9lie",
+      "Giang, William",
+      "Gilboa, Dar",
+      "Goeders, James E.",
+      "Gonzales, Edward C.",
+      "Gosula, Raja",
+      "de Graaf, Stijn J.",
+      "Dau, Alejandro Grajales",
+      "Graumann, Dietrich",
+      "Grebel, Joel",
+      "Greene, Alex",
+      "Gross, Jonathan A.",
+      "Guerrero, Jose",
+      "Guevel, Lo\u00efck Le",
+      "Ha, Tan",
+      "Habegger, Steve",
+      "Hadick, Tanner",
+      "Hadjikhani, Ali",
+      "Hamilton, Michael C.",
+      "Harrigan, Matthew P.",
+      "Harrington, Sean D.",
+      "Hartshorn, Jeanne",
+      "Heslin, Stephen",
+      "Heu, Paula",
+      "Higgott, Oscar",
+      "Hiltermann, Reno",
+      "Huang, Hsin-Yuan",
+      "Hucka, Mike",
+      "Hudspeth, Christopher",
+      "Huff, Ashley",
+      "Huggins, William J.",
+      "Jeffrey, Evan",
+      "Jevons, Shaun",
+      "Jiang, Zhang",
+      "Jin, Xiaoxuan",
+      "Joshi, Chaitali",
+      "Juhas, Pavol",
+      "Kabel, Andreas",
+      "Kafri, Dvir",
+      "Kang, Hui",
+      "Kang, Kiseo",
+      "Karamlou, Amir H.",
+      "Kaufman, Ryan",
+      "Kechedzhi, Kostyantyn",
+      "Khattar, Tanuj",
+      "Khezri, Mostafa",
+      "Kim, Seon",
+      "Knaut, Can M.",
+      "Kobrin, Bryce",
+      "Kostritsa, Fedor",
+      "Kreikebaum, John Mark",
+      "Kudo, Ryuho",
+      "Kueffler, Ben",
+      "Kumar, Arun",
+      "Kurilovich, Vladislav D.",
+      "Kutsko, Vitali",
+      "Lacroix, Nathan",
+      "Landhuis, David",
+      "Lange-Dei, Tiano",
+      "Langley, Brandon W.",
+      "Laptev, Pavel",
+      "Lau, Kim-Ming",
+      "Ledford, Justin",
+      "Lee, Joy",
+      "Lee, Kenny",
+      "Lester, Brian J.",
+      "Leung, Wendy",
+      "Li, Lily",
+      "Li, Wing Yan",
+      "Li, Ming",
+      "Lill, Alexander T.",
+      "Livingston, William P.",
+      "Lloyd, Matthew T.",
+      "Locharla, Aditya",
+      "De Lorenzo, Laura",
+      "Lundahl, Daniel",
+      "Lunt, Aaron",
+      "Madhuk, Sid",
+      "Maiti, Aniket",
+      "Maloney, Ashley",
+      "Mandr\u00e0, Salvatore",
+      "Martin, Leigh S.",
+      "Martin, Orion",
+      "Mascot, Eric",
+      "Das, Paul Masih",
+      "Maslov, Dmitri",
+      "Mathews, Melvin",
+      "Maxfield, Cameron",
+      "McClean, Jarrod R.",
+      "McEwen, Matt",
+      "Meeks, Seneca",
+      "Miao, Kevin C.",
+      "Minev, Zlatko K.",
+      "Molavi, Reza",
+      "Molina, Sebastian",
+      "Montazeri, Shirin",
+      "Neill, Charles",
+      "Newman, Michael",
+      "Nguyen, Anthony",
+      "Nguyen, Murray",
+      "Ni, Chia-Hung",
+      "Niu, Murphy Yuezhen",
+      "Oas, Logan",
+      "Orosco, Raymond",
+      "Ottosson, Kristoffer",
+      "Pagano, Alice",
+      "Di Paolo, Agustin",
+      "Peek, Sherman",
+      "Peterson, David",
+      "Pizzuto, Alex",
+      "Portoles, Elias",
+      "Potter, Rebecca",
+      "Pritchard, Orion",
+      "Qian, Michael",
+      "Quintana, Chris",
+      "Ranadive, Arpit",
+      "Reagor, Matthew J.",
+      "Resnick, Rachel",
+      "Rhodes, David M.",
+      "Riley, Daniel",
+      "Roberts, Gabrielle",
+      "Rodriguez, Roberto",
+      "Ropes, Emma",
+      "De Rose, Lucia B.",
+      "Rosenberg, Eliott",
+      "Rosenfeld, Emma",
+      "Rosenstock, Dario",
+      "Rossi, Elizabeth",
+      "Roushan, Pedram",
+      "Rower, David A.",
+      "Salazar, Robert",
+      "Sankaragomathi, Kannan",
+      "Sarihan, Murat Can",
+      "Satzinger, Kevin J.",
+      "Schaefer, Max",
+      "Schroeder, Sebastian",
+      "Schurkus, Henry F.",
+      "Shahingohar, Aria",
+      "Shearn, Michael J.",
+      "Shorter, Aaron",
+      "Shvarts, Vladimir",
+      "Small, Spencer",
+      "Smith, W. Clarke",
+      "Sobel, David A.",
+      "Spells, Barrett",
+      "Springer, Sofia",
+      "Sterling, George",
+      "Suchard, Jordan",
+      "Szasz, Aaron",
+      "Sztein, Alexander",
+      "Taylor, Madeline",
+      "Thiruraman, Jothi Priyanka",
+      "Thor, Douglas",
+      "Timucin, Dogan",
+      "Tomita, Eifu",
+      "Torres, Alfredo",
+      "Torunbalci, M. Mert",
+      "Tran, Hao",
+      "Vaishnav, Abeer",
+      "Vargas, Justin",
+      "Vdovichev, Sergey",
+      "Vidal, Guifre",
+      "Heidweiller, Catherine Vollgraff",
+      "Voorhees, Meghan",
+      "Waltman, Steven",
+      "Waltz, Jonathan",
+      "Wang, Shannon X.",
+      "Ware, Brayden",
+      "Watson, James D.",
+      "Wei, Yonghua",
+      "Weidel, Travis",
+      "White, Theodore",
+      "Wong, Kristi",
+      "Woo, Bryan W. K.",
+      "Wood, Christopher J.",
+      "Woodson, Maddy",
+      "Xing, Cheng",
+      "Yao, Z. Jamie",
+      "Yeh, Ping",
+      "Ying, Bicheng",
+      "Yoo, Juhwan",
+      "Yosri, Noureldin",
+      "Young, Elliot",
+      "Young, Grayson",
+      "Zalcman, Adam",
+      "Zhang, Ran",
+      "Zhang, Yaxing",
+      "Zhu, Ningfeng",
+      "Zobrist, Nicholas",
+      "Zou, Zhenjie",
+      "Babbush, Ryan",
+      "Bacon, Dave",
+      "Boixo, Sergio",
+      "Chen, Yu",
+      "Chen, Zijun",
+      "Devoret, Michel",
+      "Hansen, Monica",
+      "Hilton, Jeremy",
+      "Jones, Cody",
+      "Kelly, Julian",
+      "Korotkov, Alexander N.",
+      "Lucero, Erik",
+      "Megrant, Anthony",
+      "Neven, Hartmut",
+      "Oliver, William D.",
+      "Ramachandran, Ganesh",
+      "Smelyanskiy, Vadim",
+      "Klimov, Paul V."
+    ],
+    "date": [
+      "2025/11/11"
+    ],
+    "doi": []
+  }
+}

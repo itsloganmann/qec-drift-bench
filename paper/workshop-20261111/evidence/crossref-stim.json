@@ -1,0 +1,39 @@
+{
+  "doi": "10.22331/q-2021-07-06-497",
+  "title": [
+    "Stim: a fast stabilizer circuit simulator"
+  ],
+  "published": {
+    "date-parts": [
+      [
+        2021,
+        7,
+        6
+      ]
+    ]
+  },
+  "author": [
+    {
+      "given": "Craig",
+      "family": "Gidney",
+      "sequence": "first",
+      "affiliation": [
+        {
+          "name": "Google Inc., Santa Barbara, California 93117, USA"
+        }
+      ],
+      "role": [
+        {
+          "vocabulary": "crossref",
+          "role": "author"
+        }
+      ]
+    }
+  ],
+  "container": [
+    "Quantum"
+  ],
+  "volume": "5",
+  "page": "497",
+  "primary_url": "https://doi.org/10.22331/q-2021-07-06-497"
+}
