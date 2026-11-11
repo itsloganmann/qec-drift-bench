@@ -25,3 +25,6 @@ checkpoints/
 
 # scaffold trial episodes
 trajectories/agent_trial/
+
+# Generated paper previews; vector figures are versioned.
+paper/workshop-20261111/figures/*.png

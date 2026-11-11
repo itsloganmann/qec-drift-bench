@@ -1,0 +1,156 @@
+{
+  "codebook": [
+    {
+      "l1": "Execution / delivery",
+      "l2": "Budget or early stop",
+      "l3": "Budget exhausted",
+      "label": "out_of_budget",
+      "definition": "No scorable decoder when the work budget or deadline ended."
+    },
+    {
+      "l1": "Execution / delivery",
+      "l2": "Budget or early stop",
+      "l3": "No submission",
+      "label": "no_submission",
+      "definition": "No decoder submitted; voluntary stop without a budget marker."
+    },
+    {
+      "l1": "Execution / delivery",
+      "l2": "Scoring execution",
+      "l3": "Broken decoder",
+      "label": "broken_decoder",
+      "definition": "Decoder exists but cannot be scored, after the budget gate."
+    },
+    {
+      "l1": "Decoder repair",
+      "l2": "Regression",
+      "l3": "Harmful decoder",
+      "label": "harmful_decoder",
+      "definition": "Measured performance is worse than nominal plain matching."
+    },
+    {
+      "l1": "Decoder repair",
+      "l2": "Insufficient update",
+      "l3": "Nominal unchanged",
+      "label": "nominal_unchanged",
+      "definition": "Repair fails and predictions/source remain behaviorally nominal."
+    },
+    {
+      "l1": "Decoder repair",
+      "l2": "Insufficient update",
+      "l3": "Plain fitted matching",
+      "label": "plain_matching",
+      "definition": "Repair fails; fitted decoder lacks identified correlation handling."
+    },
+    {
+      "l1": "Decoder repair",
+      "l2": "Insufficient update",
+      "l3": "Under-adapted",
+      "label": "under_adapted",
+      "definition": "Repair fails; remaining fitted/correlated or custom decoder category."
+    },
+    {
+      "l1": "Diagnosis / report",
+      "l2": "Report correctness",
+      "l3": "Misdiagnosis",
+      "label": "misdiagnosis",
+      "definition": "Repair is sufficient but the fault report fails diagnosis."
+    }
+  ],
+  "population": "Current development; complete exact-input transcript review",
+  "reviewed": 533,
+  "review_coded_passes": 146,
+  "review_coded_failures": 387,
+  "review_coded_exclusions": 0,
+  "frozen_rule_passes": 144,
+  "frozen_rule_failures": 389,
+  "judge_labels": {
+    "nominal_unchanged": 42,
+    "plain_matching": 116,
+    "out_of_budget": 36,
+    "harmful_decoder": 72,
+    "passed": 146,
+    "under_adapted": 108,
+    "misdiagnosis": 13
+  },
+  "rule_labels": {
+    "nominal_unchanged": 44,
+    "plain_matching": 117,
+    "out_of_budget": 36,
+    "harmful_decoder": 72,
+    "passed": 144,
+    "under_adapted": 109,
+    "misdiagnosis": 11
+  },
+  "l1_review_counts": {
+    "Execution / delivery": 36,
+    "Decoder repair": 338,
+    "Diagnosis / report": 13
+  },
+  "l2_review_counts": {
+    "Execution / delivery / Budget or early stop": 36,
+    "Execution / delivery / Scoring execution": 0,
+    "Decoder repair / Regression": 72,
+    "Decoder repair / Insufficient update": 266,
+    "Diagnosis / report / Report correctness": 13
+  },
+  "by_cohort_review_labels": {
+    "agent_decoder": {
+      "no_submission": 9,
+      "plain_matching": 5,
+      "nominal_unchanged": 1,
+      "invalid_run": 2,
+      "passed": 6,
+      "out_of_budget": 6,
+      "broken_decoder": 1
+    },
+    "agent_drift": {
+      "passed": 11,
+      "nominal_unchanged": 2,
+      "plain_matching": 1
+    },
+    "agent_hard": {
+      "passed": 9,
+      "plain_matching": 12,
+      "nominal_unchanged": 4
+    },
+    "agent_hard2": {
+      "nominal_unchanged": 3,
+      "passed": 7,
+      "plain_matching": 11,
+      "misdiagnosis": 4,
+      "harmful_decoder": 2
+    },
+    "agent_launch": {
+      "harmful_decoder": 1,
+      "passed": 19,
+      "plain_matching": 41,
+      "broken_decoder": 3,
+      "under_adapted": 2,
+      "nominal_unchanged": 6,
+      "misdiagnosis": 2
+    },
+    "agent_trial": {
+      "nominal_unchanged": 1
+    },
+    "agent_launch2": {
+      "nominal_unchanged": 42,
+      "plain_matching": 116,
+      "out_of_budget": 36,
+      "harmful_decoder": 72,
+      "passed": 146,
+      "under_adapted": 108,
+      "misdiagnosis": 13
+    },
+    "fresh": {
+      "under_adapted": 11,
+      "passed": 13,
+      "plain_matching": 14,
+      "harmful_decoder": 8,
+      "nominal_unchanged": 6,
+      "out_of_budget": 3,
+      "misdiagnosis": 1
+    }
+  },
+  "mapping_notes": "This is a deterministic regrouping of saved labels, not a re-review. Each failure label occurs once. Invalidations and passes are classified before the conditional failure tree. Four floor contradictions remain raw; the codebook partitions annotation labels, not independently validated causal mechanisms."
+}

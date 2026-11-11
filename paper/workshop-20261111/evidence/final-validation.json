@@ -1,77 +1,110 @@
 {
-  "checked_utc": "2026-11-11T01:43:20.309413+00:00",
-  "status": "complete",
-  "pages": 5,
-  "bibliography_real_papers": 20,
-  "bibliography_entries_cited": 20,
-  "primary_record_pdf_and_doi_verified": true,
-  "separate_labeled_online_project_artifact": 1,
-  "figures": 2,
-  "quantitative_recomputation": "533 development rows,144 relative joint passes; zero verdict mismatches; histogram/family/fresh aggregates match frozen sources",
-  "reviews": {
-    "scientific_claims": "atlas_code_review APPROVED",
-    "quantitative_figures_python": "atlas_python_review APPROVED"
-  },
-  "ruff": "passed",
-  "latex_errors": 0,
-  "latex_warnings": 0,
-  "visual_review": "All five final pages and both exported figures inspected; readable and unclipped.",
+  "checked_utc": "2026-11-11T02:41:42.380535+00:00",
+  "status": "verified",
+  "pdf_pages": 8,
+  "main_text_pages": 4,
+  "references_pages": [
+    5
+  ],
+  "appendix_pages": [
+    6,
+    7,
+    8
+  ],
+  "pdf_sha256": "4760427db3eec4e53dd9b2d9e0286ca6a2b57714c770b598401e53431f68b972",
+  "pdf_bytes": 270409,
+  "authors": [
+    "Logan Mann",
+    "Pranav Reddy"
+  ],
+  "affiliation": "University of California, Santa Barbara",
+  "emails": [
+    "loganmann@ucsb.edu",
+    "preddy@ucsb.edu"
+  ],
+  "official_style_files_unmodified": true,
   "all_fonts_embedded": true,
   "text_extractable": true,
-  "character_bounds": [
+  "page_geometry": [
     {
       "page": 1,
-      "characters": 5098,
-      "min_x": 53.641,
-      "max_x": 559.743837,
-      "min_y": 58.51154159999999,
-      "max_y": 771.5682884
+      "characters": 3518,
+      "characters_outside_page": 0
     },
     {
       "page": 2,
-      "characters": 5041,
-      "min_x": 53.392,
-      "max_x": 559.7476076640002,
-      "min_y": 50.933745600000066,
-      "max_y": 771.5682884
+      "characters": 4100,
+      "characters_outside_page": 0
     },
     {
       "page": 3,
-      "characters": 4003,
-      "min_x": 53.532,
-      "max_x": 559.6619814080002,
-      "min_y": 57.44963071029997,
-      "max_y": 771.5682884
+      "characters": 3273,
+      "characters_outside_page": 0
     },
     {
       "page": 4,
-      "characters": 4264,
-      "min_x": 54.0,
-      "max_x": 559.7424569998002,
-      "min_y": 57.44963071029997,
-      "max_y": 771.5682884
+      "characters": 4273,
+      "characters_outside_page": 0
     },
     {
       "page": 5,
-      "characters": 3190,
-      "min_x": 54.0,
-      "max_x": 561.29104,
-      "min_y": 50.84566080000002,
-      "max_y": 771.5682884
+      "characters": 3181,
+      "characters_outside_page": 0
+    },
+    {
+      "page": 6,
+      "characters": 4503,
+      "characters_outside_page": 0
+    },
+    {
+      "page": 7,
+      "characters": 3257,
+      "characters_outside_page": 0
+    },
+    {
+      "page": 8,
+      "characters": 2069,
+      "characters_outside_page": 0
     }
   ],
-  "external_link_count": 34,
-  "privacy": {
-    "text_files_scanned": 14,
-    "machine_secret_values_checked": 61,
-    "hits": []
+  "latex_warnings": 0,
+  "visually_inspected_final_pages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "real_paper_references_verified": 20,
+  "bib_unchanged_from_verified_previous_edition": true,
+  "complete_model_configurations": 23,
+  "identical_tasks": 23,
+  "model_score_table_independently_approved": true,
+  "mece_failure_labels": 8,
+  "reviewed_episodes": 760,
+  "main_reviewed_episodes": 533,
+  "main_review_coded_failures": 387,
+  "quote_source_verified": true,
+  "public_quote_sha256": "8bcc8b61269b2765a7053242acdfe77363148fc289c7eac4b83aad26944a7e2a",
+  "pattern_secret_hits": 0,
+  "exact_secret_hits": 0,
+  "private_path_hits": 0,
+  "tests": {
+    "focused_pytest": "29 passed",
+    "ruff": "passed",
+    "bash_syntax": "passed",
+    "grid_output_smoke": "passed"
   },
-  "reproduction_versions": {
+  "independent_reviews": {
+    "atlas_code_review": "approved",
+    "atlas_python_review": "approved including numeric table"
+  },
+  "plotting_versions": {
     "matplotlib": "3.11.2",
-    "numpy": "2.5.4",
-    "tex_engine": "pdfTeX TeX Live2026",
-    "format": "10pt two-column neutral workshop manuscript,5 total pages including references"
+    "numpy": "2.5.4"
   },
-  "pdf_sha256": "967b17277c69175bdf4763551ee19c062ea0f3f2a9cc503cc52500339054d1da",
-  "pdf_bytes": 240362
+  "no_new_model_runs": true
 }

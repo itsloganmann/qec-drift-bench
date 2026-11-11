@@ -132,116 +132,211 @@ def outcomes():
     save(fig, "diagnosis-repair")
 
 
-def trajectories():
-    fig, (ax, bx) = plt.subplots(
-        1,
-        2,
-        figsize=(7.0, 2.65),
-        gridspec_kw={"width_ratios": [1, 1.3]},
-        layout="constrained",
-    )
-    keys = [
-        "passed",
-        "plain_matching",
-        "under_adapted",
-        "harmful_decoder",
-        "nominal_unchanged",
-        "misdiagnosis",
-        "out_of_budget",
-    ]
-    names = [
-        "Joint pass",
-        "Plain fitted",
-        "Under-adapted",
-        "Harmful",
-        "Nominal",
-        "Diagnosis failure",
-        "Budget exhausted",
-    ]
-    values = [
-        [int(k) for k, n in D["tool_calls_by_rule_label"][key].items() for _ in range(n)]
-        for key in keys
-    ]
-    assert sum(map(len, values)) == 533
-    box = ax.boxplot(
-        values,
-        orientation="horizontal",
-        tick_labels=[f"{s} ({len(v)})" for s, v in zip(names, values, strict=True)],
-        widths=0.5,
-        patch_artist=True,
-        showfliers=False,
-        medianprops={"color": "#233440", "linewidth": 1.1},
-        whiskerprops={"color": GRAY},
-        capprops={"color": GRAY},
-    )
-    for i, patch in enumerate(box["boxes"]):
-        patch.set(facecolor=TEAL if i == 0 else (ORANGE if i == 6 else BLUE), alpha=0.35)
-    ax.axvline(40, color=ORANGE, ls="--", lw=0.9)
-    ax.set(
-        xlim=(0, 44),
-        xticks=[0, 10, 20, 30, 40],
-        xlabel="Completed tool calls (archived count)",
-    )
-    ax.invert_yaxis()
-    ax.set_title("A  Tool use overlaps", loc="left", fontsize=9, weight="bold")
-    bx.set(xlim=(0, 3), ylim=(-0.65, 2.85))
-    bx.axis("off")
-    bx.set_title("B  Trace-grounded failure paths", loc="left", fontsize=9, weight="bold")
-    cases = [
-        [
-            "Prediction/label\nshapes differ",
-            "Broadcasted\nvalidation loss",
-            "Harmful\ndecoder",
-        ],
-        [
-            "Class index used\nas physical ID",
-            "Wrong regime\ndispatch",
-            "Insufficient\nrepair",
-        ],
-        [
-            "49 qubits reported;\n21 changed",
-            "Localization\nJaccard < 0.5",
-            "Good repair;\nwrong diagnosis",
-        ],
-    ]
-    for y, row in enumerate(cases):
-        yy = 2.25 - y
-        for x, text in enumerate(row):
-            color = ORANGE if x == 2 else BLUE
-            bx.add_patch(
-                FancyBboxPatch(
-                    (x + 0.02, yy - 0.29),
-                    0.88,
-                    0.6,
-                    boxstyle="round,pad=0.03",
-                    fc=color,
-                    alpha=0.1,
-                    ec="none",
-                )
+def mece_taxonomy():
+    """Plot the complete conditional codebook beside saved transcript labels."""
+    tax = json.loads((ROOT / "evidence/hierarchical-taxonomy.json").read_text())
+    rows = tax["codebook"]
+    assert len({r["label"] for r in rows}) == 8
+    assert sum(tax["judge_labels"].get(r["label"], 0) for r in rows) == 387
+    colors = {
+        "Execution / delivery": GRAY,
+        "Decoder repair": BLUE,
+        "Diagnosis / report": ORANGE,
+    }
+    fig, ax = plt.subplots(figsize=(7.0, 3.1), layout="constrained")
+    ax.set(xlim=(0, 10.8), ylim=(-0.85, 8.0))
+    ax.axis("off")
+    for x, title in [
+        (0, "L1: failure area"),
+        (2.0, "L2: failure class"),
+        (4.35, "L3: assigned failure mode"),
+        (7.45, "Trajectory-review distribution"),
+    ]:
+        ax.text(x, 7.72, title, fontsize=8, weight="bold", va="center")
+    groups = {}
+    pairs = {}
+    for i, row in enumerate(rows):
+        y = 7 - i
+        groups.setdefault(row["l1"], []).append(y)
+        pairs.setdefault((row["l1"], row["l2"]), []).append(y)
+    labels1 = {
+        "Execution / delivery": "Execution /\ndelivery",
+        "Decoder repair": "Decoder\nrepair",
+        "Diagnosis / report": "Diagnosis/report",
+    }
+    labels2 = {
+        "Budget or early stop": "Budget or\nearly stop",
+        "Scoring execution": "Scoring\nexecution",
+        "Regression": "Regression",
+        "Insufficient update": "Insufficient\nupdate",
+        "Report correctness": "Report\ncorrectness",
+    }
+    for name, ys in groups.items():
+        mid = sum(ys) / len(ys)
+        n = tax["l1_review_counts"][name]
+        ax.add_patch(
+            FancyBboxPatch(
+                (0, min(ys) - 0.34),
+                1.65,
+                max(ys) - min(ys) + 0.68,
+                boxstyle="round,pad=0.03",
+                fc=colors[name],
+                ec="none",
+                alpha=0.12,
             )
-            bx.text(x + 0.46, yy, text, ha="center", va="center", fontsize=7)
-            if x < 2:
-                bx.annotate(
-                    "",
-                    xy=(x + 1.01, yy),
-                    xytext=(x + 0.93, yy),
-                    arrowprops={"arrowstyle": "->", "color": GRAY, "lw": 0.8},
-                )
-    bx.text(
-        1.48,
-        -0.49,
-        (
-            "Selected cases; arrows summarize observed code paths,\n"
-            "not controlled causal effects or measured prevalence."
-        ),
-        ha="center",
-        va="center",
-        fontsize=7,
-        color=GRAY,
+        )
+        ax.text(
+            0.825,
+            mid + 0.15,
+            labels1[name],
+            ha="center",
+            va="center",
+            fontsize=8,
+            weight="bold",
+        )
+        ax.text(
+            0.825,
+            mid - (0.35 if len(ys) == 1 else 0.65),
+            f"{100 * n / 387:.1f}%",
+            ha="center",
+            fontsize=7,
+            color=colors[name],
+        )
+    for (l1, l2), ys in pairs.items():
+        mid = sum(ys) / len(ys)
+        ax.plot(
+            [1.7, 1.85, 1.85, 2],
+            [
+                sum(groups[l1]) / len(groups[l1]),
+                sum(groups[l1]) / len(groups[l1]),
+                mid,
+                mid,
+            ],
+            color="#bac4cb",
+            lw=0.8,
+        )
+        ax.add_patch(
+            FancyBboxPatch(
+                (2.0, min(ys) - 0.3),
+                1.72,
+                max(ys) - min(ys) + 0.6,
+                boxstyle="round,pad=0.03",
+                fc=colors[l1],
+                ec="none",
+                alpha=0.07,
+            )
+        )
+        ax.text(2.86, mid, labels2[l2], ha="center", va="center", fontsize=7.5)
+    for i, row in enumerate(rows):
+        y = 7 - i
+        ys = pairs[(row["l1"], row["l2"])]
+        ax.plot(
+            [3.76, 3.95, 3.95, 4.25],
+            [sum(ys) / len(ys), sum(ys) / len(ys), y, y],
+            color="#bac4cb",
+            lw=0.8,
+        )
+        ax.text(4.35, y, row["l3"], fontsize=7.8, va="center")
+        n = tax["judge_labels"].get(row["label"], 0)
+        nr = tax["rule_labels"].get(row["label"], 0)
+        ax.barh(y, 2.2 * n / 116, height=0.39, left=7.4, color=colors[row["l1"]], alpha=0.8)
+        ax.text(9.7, y, f"{n} ({nr})", va="center", fontsize=7.4)
+    ax.text(7.4, -0.48, "Review n (frozen-rule n)", fontsize=7, color=GRAY)
+    save(fig, "mece-taxonomy")
+
+
+def trajectory_example():
+    """Show exact observable code fragments and their explicit review annotation."""
+    ex = json.loads((ROOT / "evidence/trajectory-example.json").read_text())
+    assert ex["review_label"] == "harmful_decoder"
+    quoted = (
+        "mismeasured nominal matching by broadcasting predictions against labels in `np.mean(p!=y)`"
     )
-    save(fig, "trajectory-audit")
+    assert quoted in ex["review_excerpt"]
+    fig, ax = plt.subplots(figsize=(3.35, 2.9), layout="constrained")
+    ax.set(xlim=(0, 1), ylim=(0, 1))
+    ax.axis("off")
+    ax.text(
+        0,
+        0.98,
+        "Trajectory excerpt and failure annotation",
+        fontsize=8.1,
+        weight="bold",
+        va="top",
+    )
+    ax.add_patch(
+        FancyBboxPatch(
+            (0, 0.55),
+            1,
+            0.34,
+            boxstyle="round,pad=0.01",
+            facecolor="#edf2f5",
+            edgecolor="none",
+        )
+    )
+    ax.text(0.025, 0.86, "Recorded tool-code fragments:", fontsize=7.2, va="top", color=GRAY)
+    ax.text(
+        0.025,
+        0.78,
+        "\n".join(ex["code_fragments"]),
+        fontsize=7.1,
+        va="top",
+        family="DejaVu Sans Mono",
+        linespacing=1.4,
+    )
+    ax.text(
+        0.025,
+        0.575,
+        ex["observed_stdout_prefix"],
+        fontsize=6.9,
+        family="DejaVu Sans Mono",
+        va="bottom",
+        color=BLUE,
+    )
+    ax.text(0, 0.49, "Model-assisted review:", fontsize=7.4, weight="bold", va="top")
+    ax.text(
+        0,
+        0.425,
+        (
+            "“mismeasured nominal matching by broadcasting\n"
+            "predictions against labels in `np.mean(p!=y)`”"
+        ),
+        fontsize=7.1,
+        va="top",
+        linespacing=1.35,
+    )
+    ax.add_patch(
+        FancyBboxPatch(
+            (0, 0.02),
+            1,
+            0.24,
+            boxstyle="round,pad=0.01",
+            facecolor=ORANGE,
+            alpha=0.11,
+            edgecolor="none",
+        )
+    )
+    ax.text(
+        0.025,
+        0.235,
+        "L1 Decoder repair > L2 Regression",
+        fontsize=7.4,
+        weight="bold",
+        va="top",
+        color=ORANGE,
+    )
+    ax.text(0.025, 0.16, "L3 “harmful_decoder”", fontsize=7.8, weight="bold", va="top")
+    ax.text(
+        0.025,
+        0.085,
+        f"Frozen score: G = {ex['frozen_gap_closed']:.3f} < 0",
+        fontsize=7.3,
+        va="top",
+    )
+    save(fig, "trajectory-example")
 
 
 if __name__ == "__main__":
     outcomes()
-    trajectories()
+    mece_taxonomy()
+    trajectory_example()

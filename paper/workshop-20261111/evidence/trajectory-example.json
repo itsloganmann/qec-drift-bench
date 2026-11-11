@@ -1,0 +1,15 @@
+{
+  "source_type": "visible completed tool action and explicit model-assisted annotation, not hidden reasoning",
+  "code_fragments": [
+    "p=m.decode_batch(z['det'])",
+    "y=z['obs'][:,0]",
+    "np.mean(p!=y)"
+  ],
+  "observed_stdout_prefix": "val.npz err 0.26542211",
+  "review_excerpt": "The agent mismeasured nominal matching by broadcasting predictions against labels in `np.mean(p!=y)`, then replaced it with a supervised ensemble.",
+  "review_label": "harmful_decoder",
+  "frozen_gap_closed": -14.754074074074074,
+  "archive_sha256": "91695b693e000ee856e5cba776d4a9dd49534d8fbd53a84704ef1ffe76ac98b1",
+  "review_key_sha256": "8f273d7a9c86049a3daca9c09636e8c9276aeb481420dad1b6532bedcd20208e",
+  "quotation_notes": "Code fragments are exact substrings after decoding the recorded shell quoting. Line breaks are presentation-only. Output is an exact prefix; elapsed time and paths omitted. No internal reasoning is quoted."
+}

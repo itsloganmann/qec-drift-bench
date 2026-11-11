@@ -1,6 +1,6 @@
 # QEC-Drift v2: one task per scenario, every model and effort on two subscriptions
 
-Date: 2026-11-02. Status: running. The tables at the end fill in as arms finish.
+Historical development snapshot, started 2026-11-02. The finite closeout is complete and recurring launchers are stopped. See the [current failure atlas](failure-atlas-20261110/index.md) and [paper](../paper/workshop-20261111/QEC_Drift_Workshop_Paper.pdf). Tables below preserve their recorded coverage; they do not imply active runs.
 
 ## Why a second launch set
 
@@ -235,7 +235,7 @@ masked throughout facts and transcript text, preserving path relationships and o
 evidence. Scaffold and tool syntax still provide clues, so this is not complete blinding.
 The cache hashes the exact submitted input, rubric, schema and judge settings and uses arm,
 task and key together. Legacy judgments stay archived and do not count under the new
-protocol. The hourly publisher takes at most eight pending reviews per tick. Its coverage
+protocol. The historical hourly publisher took at most eight pending reviews per tick. Its recorded coverage
 report must be read with every partial result. Rows and raw attempts still lack shared attempt
 IDs; no mismatch was found in the current rows, but a crash between archive append and table
 replacement could create one. That recovery risk remains open.

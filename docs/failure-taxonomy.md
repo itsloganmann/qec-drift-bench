@@ -1,103 +1,39 @@
-# The failure taxonomy: one label for every episode
+# Failure taxonomy
 
-The finite audit is complete for all 760 score-selected decoder episodes. See the [failure atlas](failure-atlas-20261110/index.md) for plots, cohort coverage, rule/judge disagreements, and source limits. The legacy recurring launchers remain stopped after this closeout.
+A failure receives one primary label. The L1/L2/L3 hierarchy is mutually exclusive and collectively exhaustive (MECE) **after passes and external invalidations are separated**. Multiple defects can occur in one trajectory; the priority rule assigns a single primary leaf rather than double counting them.
 
-Every episode of every arm, on every scaffold (the API harness, Claude Code, Codex), gets
-exactly one label from the tree below. The labels are mutually exclusive and, together,
-exhaustive: `tests/test_taxonomy.py` runs every combination of the tree's inputs and checks
-that each lands in exactly one label and that every label is reachable.
+## Read the hierarchy
 
-- Code: `scoring/taxonomy.py` (the tree, the transcript features, the legitimacy flags).
-- Run: `scripts/legitimacy.py` labels every arm, writes `data/<set>/<arm>_taxonomy.parquet`,
-  and regenerates `docs/legitimacy.md`.
-- Second opinion: `scripts/judge_transcripts.py` assigns the same labels without seeing the
-  rule label. Protocol `identifier-masked-v2` masks known model identifiers and arm paths
-  throughout its input while retaining path relationships. Scaffold and tool syntax remain
-  clues; this is not complete blinding. Its cache hashes the exact input, rubric, schema and
-  judge settings, keyed by arm and task. Earlier judgments remain archived and excluded.
-  `docs/judge.md` separates valid rows, available transcripts, current reviews and gaps.
-  The hourly publisher evaluates at most eight pending episodes per tick, in pairs.
-  `scripts/judge_tick.py` checks fresh usage before each pair and starts none if either
-  Codex window is at least 85%, usage is unknown, or the provider reports HTTP 429.
-  Reviews already running can carry usage past the threshold. Report refreshes still run.
-- Transcripts: `trajectories/<set>/<arm>/<task>.md`, one page per episode, with the score.
+| L1: failure area | L2: failure class | L3: primary failure mode | Review n | Frozen-rule n |
+|---|---|---|---:|---:|
+| Execution / delivery | Budget or early stop | Budget exhausted |36|36|
+| Execution / delivery | Budget or early stop | No submission |0|0|
+| Execution / delivery | Scoring execution | Broken decoder |0|0|
+| Decoder repair | Regression | Harmful decoder |72|72|
+| Decoder repair | Insufficient update | Nominal unchanged |42|44|
+| Decoder repair | Insufficient update | Plain fitted matching |116|117|
+| Decoder repair | Insufficient update | Under-adapted |108|109|
+| Diagnosis / report | Report correctness | Misdiagnosis |13|11|
+| **Total failures** | | | **387** | **389** |
 
-New runs store the same `attempt_id` in the score and its archived transcript. The archive
-record is flushed to disk before the score table is replaced atomically. Archives keep prior
-attempts. Readers use one score snapshot and match transcripts and derived labels by attempt;
-an uncommitted rerun cannot replace the evidence for a committed score. Missing matches are
-reported, and stale labels wait for regeneration. This protects process-crash recovery with
-one writer per arm; it does not coordinate concurrent writers.
+Population: all 533 current development episodes with exact-input transcript judgments. The review assigns 146 passes and 0 external exclusions; the frozen rule has 144 passes. Other cohorts have different task contracts and are shown separately in the [atlas](failure-atlas-20261110/index.md) and paper appendix.
 
-Historical rows without IDs use the last untagged transcript for the task. Older ambiguous
-reruns remain ambiguous. Rows without stored source or size metadata
-retain the old work-folder fallback; an explicit zero-byte decoder never uses that fallback.
-The legacy rescoring scripts refuse rows with IDs, since they cannot preserve this linkage.
+## Why a leaf applies
 
-Two v1 archives have damaged gzip members. The reader recovers complete JSON records before
-compression errors, but cannot verify their checksums. On November 8, the 27 selected records
-in those two arms matched the stored decoder source and parsed report fields, including ten
-records the previous reader had dropped. All 545 records in the 24 v2 archives also matched
-strict gzip decoding. The raw archives and scored rows were preserved.
+Apply the first applicable gate:
 
-## The tree
+1. Separate external invalidations and joint passes.
+2. If there is no scorable decoder: budget/deadline exhaustion first, then voluntary stop with no decoder, then a present but unscorable decoder.
+3. If the measured repair is worse than nominal plain matching, label it harmful.
+4. If repair passes but the fault report fails, label it misdiagnosis.
+5. For remaining insufficient repairs, distinguish behaviorally nominal, fitted plain matching, and the remaining under-adapted category.
 
-An episode takes the first gate that applies.
+Nominal behavior uses at least 99.99% prediction agreement when recorded, with source inspection as a fallback. Decoder subtypes use implementation heuristics and can miss custom algorithms. The hierarchy partitions operational labels; it is not an independently validated causal theory.
 
-| gate | question | label |
-| --- | --- | --- |
-| G0 | Did an external failure invalidate the episode? It never ran, it was killed before the agent acted, a provider limit interrupted it, the login was lost, or the environment lacked what the task text promises (a missing stim or pymatching). | `invalid_run` |
-| G1 | Did it pass the relative rule: diagnosis right, and the decoder good enough? | `passed` |
-| G2 | No scorable decoder, and the episode ended at the 40-tool-call budget or the time limit? | `out_of_budget` |
-| G3 | No `decoder.py`, and the agent stopped on its own? | `no_submission` |
-| G4 | `decoder.py` exists but did not score (a crash, a timeout, a wrong shape)? | `broken_decoder` |
-| G5 | Scored worse than plain matching on the nominal model (`gap_closed` below 0)? | `harmful_decoder` |
-| G6 | The decoder was good enough, but the report named the wrong fault? | `misdiagnosis` |
-| G7 | The decoder is the nominal model's decoder: the data never reached it? | `nominal_unchanged` |
-| G8 | A model fitted to the data, decoded without the correlations? | `plain_matching` |
-| G9 | A fitted, correlated decoder that recovered too little of the loss? | `under_adapted` |
+## Evidence and limits
 
-`invalid_run` episodes are set aside and rerun; they never count toward a score. G1 to G9
-are the scored outcomes: G1 is a pass, G2 to G5 mean no usable decoder, G6 is a wrong
-diagnosis on a good decoder, G7 to G9 are a decoder that fell short, named by what it carries.
-Whether the diagnosis was also wrong on a G7 to G9 episode is the attribute
-`diagnosis_wrong`, not a label.
+The review is score-aware and model-assisted. Four development labels contradict a measured repair floor; they remain raw, and they do not change frozen success scores. The 47 historical environment exclusions also remain recorded as a policy dispute. Current review coverage is 760/760 score-selected decoder episodes. The old hourly publisher and recurring launchers are stopped.
 
-## The inputs of the tree
+The [paper](../paper/workshop-20261111/QEC_Drift_Workshop_Paper.pdf) contains the hierarchy, distribution, and an exact visible tool-action excerpt with its quoted review label. The [codebook and counts](../paper/workshop-20261111/evidence/hierarchical-taxonomy.json) and [quote provenance](../paper/workshop-20261111/evidence/trajectory-example.json) are reproducible aggregate artifacts.
 
-- **The decoder leaf** (`scoring/failure_modes_decoder.py`): what the episode shipped. Behaviour
-  first: a decoder whose test predictions agree with plain or correlated nominal matching on
-  99.99% of the shots is that decoder (nominal); anything else is fitted, and correlated when
-  `enable_correlations` is in its source. Rows from before the harness recorded agreement fall
-  back to reading the source (an inlined model with other probabilities, a model built from
-  computed text, a rewrite of the noise lines, a module or data file of its own).
-- **The verdict under the relative rule** (`agent/awareness.py` and the same file): the
-  diagnosis (scope right, the stationary flag right, at least half the changed qubits named)
-  and the fix (half the plain gap closed, half the drift loss recovered, and at least 0.75 of
-  what the honest baseline recovers on that task: the adaptive decoder for a non-stationary fault, the
-  pairwise refit for a stationary one).
-- **Two run facts from the transcript**: whether the agent acted at all, and whether the
-  episode ended at the budget (the harness note "tool-call limit" or "time limit").
-
-## Legitimacy flags: attributes, not labels
-
-Each episode also carries flags that a reader checks; they never change the label.
-
-- `harness`: what put an episode in G0 (`never_acted`, `env_missing`, `login_lost`,
-  `provider_limit`, `error_row`). A provider limit invalidates a partial attempt even after
-  tool calls or a decoder file; it is archived without scoring and queued for a fresh run.
-- `integrity`: the agent reached for something outside the task: `denied` (the sandbox refused
-  a path), `network` (an install or a URL), `outside` (a path outside its task folder and the
-  venv), `probe` (names of the hidden test, the harness or the references), `own_copy` (it
-  installed its own stim, pymatching or numpy), `name_seen` (its own task name is in the transcript; a
-  task name says what is wrong, so this must never happen).
-- `anomalies`: `beats_oracle` (drift recovery above 1.15: better than per-shot correlated
-  matching with the true model, possible with a better decoder, worth reading), `no_report`,
-  `over_budget_row`.
-
-## Before this tree
-
-Until 2026-11-03 each episode had two labels: the decoder leaf and a verdict (passed,
-missed_diagnosis, missed_fix, missed_both, no_score). The tree above replaces the pair with
-one label; both stay in the taxonomy table as the tree's inputs. The paper-era taxonomy of
-single responses is in `docs/archive/failure-taxonomy-responses.md`.
+Implementation: [priority tree](../src/qec_drift/scoring/taxonomy.py), [decoder adapter](../src/qec_drift/scoring/failure_modes_decoder.py), [transcript evaluator](../scripts/judge_transcripts.py). The [atlas](failure-atlas-20261110/index.md) documents source linkage, damaged-archive recovery, provisional fresh subtypes, and exact-input coverage.

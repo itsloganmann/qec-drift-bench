@@ -1,0 +1,155 @@
+{
+  "metric": "Percentage of tasks passed under the frozen joint diagnosis-and-decoder-repair rule",
+  "tasks": 23,
+  "identical_tasks_for_all_shown_configurations": true,
+  "complete_configurations": 23,
+  "model_rows": [
+    {
+      "model": "GPT-5.6-Luna",
+      "settings": {
+        "low": {
+          "task_count": 23,
+          "passes": 0,
+          "pass_percent": 0.0
+        },
+        "medium": {
+          "task_count": 23,
+          "passes": 0,
+          "pass_percent": 0.0
+        },
+        "high": {
+          "task_count": 23,
+          "passes": 0,
+          "pass_percent": 0.0
+        },
+        "xhigh": {
+          "task_count": 23,
+          "passes": 1,
+          "pass_percent": 4.3
+        },
+        "max": {
+          "task_count": 23,
+          "passes": 3,
+          "pass_percent": 13.0
+        },
+        "ultra": null
+      }
+    },
+    {
+      "model": "GPT-5.6-Sol",
+      "settings": {
+        "low": {
+          "task_count": 23,
+          "passes": 4,
+          "pass_percent": 17.4
+        },
+        "medium": {
+          "task_count": 23,
+          "passes": 4,
+          "pass_percent": 17.4
+        },
+        "high": {
+          "task_count": 23,
+          "passes": 8,
+          "pass_percent": 34.8
+        },
+        "xhigh": {
+          "task_count": 23,
+          "passes": 7,
+          "pass_percent": 30.4
+        },
+        "max": {
+          "task_count": 23,
+          "passes": 11,
+          "pass_percent": 47.8
+        },
+        "ultra": {
+          "task_count": 23,
+          "passes": 7,
+          "pass_percent": 30.4
+        }
+      }
+    },
+    {
+      "model": "GPT-5.6-Terra",
+      "settings": {
+        "low": {
+          "task_count": 23,
+          "passes": 0,
+          "pass_percent": 0.0
+        },
+        "medium": {
+          "task_count": 23,
+          "passes": 0,
+          "pass_percent": 0.0
+        },
+        "high": {
+          "task_count": 23,
+          "passes": 1,
+          "pass_percent": 4.3
+        },
+        "xhigh": {
+          "task_count": 23,
+          "passes": 2,
+          "pass_percent": 8.7
+        },
+        "max": {
+          "task_count": 23,
+          "passes": 6,
+          "pass_percent": 26.1
+        },
+        "ultra": {
+          "task_count": 23,
+          "passes": 7,
+          "pass_percent": 30.4
+        }
+      }
+    },
+    {
+      "model": "GPT-6-Astra",
+      "settings": {
+        "low": {
+          "task_count": 23,
+          "passes": 14,
+          "pass_percent": 60.9
+        },
+        "medium": {
+          "task_count": 23,
+          "passes": 13,
+          "pass_percent": 56.5
+        },
+        "high": {
+          "task_count": 23,
+          "passes": 13,
+          "pass_percent": 56.5
+        },
+        "xhigh": {
+          "task_count": 23,
+          "passes": 10,
+          "pass_percent": 43.5
+        },
+        "max": {
+          "task_count": 23,
+          "passes": 15,
+          "pass_percent": 65.2
+        },
+        "ultra": {
+          "task_count": 23,
+          "passes": 14,
+          "pass_percent": 60.9
+        }
+      }
+    }
+  ],
+  "settings": [
+    "low",
+    "medium",
+    "high",
+    "xhigh",
+    "max",
+    "ultra"
+  ],
+  "selected_tasks_sha256": "c5c2643ab524cabb200a4c7091be82c378275dbda611bcf1a0b7379f946178fa",
+  "population_note": "Tasks were selected adaptively during development. Incomplete configurations are excluded from this percentage comparison, not counted as failures.",
+  "not_run_note": "Not run means no complete evaluation for that model/setting; it is not zero."
+}

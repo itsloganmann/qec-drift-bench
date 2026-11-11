@@ -1,12 +1,12 @@
-"""The live results table: models by effort levels, pass rates per cell, into the README.
+"""Selected development configurations, optionally written to a standalone snapshot.
 
     uv run python scripts/grid_table.py                      # print the table
-    uv run python scripts/grid_table.py --readme README.md   # also replace the README block
+    uv run python scripts/grid_table.py --output snapshot.md # write a standalone snapshot
 
 Each cell is the relative pass rate (the headline: diagnosis right, half the gap closed, and
 at least 0.75 of what the honest adaptive decoder recovers) over the absolute pass rate
-(without the honest-decoder bar), from scripts/launch_scores.py. An arm still running shows
-how many of the set's tasks it has done. Arms are the parquet files of a launch folder, named
+(without the honest-decoder bar), from scripts/launch_scores.py. Partial configurations show
+observed task coverage, not active-run status. Arms are the parquet files of a launch folder, named
 <model>_<effort>_<cc|codex>.parquet by scripts/run_grid.py (cc: Claude Code on the claude.ai
 subscription; codex: Codex on the ChatGPT subscription; no suffix: the API harness).
 """
@@ -31,8 +31,6 @@ from qec_drift.agent.decoder_task import LAUNCH2_CORE  # noqa: E402
 
 EFFORTS = ("low", "medium", "high", "xhigh", "max", "ultra")
 SCAFFOLDS = {"cc": "Claude Code", "codex": "Codex", "": "API"}
-START = "<!-- grid:start -->"
-END = "<!-- grid:end -->"
 SETS = (  # folder, title
     ("data/agent_launch2", "v2 launch set"),
     ("data/agent_launch", "v1 launch set"),
@@ -135,11 +133,11 @@ def table(folder: Path, title: str) -> str:
 def block(root: Path) -> str:
     stamp = time.strftime("%Y-%m-%d %H:%M %Z")
     parts = [
-        START,
-        "## Live results",
+        "# Selected development results",
         "",
         "Pass rate under the relative rule / under the absolute rule "
-        "(docs/launch2-grid-2026-11-02.md). Arms still running show their done count. "
+        "on adaptively selected tasks (docs/launch2-grid-2026-11-02.md). "
+        "Partial configurations show observed coverage, not active-worker status. "
         "Episodes labelled `invalid_run` (the harness failed them; docs/failure-taxonomy.md) "
         "are left out. "
         "Updated " + stamp + ".",
@@ -149,29 +147,18 @@ def block(root: Path) -> str:
         t = table(root / folder, title)
         if t:
             parts += [t, ""]
-    parts.append(END)
     return "\n".join(parts)
-
-
-def write_readme(readme: Path, text: str) -> None:
-    old = readme.read_text()
-    if START in old and END in old:
-        new = old[: old.index(START)] + text + old[old.index(END) + len(END) :]
-    else:
-        title_end = old.index("\n", old.index("# ")) + 1
-        new = old[:title_end] + "\n" + text + "\n" + old[title_end:]
-    readme.write_text(new)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     ap.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
-    ap.add_argument("--readme", type=Path, default=None, help="README to update in place")
+    ap.add_argument("--output", type=Path, help="Write a standalone Markdown snapshot")
     args = ap.parse_args()
     text = block(args.root)
     print(text)
-    if args.readme:
-        write_readme(args.readme, text)
+    if args.output:
+        args.output.write_text(text + "\n")
 
 
 if __name__ == "__main__":
