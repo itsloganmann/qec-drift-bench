@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 from collections import Counter
+from collections.abc import Callable
 from datetime import UTC, datetime
 from functools import lru_cache
 from itertools import combinations
@@ -107,14 +108,20 @@ def metric_value(score: dict, metric: str) -> bool | None:
 
 
 def analyze(
-    frozen: dict, entries: list[dict], models: dict | None = None, baseline: dict | None = None
+    frozen: dict,
+    entries: list[dict],
+    models: dict | None = None,
+    baseline: dict | None = None,
+    *,
+    model_rows_validator: Callable[..., tuple[list, list]] | None = None,
 ) -> dict:
     validate_design(frozen, entries)
     candidates = frozen["candidates"]
     by_id = {c["id"]: c for c in candidates}
     eligible_ids = {e["id"] for e in entries if e["gate"]["eligible"]}
     eligible = [c for c in candidates if c["id"] in eligible_ids]
-    scores, groups = model_rows(frozen, entries, models)
+    validator = model_rows if model_rows_validator is None else model_rows_validator
+    scores, groups = validator(frozen, entries, models)
 
     @lru_cache(maxsize=8)
     def weights(ids: tuple[str, ...]) -> np.ndarray:

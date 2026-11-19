@@ -14,6 +14,8 @@ data/*/*
 !data/*/references.json
 !data/audits/development-closeout-20261109.json
 !data/audits/fresh-seed-closeout-20261110.json
+!data/audits/codex-replication-progress.json
+data/usage_log.jsonl
 results/
 .cache/
 *.npy

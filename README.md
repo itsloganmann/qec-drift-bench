@@ -10,12 +10,14 @@ A benchmark for AI models that must identify a quantum noise fault and build a w
 
 | Model | Low | Medium | High | Very high | Maximum | Ultra |
 |---|---:|---:|---:|---:|---:|---:|
-| GPT-5.6-Luna | 0.0% | 0.0% | 0.0% | 4.3% | 13.0% | Not run |
+| GPT-5.6-Luna | 0.0% | 0.0% | 0.0% | 4.3% | 13.0% | N/A |
 | GPT-5.6-Sol | 17.4% | 17.4% | 34.8% | 30.4% | 47.8% | 30.4% |
 | GPT-5.6-Terra | 0.0% | 0.0% | 4.3% | 8.7% | 26.1% | 30.4% |
 | GPT-6-Astra | 60.9% | 56.5% | 56.5% | 43.5% | 65.2% | 60.9% |
 
-Columns are the model's reasoning settings. “Not run” means the evaluation was not completed, not a 0% score. Incomplete model evaluations are documented in the paper appendix. These tasks were selected during development, so the percentages describe performance on this task set.
+Columns are the model's reasoning settings. Ultra enables automatic delegation. N/A means the model does not offer that setting. All 23 supported configurations completed the same 23 tasks. These tasks were selected during development, so the percentages describe performance on this task set.
+
+A separate replication on 85 tasks is in progress. [Evaluation progress](data/audits/codex-replication-progress.json) was checked on 19 November 2026. The published table and paper report the completed development study. Replication results will replace them after all evaluations and trajectory audits finish.
 
 ## Paper and analysis
 

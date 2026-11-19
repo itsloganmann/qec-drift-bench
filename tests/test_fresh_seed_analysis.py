@@ -91,6 +91,42 @@ def test_partial_matching_retains_interruptions_and_uses_common_cases(inputs):
     assert matched["availability_selection_warning"]
 
 
+def test_explicit_validator_preserves_adjudicated_interruption_history(inputs):
+    frozen, entries = inputs
+    recovered = pair("a", 0, True)
+    recovered["attempts"].insert(0, {"id": "stopped", "status": "controller_interrupted"})
+    models = state(frozen, [recovered, pair("b", 0, False)])
+    original = copy.deepcopy(models)
+    with pytest.raises(ValueError, match="non-retryable"):
+        analysis.analyze(frozen, entries, models)
+    calls = []
+
+    def validated_rows(design, references, results):
+        assert (design, references, results) == (frozen, entries, models)
+        calls.append(True)
+        view = copy.deepcopy(results)
+        selected = view["pairs"][0]
+        assert selected["attempts"][0] == {"id": "stopped", "status": "controller_interrupted"}
+        selected["attempts"] = selected["attempts"][1:]
+        scores, _ = analysis.model_rows(design, references, view)
+        groups = [
+            [p for p in results["pairs"] if p["arm_index"] == i and p["status"] != "ineligible"]
+            for i in range(len(design["arms"]))
+        ]
+        return scores, groups
+
+    report = analysis.analyze(frozen, entries, models, model_rows_validator=validated_rows)
+    assert calls == [True]
+    assert report["arms"][0]["attempt_status_counts"] == {"controller_interrupted": 1, "valid": 2}
+    metric = report["arms"][0]["metrics"]["passed_relative"]
+    assert metric["bounds"]["denominator"] == 2
+    assert metric["bounds"]["passes"] == 1
+    assert metric["bounds"]["failures"] == 1
+    assert metric["bounds"]["unresolved"] == 0
+    assert metric["estimate"]["mean"] == 0.5
+    assert models == original
+
+
 def test_timeout_is_a_valid_failure_and_not_an_unresolved_result(inputs):
     frozen, entries = inputs
     p = pair("a", 0, False)
