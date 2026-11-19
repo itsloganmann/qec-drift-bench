@@ -1,13 +1,15 @@
 # Repository syncing
 
-An hourly Codex check syncs finished local changes to `itsloganmann/qec-drift` and refreshes the public `itsloganmann/qec-drift-bench` snapshot. It runs on this laptop while Codex is available. Pranav's fork is compared but never modified.
+`itsloganmann/qec-drift-bench` is the canonical repository and the only publication target. An hourly Codex check publishes ready local changes while this laptop and Codex are available. The former private repository is no longer synchronized. Pranav's fork is compared but never modified.
+
+The running study keeps its existing local research checkout and raw evidence. Its Git history stays local, and private-remote pushes are disabled. Publish only the curated public tree; never push the research checkout's history to the public repository.
 
 ## Before each push
 
-1. Read the current continuation checkpoint and repository rules. Inspect every changed path. Commit only ready, reviewed source, tests, documentation, and anonymous aggregate evidence. Run the tests affected by code changes. Never use a blanket add in the research checkout.
-2. Fetch both repositories. Compare their current heads with `.cache/repository-sync/receipt.json`. Preserve remote contributions. Use a normal fast-forward push. If histories diverge or an unfamiliar public commit appears, preserve the work and report the conflict. Never force push or replace a collaborator's changes.
+1. Read the current continuation checkpoint and repository rules. Inspect every changed path. Commit only ready, reviewed source, tests, documentation, and anonymous aggregate evidence to the local research checkout. These source commits do not require a private remote push. Run the tests affected by code changes. Never use a blanket add in the research checkout.
+2. Check the public head and local source head against `.cache/repository-sync/receipt.json`. Preserve public contributions. Use a normal fast-forward public push. If histories diverge or an unfamiliar public commit appears, preserve the work and report the conflict. Never force push or replace a collaborator's changes. Do not fetch, commit to, or push the former private repository as part of synchronization.
 3. Inspect the exact public diff before pushing. Exclude raw trajectories, scorer fixtures, task identities, local paths, credentials, usage telemetry, reference-build logs, caches, and temporary drafts. Run the existing history secret scanner and require zero hits. Prepare snapshots with `scripts/publish_snapshot.sh --no-push`. Verify that the generated commit has the expected public head as its parent, then inspect its exact diff before a separate normal push. The script replaces its destination tree, so never let a scheduled invocation push automatically.
-4. Verify the pushed private and public commit hashes against GitHub. Record both hashes, the source commit, changed paths, checks, and time in the local receipt. Unchanged files require no commit.
+4. Push only from the prepared public checkout to `itsloganmann/qec-drift-bench`. Verify its GitHub commit hash. Record the public hash, local source commit, changed paths, checks, and time in the local receipt. Unchanged files require no commit.
 
 ## Study and paper
 
