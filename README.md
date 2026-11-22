@@ -17,7 +17,7 @@ A benchmark for AI models that must identify a quantum noise fault and build a w
 
 Columns are the model's reasoning settings. Ultra enables automatic delegation. N/A means the model does not offer that setting. All 23 supported configurations completed the same 23 tasks. These tasks were selected during development, so the percentages describe performance on this task set.
 
-A separate replication on 85 tasks is in progress. [Evaluation progress](data/audits/codex-replication-progress.json) was checked on 19 November 2026. The published table and paper report the completed development study. Replication results will replace them after all evaluations and trajectory audits finish.
+A separate replication on 85 tasks is in progress. See [evaluation progress](data/audits/codex-replication-progress.json). The published table and paper report the completed development study. Replication results will replace them after all evaluations and trajectory audits finish.
 
 ## Paper and analysis
 
