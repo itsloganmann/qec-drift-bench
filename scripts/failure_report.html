@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QEC-Drift failure analysis</title>
+<style>
+:root{color-scheme:light;--ink:#122321;--muted:#4f6260;--line:#d3dfda;--paper:#f5f8f6;--white:#fff;--accent:#176752;--soft:#e6f2ec;--warm:#855129;--focus:#155e9a;font-family:system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);background:var(--paper);font-size:15px;line-height:1.5}
+[hidden]{display:none!important}
+header{background:#102b26;color:white}
+nav{max-width:1380px;margin:auto;padding:14px 26px;display:flex;flex-wrap:wrap;align-items:center;gap:18px}
+nav strong{margin-right:auto;letter-spacing:.025em}
+nav a{color:#e2f3ea;padding:5px 8px;text-decoration:none}
+nav a[aria-current]{border-radius:5px;background:#2a4e43;color:white}
+main{max-width:1380px;margin:auto;padding:25px 26px 60px}
+h1,h2,h3,p{margin:0}
+h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin-bottom:8px;letter-spacing:-.04em}
+h2{font-size:1.12rem;line-height:1.25}
+p+p{margin-top:8px}
+a{color:var(--accent);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.panel,details.method{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:15px}
+.small{font-size:.83rem;color:var(--muted)}
+.method{margin:12px 0}
+.method p{margin:8px 0 0}
+summary{cursor:pointer}
+.filters{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;margin:20px 0 12px}
+label{font-weight:600;color:var(--muted);font-size:.82rem;display:grid;gap:4px;min-width:0}
+input,button,select{font:inherit;color:inherit}
+select,input[type=search],button{background:white;border:1px solid #9fb4ac;border-radius:6px;padding:6px 9px;max-width:100%}
+select{min-height:36px}
+button{cursor:pointer}
+button:hover{background:var(--soft)}
+button[aria-pressed=true]{background:var(--accent);color:white;border-color:var(--accent)}
+.filters label{flex:1 1 180px}
+.toolbar,.panel-heading{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.toolbar{margin:10px 0}
+.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+.stat-grid div{padding:11px 13px;border-radius:8px;background:var(--soft)}
+.stat-grid strong{font-size:1.35rem;display:block;font-variant-numeric:tabular-nums}
+.taxonomy-grid{display:grid;grid-template-columns:minmax(0,1.13fr) minmax(0,1fr);gap:14px;align-items:start}
+.branch{border:1px solid var(--line);border-radius:6px;background:white;margin:6px 0;padding:7px 10px}
+.branch>.branch{margin-left:10px}
+.branch>summary{font-weight:650}
+.branch>summary::marker{color:var(--accent)}
+.branch>summary span{color:var(--muted);font-size:.84rem;font-weight:500;margin-left:6px}
+.leaf{font-size:.88rem;margin:7px 4px 2px 12px}
+.leaf p{margin:3px 0}
+.highlight{border-color:var(--accent);background:var(--soft)}
+.bars{display:grid;gap:7px;margin:13px 0}
+.bar{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(30px,1fr) 44px;gap:6px;align-items:center;text-align:left;font-size:.85rem}
+.bar b{text-align:right;font-variant-numeric:tabular-nums}
+.track{background:#e4ebe7;border-radius:4px;overflow:hidden;height:11px}
+.fill{display:block;background:var(--accent);height:100%;width:var(--width)}
+.checkbox{display:flex;align-items:center;gap:6px}
+.trace-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,.85fr) minmax(0,1.6fr);gap:12px;align-items:start}
+.list{max-height:600px;overflow:auto;display:grid;gap:6px;margin-top:10px}
+.list button{text-align:left;display:block;width:100%;overflow-wrap:anywhere}
+.list small{display:block;font-size:.78rem;color:var(--muted)}
+.list button[aria-pressed=true] small{color:white}
+.trace-grid .panel label{margin:8px 0}
+.trace-grid .panel input,.trace-grid .panel select{width:100%}
+#trail ol{margin:12px 0 0;padding:0;list-style:none}
+#trail li{position:relative;padding:10px 12px;margin:0 0 20px;border:1px solid var(--line);border-radius:7px}
+#trail li:not(:last-child)::after{content:"↓";color:var(--accent);position:absolute;bottom:-20px;left:20px}
+#trail li:last-child{margin-bottom:0;background:var(--soft);border-color:#aacdbd}
+#trail pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f6f4;padding:8px;border-radius:5px;margin:5px 0 0;font-size:.84rem}
+#trail p{margin-top:5px;overflow-wrap:anywhere}
+@media(max-width:860px){.taxonomy-grid{grid-template-columns:1fr}.trace-grid{grid-template-columns:1fr 1fr}.trace-grid>.detail{grid-column:1/-1}.list{max-height:270px}}
+@media(max-width:560px){main,nav{padding-left:13px;padding-right:13px}.stat-grid{grid-template-columns:1fr 1fr}.trace-grid{grid-template-columns:1fr}.bar{grid-template-columns:minmax(0,1.7fr) minmax(25px,1fr) 35px}.trace-grid>.detail{grid-column:auto}}
+</style>
+</head>
+<body>
+<header><nav aria-label="Report views">
+<strong>QEC-Drift</strong>
+<a id="nav-taxonomy" href="#taxonomy">Failure mode taxonomy</a>
+<a id="nav-traces" href="#traces">Failed check traces</a>
+</nav></header>
+<main>
+<noscript>This report needs JavaScript to filter the taxonomy and display evidence.</noscript>
+<section id="taxonomy">
+<h1>Failure mode taxonomy</h1>
+<p id="snapshot" class="small"></p>
+<details class="method"><summary>How runs and failures are counted</summary>
+<p>Each scored failure has one primary L3 label under one L2 class and one L1 area. Passes and external interruptions have separate counts. A trace can show several failed checks for one episode.</p>
+<p>The scoring rule determines joint pass rates. The score-aware trajectory review supplies a separate label. It can disagree with the rule. Review labels describe recorded evidence.</p>
+<p>Historical reviews used rendered inputs that sometimes shortened long outputs. The replication reviews captured Codex output without middle cuts. One budget-stop archive has a possible unverified tail.</p>
+</details>
+<form class="panel filters" id="filters" aria-label="Filter failure modes">
+<label>Evaluation<select id="cohort"></select></label>
+<label>Configuration<select id="configuration"></select></label>
+<label>Task family<select id="family"></select></label>
+<label>Label source<select id="lens"><option value="review">Trajectory review</option><option value="rule">Scoring rule</option></select></label>
+<button type="reset">Clear filters</button>
+</form>
+<div id="metrics" class="stat-grid" aria-label="Filtered evaluation results"></div>
+<div class="toolbar">
+<p id="matches" class="small" role="status"></p>
+<div><button type="button" id="expand">Expand all</button> <button type="button" id="collapse">Collapse all</button></div>
+</div>
+<div class="taxonomy-grid">
+<section class="panel" aria-labelledby="tree-head">
+<h2 id="tree-head">L1 area → L2 class → L3 failure mode</h2>
+<p class="small">Percentages use the selected episodes in the filter.</p>
+<div id="tree"></div>
+</section>
+<section class="panel" aria-labelledby="chart-head">
+<div class="panel-heading"><h2 id="chart-head">Failure distribution</h2>
+<div id="levels" aria-label="Hierarchy level"><button type="button" data-level="1">L1</button> <button type="button" data-level="2">L2</button> <button type="button" data-level="3">L3</button></div></div>
+<p id="chart-base" class="small"></p>
+<div id="bars" class="bars"></div>
+<label class="checkbox"><input type="checkbox" id="show-zero"> Show zero counts</label>
+</section>
+</div>
+</section>
+<section id="traces" hidden>
+<h1>Failed check traces</h1>
+<p id="trace-coverage" class="small"></p>
+<div class="panel filters">
+<label>Evaluation<select id="trace-cohort"></select></label>
+<label>Configuration<select id="trace-configuration"></select></label>
+<label>Task family<select id="trace-family"></select></label>
+<label>Failure mode<select id="trace-mode"></select></label>
+<label>Find a task or run<input id="trace-search" type="search"></label>
+<label>Sort by<select id="trace-sort"><option value="configuration">Configuration, then task</option><option value="task">Task, then configuration</option></select></label>
+</div>
+<div class="trace-grid">
+<section class="panel" aria-labelledby="runs-head"><h2 id="runs-head">Trajectories</h2><p id="run-count" class="small" role="status"></p><div id="runs" class="list"></div></section>
+<section class="panel" aria-labelledby="checks-head"><h2 id="checks-head">Failed checks</h2><p id="run-selected" class="small"></p><div id="checks" class="list"></div></section>
+<section class="panel detail" aria-labelledby="trail-head"><h2 id="trail-head">Recorded timeline</h2><div id="trail"></div></section>
+</div>
+<details class="method"><summary>How evidence is linked</summary>
+<p>Source-verified excerpts were checked against saved records. Related excerpts are literal matches for terms relevant to the selected check. The timeline orders events and ends with the scorer or eligibility verdict. A missing match leaves the verdict and its review visible.</p>
+</details>
+</section>
+</main>
+<script type="application/json" id="report-data">__REPORT_DATA__</script>
+<script>__REPORT_SCRIPT__</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "source_type": "Visible agent message, completed tool action, submitted decoder snapshot, and score-aware review",
+  "visible_quote": "the strongest detector moving through the array over shot order",
+  "code_fragments": [
+    "Matching.from_detector_error_model(",
+    "    c.detector_error_model(decompose_errors=True))"
+  ],
+  "review_excerpt": "used matching without enable_correlations",
+  "rule_label": "plain_matching",
+  "review_label": "plain_matching",
+  "diagnosis_correct": true,
+  "passed_relative": false,
+  "frozen_gap_closed": 0.10195674562306911,
+  "frozen_gap_drift": -1.1637717121588087,
+  "archive_stdout_sha256": "ef4d4e52f3eefeaf38e1a1d8d09d00a60786f5a7eb0628efd104c804a2643cdd",
+  "review_sha256": "3e07e5bde4d85560af83c9be8a0cd9730172f2498d576670e3ecf18397fd9e02",
+  "quotation_notes": "The observation and annotation are exact substrings. The code is a literal tool-call substring with a display line break and indentation. The saved decoder contains the same call after whitespace normalization."
+}

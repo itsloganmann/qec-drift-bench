@@ -23,7 +23,7 @@ A separate replication on 85 tasks is in progress. See [evaluation progress](dat
 
 - [Paper PDF: four main pages, plus references and appendix](paper/workshop-20261111/QEC_Drift_Workshop_Paper.pdf), by Logan Mann and Pranav Reddy, University of California, Santa Barbara.
 - [LaTeX source and build instructions](paper/workshop-20261111/README.md).
-- [L1/L2/L3 failure taxonomy](docs/failure-taxonomy.md) and [failure-analysis plots](docs/failure-atlas-20261110/index.md).
+- [Interactive failure taxonomy and trace analysis](docs/failure-analysis/README.md) and [failure-analysis plots](docs/failure-atlas-20261110/index.md).
 - [Fresh-seed evaluation](docs/fresh-seed-results-20261110.md) and [literature/novelty checks](paper/workshop-20261111/LITERATURE_AND_NOVELTY_AUDIT.md).
 
 ## Reproduce
