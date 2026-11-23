@@ -1,21 +1,25 @@
 {
   "status": "in_progress",
-  "checked_utc": "2026-11-23T21:15:45.668890+00:00",
+  "checked_utc": "2026-11-23T22:38:25.368566+00:00",
   "configurations": 23,
   "eligible_tasks": 85,
   "planned_evaluations": 1955,
-  "completed_evaluations": 906,
-  "remaining_evaluations": 1049,
+  "completed_evaluations": 914,
+  "remaining_evaluations": 1041,
   "completed_attempts_awaiting_trajectory_review": 0,
-  "selected_trajectories_verified": 906,
-  "source_results_sha256": "0ff5fa5a65aac4e4f5a79fa34f451f18b779793794b1557b0972033bde860241",
+  "selected_trajectories_verified": 914,
+  "source_results_sha256": "b50080cd66b2c0d7c4cb664b963a25854cd96a5d87bc8f1c6c0f880d2600613c",
   "task_scoring_contract_unchanged": true,
-  "capture_scope": "All archived Codex output; unexposed internal reasoning is unavailable. One budget-stop attempt has an unverified possible post-stop tail.",
+  "capture_scope": "All archived Codex output; unexposed internal reasoning is unavailable. Output after the tool-budget stop could not be verified for two attempts.",
   "results_scope": "Progress only. Final pass percentages and the revised paper require the complete matched study.",
   "capture_limitations": [
     {
       "attempt_id": "7eca176a47b64b479af4ef685c0b5869",
       "note": "One tool-budget stop raised a harness error before scoring. All captured bytes were reviewed; an uncaptured post-stop tail cannot be ruled out. The preserved absent submission was scored as a failure without rerunning the model."
+    },
+    {
+      "attempt_id": "39855f37b499425ab907ee4e4c80e8ca",
+      "note": "A tool-budget stop ended with a harness error and no saved score. The preserved decoder and report were scored with the frozen scorer, without rerunning the model. Output after the stop could not be verified."
     }
   ]
 }

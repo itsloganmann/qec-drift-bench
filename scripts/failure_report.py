@@ -245,6 +245,10 @@ def replication_rows(evidence: Path, include_traces: bool) -> tuple[list[dict], 
         or state["contract"]["candidate_manifest_sha256"] != digest(manifest_bytes)
     ):
         raise ValueError("The results, manifest and verified trajectory audit must match")
+    capture_limits = {
+        item["attempt_id"]: item["provenance_limit"]
+        for item in audit.get("capture_limitations", [])
+    }
     original = load(study / "models/original56-complete-trajectory-reviews-20261111.json")
     if not original["complete"] or len(original["records"]) != 56:
         raise ValueError("The original trajectory ledger is incomplete")
@@ -327,17 +331,20 @@ def replication_rows(evidence: Path, include_traces: bool) -> tuple[list[dict], 
                     row["source_note"] = (
                         "Normalized event stream. Excerpt positions refer to event lines."
                     )
-                    if identity == "7eca176a47b64b479af4ef685c0b5869":
-                        row["source_note"] += " The possible post-stop tail is unverified."
+                    if identity in capture_limits:
+                        row["source_note"] += f" {capture_limits[identity]}"
             rows.append(row)
     if seen != early.keys() | resumed.keys():
         raise ValueError("Report coverage differs from the verified review ledgers")
+    if not capture_limits.keys() <= seen:
+        raise ValueError("Capture limits refer to attempts outside the verified review ledgers")
     if sum(row["selected"] for row in rows) != audit["completed_codex_episodes"]:
         raise ValueError("Report selected scores differ from the benchmark ledger")
     return rows, {
         "checked": audit["checked_utc"],
         "scored": audit["completed_codex_episodes"],
         "planned": 1955,
+        "capture_limits": len(capture_limits),
     }
 
 
@@ -435,7 +442,14 @@ def render(template_dir: Path, output: Path, payload: dict, private: bool) -> No
     safe_json = json.dumps(
         payload, ensure_ascii=False, allow_nan=False, separators=(",", ":")
     ).replace("<", "\\u003c")
-    html = template.replace("__REPORT_SCRIPT__", script).replace("__REPORT_DATA__", safe_json)
+    count = payload["snapshot"]["capture_limits"]
+    attempts = "one budget-stopped attempt" if count == 1 else f"{count:,} budget-stopped attempts"
+    capture_note = f" Output after the stop could not be verified for {attempts}." if count else ""
+    html = (
+        template.replace("__CAPTURE_NOTE__", capture_note)
+        .replace("__REPORT_SCRIPT__", script)
+        .replace("__REPORT_DATA__", safe_json)
+    )
     output.parent.mkdir(parents=True, exist_ok=True)
     # Publish only completed files. Private artifacts have the owner's read and write permissions.
     with NamedTemporaryFile(mode="w", encoding="utf-8", dir=output.parent, delete=False) as handle:

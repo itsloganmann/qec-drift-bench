@@ -6,7 +6,7 @@ The taxonomy view links an expandable L1, L2 and L3 tree to the failure distribu
 
 The trace view shows the chronology of recorded excerpts, the saved review and the measured verdict. The public report includes a development example and a moving-fault example from the replication. The private report includes every failed or externally interrupted attempt and reviewed disagreement covered by the saved evidence. The report retains the 704 historical decoder records. The fresh-seed view incorporates the 56 early replication results once.
 
-Historical reviewer inputs sometimes shortened long outputs. Some recovered archives lack full checksums. Fresh-seed reviews cover captured Codex output without middle cuts, with one documented possible post-stop tail. The archive contains the events exposed by the CLI. A related excerpt is a literal match located with a search term. Use it to inspect the check. A causal claim requires a controlled comparison.
+Historical reviewer inputs sometimes shortened long outputs. Some recovered archives lack full checksums. Replication reviews cover archived Codex output without middle cuts. The report lists the number of budget stops with a possible uncaptured tail. A related excerpt is a literal match located with a search term. Use it to inspect the check. A causal claim requires a controlled comparison.
 
 ## Refresh from a verified snapshot
 
