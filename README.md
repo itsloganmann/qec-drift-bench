@@ -1,8 +1,6 @@
 # QEC-Drift
 
-This is a public snapshot of the benchmark: the tasks, the harness, the scoring, the fairness checks and the results. The per-episode transcripts are not in it, because some agents listed files on the machine that ran them; ask the author for access.
-
-The agent gets a baseline quantum circuit in Stim format and simulated error-detection measurements, then diagnoses any noise change and writes a decoder to predict logical errors on unseen measurements.
+The agent gets a baseline quantum circuit in Stim and sample measurements from before and after a possible noise change. It diagnoses the change and writes a decoder that predicts whether each new run has a logical error. The grader measures how much the decoder reduces errors on a separate hidden test set.
 
 Stim simulates the noisy quantum circuits. PyMatching provides the matching algorithm for the reference decoders. [Stim](https://github.com/quantumlib/Stim) and [PyMatching](https://pymatching.readthedocs.io/en/stable/).
 
