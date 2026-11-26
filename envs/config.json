@@ -1,0 +1,8 @@
+{
+ "version": "envs-v1-2026-11-26",
+ "note": "Paper seeds drawn once with secrets.randbelow(2**31) on 2026-11-15, before any model run. They are public here, so they are a reproduction set, not a held-out split. A leaderboard split is drawn by the host and never committed. Lazy and leak checks run on the public seed and the first check_seeds paper seeds.",
+ "tier": "hard",
+ "paper_seeds": [737500003, 1831243297, 1405069557, 51634295, 312674740],
+ "check_seeds": 3,
+ "threshold": 0.75
+}

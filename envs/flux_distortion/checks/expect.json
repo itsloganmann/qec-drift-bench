@@ -1,0 +1,10 @@
+[
+ {"file": "lazy_const.py", "kind": "lazy", "why": "Nominal predistortion, always 'changed' with one fixed guess."},
+ {"file": "lazy_blind_refit.py", "kind": "lazy", "why": "The reference's refit every time, never reports a change."},
+ {"file": "lazy_refit_changed.py", "kind": "lazy", "why": "The reference's refit and diagnosis, always 'changed'."},
+ {"file": "lazy_malformed.py", "kind": "lazy", "why": "Empty or malformed output must score 0 on every instance."},
+ {"file": "leak_frames.py", "kind": "leak", "why": "Walks the call stack for the grader's hidden truth."},
+ {"file": "leak_import.py", "kind": "leak", "why": "Imports the grader through sys.path and regenerates the instance."},
+ {"file": "leak_disk.py", "kind": "leak", "public_seed_open": true, "why": "Loads the grader from disk by path and looks the instance up in the public set: open on the public smoke-test seed by design, must fail on secret seeds."},
+ {"file": "lazy_always_other.py", "kind": "lazy", "why": "Hard tier: always 'changed' with kind \"other\" and the nominal predistortion. Earns the kinds credit on changes outside the model, loses every control."}
+]
