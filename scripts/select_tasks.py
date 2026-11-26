@@ -3,6 +3,10 @@
     uv run python scripts/select_tasks.py                  # every graded arm in data/envs_hard
     uv run python scripts/select_tasks.py data/envs_hard/opus_5_5_cc.parquet ...
 
+An arm table is a graded parquet from agent/envs_grade.py, or a CSV with the same columns (env,
+model, rollout, outcome, pass_rate, score). data/envs_hard/pilot_heldout_2026-11-26.csv holds
+the agent pilot of docs/envs-results.md, one row per rollout, graded by the same pass rule.
+
 A task (one task folder in envs/, hard tier) is kept when the best model's pass rate is below
 `threshold` in envs/config.json (0.75). The pass rate is `awareness.passed` per instance on the
 paper seeds (agent/envs_grade.py), averaged over the model's rollouts. A rollout that ended
@@ -31,7 +35,7 @@ DOC = paths.REPO_ROOT / "docs" / "envs-selection.md"
 
 def model_rates(tables: list[Path]) -> pd.DataFrame:
     """Per (task, model): mean pass rate and native score over rollouts, and the rollout count."""
-    frames = [pd.read_parquet(t) for t in tables]
+    frames = [pd.read_csv(t) if t.suffix == ".csv" else pd.read_parquet(t) for t in tables]
     df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
     if df.empty or "pass_rate" not in df:
         return pd.DataFrame(columns=["env", "model", "pass_rate", "score", "rollouts"])
@@ -51,7 +55,9 @@ def decide(task: str, rates: pd.DataFrame, refs: dict, threshold: float) -> dict
         return dict(task=task, status="pending" if keep else "excluded", best=None, best_pass=None)
     best = mine.loc[mine.pass_rate.idxmax()]
     status = "included" if best.pass_rate < threshold else "excluded"
-    return dict(task=task, status=status, best=best.model, best_pass=float(best.pass_rate))
+    return dict(
+        task=task, status=status, best=best.model, best_pass=round(float(best.pass_rate), 4)
+    )
 
 
 def markdown(table: list[dict], rates: pd.DataFrame, refs: dict, threshold: float) -> str:
@@ -86,7 +92,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("tables", nargs="*", type=Path)
     a = ap.parse_args(argv)
     tables = a.tables or [
-        t for t in sorted(eg.OUT.glob("*.parquet"))
+        t for t in sorted([*eg.OUT.glob("*.parquet"), *eg.OUT.glob("*.csv")])
         if not t.stem.endswith(("_instances", "_failure_modes"))
     ]  # fmt: skip
     threshold = eg.CONFIG["threshold"]
@@ -94,6 +100,10 @@ def main(argv: list[str] | None = None) -> None:
     refs = json.loads(refs_file.read_text())["tasks"] if refs_file.exists() else eg.references()
     rates = model_rates(tables)
     table = [decide(task, rates, refs, threshold) for task in TASKS]
+    for t in table:
+        mine = rates[rates.env == t["task"]].round(4)
+        t["models"] = {r.model: dict(pass_rate=r.pass_rate, score=r.score, rollouts=int(r.rollouts))
+                       for r in mine.itertuples()}  # fmt: skip
     eg.OUT.mkdir(parents=True, exist_ok=True)
     (eg.OUT / "selection.json").write_text(
         json.dumps(dict(threshold=threshold, config=eg.CONFIG["version"], tasks=table), indent=1)

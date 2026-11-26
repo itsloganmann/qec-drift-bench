@@ -1,0 +1,13 @@
+env,model,rollout,outcome,pass_rate,score,instances
+pulse_wrong_model,claude-opus-5-5,0,submitted,0.61875,0.798522,160
+pulse_wrong_model,claude-opus-5-5,1,submitted,0.625,0.779194,160
+pulse_wrong_model,claude-opus-5-5,2,submitted,0.63125,0.782311,160
+pulse_wrong_model,claude-sonnet-5-5,0,submitted,0.68125,0.841354,160
+pulse_wrong_model,claude-sonnet-5-5,1,submitted,0.63125,0.804332,160
+pulse_wrong_model,claude-sonnet-5-5,2,submitted,0.625,0.798931,160
+readout_drift,claude-opus-5-5,0,submitted,0.566667,0.687969,150
+readout_drift,claude-opus-5-5,1,submitted,0.58,0.806794,150
+readout_drift,claude-opus-5-5,2,submitted,0.533333,0.732203,150
+readout_drift,claude-sonnet-5-5,0,submitted,0.513333,0.687029,150
+readout_drift,claude-sonnet-5-5,1,submitted,0.586667,0.719251,150
+readout_drift,claude-sonnet-5-5,2,submitted,0.56,0.72093,150

@@ -9,19 +9,19 @@ They are the tasks where the best frontier agent passes under 0.75 of the instan
 | task (hard tier) | part of the device | best known method | Opus 5.5 | Sonnet 5.5 | decision |
 |---|---|---|---|---|---|
 | readout_drift | dispersive readout, IQ shots in 8 batches | 0.65 | 0.56 [0.48, 0.63] | 0.55 | ships |
-| pulse_wrong_model | 6 ns X gate under a wrong drive model | 0.61 | 0.62 [0.58, 0.67] | being scored | ships |
+| pulse_wrong_model | 6 ns X gate under a wrong drive model | 0.61 | 0.62 | 0.65 [0.60, 0.69] | ships |
 | flux_distortion | flux line of a tunable transmon | 0.66 | 0.77 [0.73, 0.81] | 0.77 | not here |
-| qec_drift_d3 | d = 3 surface code, weak faults and switching TLS | 0.70 | 0.78 [0.71, 0.84] | 0.46 | not here |
+| qec_drift_d3 | d = 3 surface code, weak faults and switching TLS | 0.67 | 0.78 [0.71, 0.84] | 0.46 | not here |
 
 Each cell is the pass rate under `awareness.passed`, per instance, on the 5 paper seeds
 (`envs/config.json`), averaged over 3 rollouts. The brackets are a 95% bootstrap interval for
-the best model, with seeds resampled together with all of their instances. "Best known method"
-is the task's `eval/_reference.py`, the strongest method we know that trusts the model TASK.md
+the best model on each task, with seeds resampled together with all of their instances. "Best
+known method" is the task's `eval/_reference.py`, the strongest method we know that trusts the model TASK.md
 states. The trivial answer ("nothing changed") scores 0.50 on every task.
 
 - readout_drift: the best agent is 9 points under the reference and 19 under the bar.
-- pulse_wrong_model: Opus matches the reference, 13 points under the bar. Sonnet's rollouts are
-  still being graded; its first rollout passes 0.69 on the first paper seed.
+- pulse_wrong_model: the best agent (Sonnet, 0.65) is 4 points over the reference and 10 under
+  the bar. Opus matches the reference.
 - flux_distortion: both models pass 0.77. The interval spans the bar, so the task stays out.
   A solver that tests the fit and refits a general filter (no example of the unlisted change)
   passes 0.84, so the task has room, but an agent already reaches the bar.
@@ -79,5 +79,6 @@ uv run python -m qec_drift.agent.envs_grade data/envs_hard/opus_5_5_cc.parquet
 uv run python scripts/select_tasks.py                             # docs/envs-selection.md
 ```
 
-Until the arms run with `envs_run`, docs/envs-selection.md lists both tasks as "pending", kept on
-the evidence that the reference passes under the bar. This page holds the pilot evidence.
+docs/envs-selection.md reads the pilot from data/envs_hard/pilot_heldout_2026-11-26.csv, one row
+per rollout. Each row is `awareness.passed` per instance on the pilot's own grader reports, with
+the readers of `agent/envs_grade.py`. Arms run with `envs_run` join that table.

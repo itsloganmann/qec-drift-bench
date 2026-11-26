@@ -65,3 +65,11 @@ def test_a_failed_check_is_marked_in_the_report():
     text = leg.markdown({"t": rows})
     assert "| lazy_const.py | lazy | 0.600 | 0.550 | FAIL | w |" in text
     assert "| reference | room | 0.800 | 0.550 | pass | w |" in text
+
+
+def test_a_csv_arm_table_counts_like_a_parquet_one(tmp_path):
+    path = tmp_path / "pilot.csv"
+    pd.read_parquet(arm(tmp_path, "a", "big", [0.6, 0.7])).to_csv(path, index=False)
+    rates = sel.model_rates([path])
+    assert rates.pass_rate.round(3).tolist() == [0.65]
+    assert sel.decide("t", rates, REFS, 0.75)["best_pass"] == 0.65
