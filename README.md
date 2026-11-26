@@ -10,7 +10,7 @@ Quantum Agent Bench tests whether AI agents can diagnose and repair drift in thr
 | [Error correction](https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/qec_drift_d3/TASK.md) | A Stim surface-code circuit and detector samples before and after a possible change | A diagnosis and a Stim detector error model for a fixed decoder | Diagnosis and logical error recovery on held-out shots |
 | [Readout](https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/readout_drift/TASK.md) | Labeled calibration measurements and eight unlabeled IQ batches | A drift diagnosis and Gaussian discriminator parameters | State assignment error on held-out measurements |
 
-The structured-output tasks are in the [public mismatch-track draft](https://github.com/pkarakala/qec-drift-bench/pull/1). The original error-correction track uses Stim and PyMatching and asks the agent to write a decoder. See the [Kaggle port status](docs/kaggle-benchmarks-port.md) for the proposed hosted evaluation.
+The structured-output tasks follow the [public mismatch-track draft](https://github.com/pkarakala/qec-drift-bench/pull/1). The original error-correction track asks the agent to write a decoder. See the [scored Kaggle pilots](docs/kaggle-benchmarks-port.md) for results from all three structured tasks.
 
 ## Error-correction results
 

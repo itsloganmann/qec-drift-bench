@@ -1,6 +1,16 @@
 # Quantum Agent Bench on Kaggle
 
-The [three-environment walkthrough](https://quantum-agent-bench.pages.dev/) covers control pulses, error correction, and readout. The [draft mismatch track](https://github.com/pkarakala/qec-drift-bench/pull/1) grades structured outputs for all three: pulse samples, detector error models, and Gaussian discriminators. A hosted pilot would first validate a fixed submission against the local grader and confirm that scored test inputs stay outside the model-facing data.
+The [three-environment walkthrough](https://quantum-agent-bench.pages.dev/) covers control pulses, error correction, and readout. The [structured tasks](https://github.com/pkarakala/qec-drift-bench/pull/1) grade pulse samples, detector error models, and Gaussian discriminators.
+
+## Hosted pilot results (November 26, 2026)
+
+| Kaggle task | Cases | Valid outputs | Gemini 3.8 Flash score |
+| --- | ---: | ---: | ---: |
+| [Control pulses](https://www.kaggle.com/benchmarks/tasks/loganmann24/quantum-bench-control-pulses-pilot/2) | 8 | 5 | 0.375 |
+| [Error correction](https://www.kaggle.com/benchmarks/tasks/loganmann24/quantum-bench-error-correction-pilot/2) | 4 | 4 | 0.575 |
+| [Readout](https://www.kaggle.com/benchmarks/tasks/loganmann24/quantum-bench-readout-pilot/2) | 8 | 6 | 0.601 |
+
+Each task uses its own rubric and synthetic case set. We verified the model-facing fields in all 20 exported prompts and kept model responses as data. A fixed readout submission scored 0.5000 locally and on Kaggle, with matching reports for all eight cases after excluding runtime. The [paper](../paper/workshop-20261111/Quantum_Agent_Bench.pdf) describes the tasks, scores, and limitations.
 
 ## Original error-correction port plan (November 8, 2026)
 

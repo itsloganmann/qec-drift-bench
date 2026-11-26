@@ -80,18 +80,18 @@ Each rubric defines its own denominator, eligibility rule, and tolerances. A no-
 \toprule
 Environment & Cases & Valid & Score \\
 \midrule
-Control pulses & 8 & Pending & Pending \\
+Control pulses & 8 & 5 & 0.375 \\
 Error correction & 4 & 4 & 0.575 \\
 Readout & 8 & 6 & 0.601 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Kaggle executes each grader with a fixed case set. The model receives a separate chat per case, with an explicit allowlist of observation fields and a structured response contract. The grader processes the returned data without running model-authored code. Its test data and generator seeds remain in the grading process. The collected run artifacts are checked against the allowed observation fields. The public walkthrough shows representative failure and repair phases, and the hosted tasks operate on their own fixed synthetic cases.
+Kaggle runs each grader on a fixed synthetic case set. Each case starts a new chat, exposes specified observation fields, and requests a structured response. The grader processes the response as data and holds the test data and generator seeds. We checked all 20 exported prompts against the allowed fields.
 
 A fixed calibration-only readout submission scored 0.5000 on the eight-case public smoke suite. The local and hosted graders agreed on every case report after excluding runtime. This check establishes parity for the reference submission on those eight cases.
 
-Table~\ref{tab:pilot} shows the three hosted tasks and the results available at the time of writing. In the four-case error-correction run, the change-call accuracy was 3/4. Its case set had no qualifying recovery-gap case, so its score reflects the applicable diagnosis and no-harm terms. The readout run recorded 6/8 valid outputs and change-call accuracy of 6/8, with invalid outputs counted as failures. The case counts support a feasibility demonstration. Reliable claims about model rankings or transfer to real hardware would require more cases, multiple models, and matched, predeclared comparisons.
+Table~\ref{tab:pilot} shows the verified hosted results. Change-call accuracy was 4/8 for control pulses, 3/4 for error correction, and 6/8 for readout. Invalid outputs count as failures. The error-correction set had no qualifying recovery-gap case, so its score reflects the applicable diagnosis and no-harm terms. The case counts support a feasibility demonstration. Reliable claims about model rankings or transfer to real hardware would require more cases, multiple models, and matched, predeclared comparisons.
 
 \balance
 \section{Evidence from the executable-decoder track}
@@ -107,7 +107,7 @@ The benchmark uses separate simulators to isolate drift at each stage. A joint s
 
 The public release includes the task specifications, the earlier executable-decoder evidence, a three-environment walkthrough, and a notebook that reproduces the historical QEC table. It also records the hosted pilot's interface and separates the public smoke fixture from the fixed evaluation sets. For independent checks, reproduce the fixed reference on its public cases before testing a new model. Larger studies should lock the available model versions, case mix, and rubric before opening scores and report each environment's diagnosis and repair metrics alongside the aggregate.
 
-\paragraph{Artifacts.} \href{https://quantum-agent-bench.pages.dev/}{Project walkthrough}, \href{https://github.com/itsloganmann/quantum-agent-bench}{benchmark repository}, and \href{https://www.kaggle.com/code/loganmann24/quantum-agent-bench}{reproducibility notebook}. The project repository includes the earlier executable-decoder manuscript and its evidence.
+\paragraph{Artifacts.} \href{https://quantum-agent-bench.pages.dev/}{Project walkthrough}, \href{https://github.com/itsloganmann/quantum-agent-bench}{benchmark repository}, and \href{https://www.kaggle.com/code/loganmann24/quantum-agent-bench}{reproducibility notebook}. Hosted tasks are available for \href{https://www.kaggle.com/benchmarks/tasks/loganmann24/quantum-bench-control-pulses-pilot/2}{control pulses}, \href{https://www.kaggle.com/benchmarks/tasks/loganmann24/quantum-bench-error-correction-pilot/2}{error correction}, and \href{https://www.kaggle.com/benchmarks/tasks/loganmann24/quantum-bench-readout-pilot/2}{readout}. The repository includes the earlier executable-decoder manuscript and its evidence.
 
 \label{sec:main-end}
 \clearpage
