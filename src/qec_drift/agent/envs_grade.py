@@ -71,11 +71,12 @@ def report(task: str, solution: Path, seed: int | None, dest: Path, ablate: bool
     return json.loads(dest.read_text())
 
 
-def _flux(rep: dict) -> Iterator[dict]:
+def _readout(rep: dict) -> Iterator[dict]:
     for r in rep["instances"]:
-        changed = r["rule"] == "fix"
+        changed = bool(r["truth"])
         right = r.get("changed") == changed
-        diag = right * (r["kind"] + r["params"]) / 2 if "kind" in r and changed else None
+        # the report's diagnosis credit: 0.15 for the kind, 0.10 for the magnitude
+        diag = right * (0.15 * r["kind"] + 0.10 * r["magnitude"]) / 0.25 if "kind" in r else None
         yield dict(
             truth_changed=changed,
             said=r.get("changed"),
@@ -86,8 +87,23 @@ def _flux(rep: dict) -> Iterator[dict]:
         )
 
 
+def _pulse(rep: dict) -> Iterator[dict]:
+    for r in rep["instances"]:
+        yield dict(
+            truth_changed=r["kind"] != "control",
+            said=r.get("changed"),
+            fix=r.get("fix"),
+            diag=r.get("diag"),
+            score=r["score"],
+            error="error" in r,
+        )
+
+
 # task -> its report's instances as (truth_changed, said, fix, diag, score, error)
-READERS: dict[str, Callable[[dict], Iterator[dict]]] = {"flux_distortion": _flux}
+READERS: dict[str, Callable[[dict], Iterator[dict]]] = {
+    "pulse_wrong_model": _pulse,
+    "readout_drift": _readout,
+}
 
 
 def passed(row: dict) -> bool:

@@ -1,0 +1,11 @@
+[
+ {"file": "leak_import.py", "kind": "leak", "why": "Review's pulse_import: `import harness` from the inherited import path, then look the instance up. eval/ is no longer on the child's sys.path, so the import fails and every instance scores 0."},
+ {"file": "leak_frames.py", "kind": "leak", "why": "Walks caller stack frames for the grader's instance record. The solver runs in an isolated child whose only caller holds `data`, so it finds nothing and falls back to the trivial answer."},
+ {"file": "lazy_const.py", "kind": "lazy", "why": "Review's pulse_const: design pulse and numbers, always 'changed'. Loses every control and gets no parameter credit on changed instances."},
+ {"file": "lazy_malformed.py", "kind": "lazy", "why": "Empty pulse and non-bool 'changed': malformed output must score 0."},
+ {"file": "lazy_blind_refit.py", "kind": "lazy", "why": "Review's pulse_blind_refit: always refit DRAG, never report a change. Fix credit needs a right yes/no, so it earns only the controls, like trivial."},
+ {"file": "lazy_blind_robust.py", "kind": "lazy", "why": "Review's pulse_blind_robust (0.73 against trivial 0.21 before): always robust pulse, never report a change. Now earns only the controls."},
+ {"file": "lazy_always_changed_robust.py", "kind": "lazy", "why": "Strong physics but no decision: always 'changed' with fitted numbers and a robust pulse. Half the instances are controls and score 0, so it cannot beat trivial (0.5) by more than chance."},
+ {"file": "heuristic_linear_model.py", "kind": "heuristic", "why": "The previous reference: exact fit and robust GRAPE, but it assumes the drive is linear. Honest standard recipe, listed not gated. Its gap to the reference on compression instances measures the 'is my model's form wrong' skill."},
+ {"file": "lazy_always_other.py", "kind": "lazy", "why": "Hard tier: design pulse, design numbers, always 'changed' with other = true. Earns diagnosis credit on changes outside the form, no fix, loses every control."}
+]

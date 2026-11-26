@@ -14,10 +14,16 @@ QEC-Drift pass rule (`agent/awareness.py`) applies to each instance
 
 | task | part of the device | what the agent gets | what it returns | instances per seed |
 |---|---|---|---|---|
-| `flux_distortion` | flux line of a tunable transmon | one step response, measured through the current predistortion | the line's stages, an optional FIR filter, the diagnosis | 32 (16 controls) |
+| `pulse_wrong_model` | drive line of a fixed-frequency transmon, 6 ns X gate | Rabi, Ramsey and DRAG-check traces | the pulse samples, the fitted drive numbers, the diagnosis | 32 (16 controls) |
+| `readout_drift` | dispersive readout | labelled calibration shots, then a few hundred unlabelled IQ shots in 8 batches | a discriminator (one per batch if you like), the diagnosis | 30 (15 controls) |
 
-Only the hard tier is here. On the standard tiers of the first data-out tasks, Claude Opus 5.5
-passed 95% or more of the instances.
+Only the hard tier is here. On the standard tiers, Claude Opus 5.5 passed 95% or more of the
+instances. A task stays only if the best agent passes under 75% of its hard instances
+([docs/envs-results.md](../docs/envs-results.md)).
+
+On the hard tier, the kit's dev data leaves out every instance whose change lies outside the
+model TASK.md states (`agent/envs_kit.py`). The scored seeds still hold them. An agent must
+notice a broken model without having seen an example of it.
 
 ## Layout of a task
 
@@ -47,7 +53,7 @@ passed 95% or more of the instances.
   the kind `"other"`. Only noticing it is graded.
 - Every TASK.md ends with a canary line, so a leak into training data can be found.
 - Files under 600 lines, numpy and scipy only, the reference's full evaluation under 10 minutes
-  on one core.
+  on one core. The pulse reference is the slowest: about 7 minutes per seed.
 
 ## Run it
 
