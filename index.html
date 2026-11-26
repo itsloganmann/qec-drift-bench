@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="QEC-Drift tests whether AI agents can diagnose changing quantum hardware noise and write a decoder that recovers on held-out measurements.">
+  <meta name="theme-color" content="#112521">
+  <meta property="og:title" content="QEC-Drift | An agent benchmark for quantum error correction">
+  <meta property="og:description" content="Diagnose a change in noise. Write a decoder. Measure recovery on held-out shots.">
+  <meta property="og:url" content="https://itsloganmann.github.io/qec-drift-bench/">
+  <title>QEC-Drift | An agent benchmark for quantum error correction</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="wrap">
+      <nav aria-label="Main navigation">
+        <a class="wordmark" href="./"><span aria-hidden="true"></span> QEC-Drift</a>
+        <div class="nav-links">
+          <a href="#benchmark">Benchmark</a>
+          <a href="#results">Results</a>
+          <a href="https://github.com/itsloganmann/qec-drift-bench">GitHub <span aria-hidden="true">↗</span></a>
+        </div>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero">
+      <div class="wrap hero-layout">
+        <div class="hero-copy">
+          <p class="eyebrow">Quantum error correction</p>
+          <h1>When the noise changes, can an AI agent repair the decoder?</h1>
+          <p class="intro">QEC-Drift gives an agent a simulated quantum circuit and samples from before and after a noise change. It tests whether the agent can diagnose the change and write a decoder that works on fresh measurements.</p>
+          <div class="actions">
+            <a class="button primary" href="#benchmark">Explore the benchmark <span aria-hidden="true">↓</span></a>
+            <a class="button secondary" href="https://github.com/itsloganmann/qec-drift-bench/blob/main/paper/workshop-20261111/QEC_Drift_Workshop_Paper.pdf">Read the paper <span aria-hidden="true">↗</span></a>
+          </div>
+          <p class="byline">Logan Mann and Pranav Reddy · UC Santa Barbara</p>
+        </div>
+        <figure class="signal">
+          <div class="signal-head"><span class="eyebrow">Moving fault</span><span class="signal-tag">Illustration</span></div>
+          <div class="panels" role="img" aria-label="A highlighted detector changes location across three successive blocks of measurements.">
+            <div class="panel"><div class="grid"><span class="fault first"></span></div><span>Early shots</span></div>
+            <div class="panel"><div class="grid"><span class="fault second"></span></div><span>Middle shots</span></div>
+            <div class="panel"><div class="grid"><span class="fault third"></span></div><span>Late shots</span></div>
+          </div>
+          <figcaption><span class="legend-dot" aria-hidden="true"></span> Largest change in detector activity</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="wrap section" id="benchmark">
+      <div class="section-intro">
+        <p class="eyebrow">Benchmark design</p>
+        <h2>Diagnosis and recovery are scored separately.</h2>
+      </div>
+      <div class="workflow">
+        <article><h3>Inspect the circuit</h3><p>The agent gets a baseline Stim circuit and detector measurements from before and after a possible change.</p></article>
+        <article><h3>Diagnose and decode</h3><p>The agent describes the noise change and writes a decoder that predicts which runs have logical errors.</p></article>
+        <article><h3>Test on fresh shots</h3><p>The grader checks the diagnosis and measures logical error reduction on held-out shots against reference decoders.</p></article>
+      </div>
+      <article class="example">
+        <div>
+          <p class="eyebrow">One recorded run</p>
+          <h3>The agent found the moving fault. Its decoder still fell short.</h3>
+          <a href="analysis/">See the failure analysis <span aria-hidden="true">↗</span></a>
+        </div>
+        <dl>
+          <div><dt>Diagnosis</dt><dd>Correct</dd></div>
+          <div><dt>Recovery gap closed</dt><dd>10.2%</dd></div>
+          <div><dt>Joint result</dt><dd>Fail</dd></div>
+        </dl>
+      </article>
+    </section>
+    <section class="results section" id="results">
+      <div class="wrap">
+        <div class="section-intro">
+          <p class="eyebrow">Evaluations</p>
+          <h2>Development results and replication progress</h2>
+          <p>The table reports joint pass rates on the same 23 tasks selected during development. The replication runs 85 tasks across 23 model and effort configurations.</p>
+        </div>
+        <div class="result-layout">
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Development results, scroll horizontally on narrow screens">
+            <table>
+              <caption>Development task pass rates</caption>
+              <thead><tr><th scope="col">Model</th><th scope="col">Low</th><th scope="col">Medium</th><th scope="col">High</th><th scope="col">Very high</th><th scope="col">Maximum</th><th scope="col">Ultra</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">GPT-5.6-Luna</th><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>4.3%</td><td>13.0%</td><td>N/A</td></tr>
+                <tr><th scope="row">GPT-5.6-Sol</th><td>17.4%</td><td>17.4%</td><td>34.8%</td><td>30.4%</td><td>47.8%</td><td>30.4%</td></tr>
+                <tr><th scope="row">GPT-5.6-Terra</th><td>0.0%</td><td>0.0%</td><td>4.3%</td><td>8.7%</td><td>26.1%</td><td>30.4%</td></tr>
+                <tr><th scope="row">GPT-6-Astra</th><td>60.9%</td><td>56.5%</td><td>56.5%</td><td>43.5%</td><td>65.2%</td><td>60.9%</td></tr>
+              </tbody>
+            </table>
+            <p class="table-note">Ultra enables automatic delegation. N/A marks an unsupported setting.</p>
+          </div>
+          <aside class="replication" aria-labelledby="replication-title">
+            <h3 id="replication-title">Audited replication</h3>
+            <p class="progress-text"><strong id="completed">1,332</strong> / <span id="planned">1,955</span></p>
+            <progress id="progress" value="1332" max="1955" aria-label="Audited replication progress"></progress>
+            <p id="audit-date">Audit from November 26, 2026</p>
+            <a href="https://github.com/itsloganmann/qec-drift-bench/blob/main/data/audits/codex-replication-progress.json">Open the audit <span aria-hidden="true">↗</span></a>
+          </aside>
+        </div>
+      </div>
+    </section>
+    <section class="wrap section resources" id="reproduce">
+      <div>
+        <p class="eyebrow">Reproduce the work</p>
+        <h2>Tasks, scoring, and reference decoders</h2>
+        <p>The repository contains the simulator setup, evaluation harness, reference methods, paper, and aggregate results.</p>
+      </div>
+      <div class="resource-links">
+        <a href="https://github.com/itsloganmann/qec-drift-bench">Benchmark repository <span aria-hidden="true">↗</span></a>
+        <a href="https://github.com/itsloganmann/qec-drift-bench/blob/main/docs/runbook.md">Reproduction guide <span aria-hidden="true">↗</span></a>
+        <a href="https://github.com/itsloganmann/qec-drift-bench/blob/main/docs/benchmark-spec-2026-11-01.md">Scoring specification <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap">
+    <span>QEC-Drift · Logan Mann and Pranav Reddy</span>
+    <a href="mailto:loganmann@ucsb.edu?subject=QEC-Drift%20benchmark">Contact the team <span aria-hidden="true">↗</span></a>
+  </footer>
+</body>
+</html>
