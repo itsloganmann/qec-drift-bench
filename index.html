@@ -9,9 +9,8 @@
   <meta property="og:url" content="https://quantum-agent-bench.pages.dev/">
   <link rel="canonical" href="https://quantum-agent-bench.pages.dev/">
   <title>Quantum Agent Bench</title>
-  <link rel="stylesheet" href="style.css?v=module-navigation">
-  <script src="site.js" defer></script>
-  <script type="module" src="explore.js?v=module-navigation"></script>
+  <link rel="stylesheet" href="style.css?v=walkthrough">
+  <script type="module" src="explore.js?v=walkthrough"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -58,12 +57,12 @@
                 <button type="button" data-part="readout">Readout electronics</button>
               </div>
               <div class="module-actions" id="module-actions" role="group" hidden>
-                <button type="button" id="show-system"><span aria-hidden="true">←</span> Back to system</button>
-                <button type="button" id="playback">Pause</button>
+                <button type="button" id="show-system" hidden><span aria-hidden="true">←</span> Back to system</button>
+                <button type="button" id="playback" aria-label="Play walkthrough">Play</button>
               </div>
               <div id="animation-labels" class="animation-labels" aria-hidden="true" hidden></div>
             </div>
-            <p class="system-note" id="system-note">Select a module to see how it works.</p>
+            <p class="system-note" id="system-note">Play the walkthrough or select a module.</p>
             <div class="stepper" id="stepper" role="group" aria-label="Simulation steps" hidden>
               <button type="button" id="previous-step" aria-label="Previous step"><span aria-hidden="true">‹</span></button>
               <div class="step-copy" id="step-copy" aria-live="off">
@@ -112,29 +111,20 @@
           <p class="eyebrow">Evaluations</p>
           <h2>Benchmark results</h2>
           <p>The hosted pilot scored Gemini 3.8 Flash on control pulses (0.375), error correction (0.575), and readout (0.601). Each task uses its own rubric. <a href="https://github.com/itsloganmann/quantum-agent-bench/blob/main/docs/kaggle-benchmarks-port.md">View hosted results ↗</a></p>
-          <p>The executable-decoder study uses 23 development tasks. The ongoing error-correction replication uses 85 tasks across 23 model and effort configurations.</p>
+          <p>The executable-decoder study uses 23 development tasks.</p>
         </div>
-        <div class="result-layout">
-          <div class="table-scroll" tabindex="0" role="region" aria-label="Development results, scroll horizontally on narrow screens">
-            <table>
-              <caption>Error-correction development task pass rates</caption>
-              <thead><tr><th scope="col">Model</th><th scope="col">Low</th><th scope="col">Medium</th><th scope="col">High</th><th scope="col">Very high</th><th scope="col">Maximum</th><th scope="col">Ultra</th></tr></thead>
-              <tbody>
-                <tr><th scope="row">GPT-5.6-Luna</th><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>4.3%</td><td>13.0%</td><td>N/A</td></tr>
-                <tr><th scope="row">GPT-5.6-Sol</th><td>17.4%</td><td>17.4%</td><td>34.8%</td><td>30.4%</td><td>47.8%</td><td>30.4%</td></tr>
-                <tr><th scope="row">GPT-5.6-Terra</th><td>0.0%</td><td>0.0%</td><td>4.3%</td><td>8.7%</td><td>26.1%</td><td>30.4%</td></tr>
-                <tr><th scope="row">GPT-6-Astra</th><td>60.9%</td><td>56.5%</td><td>56.5%</td><td>43.5%</td><td>65.2%</td><td>60.9%</td></tr>
-              </tbody>
-            </table>
-            <p class="table-note">Ultra enables automatic delegation. N/A marks an unsupported setting.</p>
-          </div>
-          <aside class="replication" aria-labelledby="replication-title">
-            <h3 id="replication-title">Audited replication</h3>
-            <p class="progress-text"><strong id="completed">1,338</strong> / <span id="planned">1,955</span></p>
-            <progress id="progress" value="1338" max="1955" aria-label="Audited replication progress"></progress>
-            <p id="audit-date">Audit from November 26, 2026</p>
-            <a href="https://github.com/itsloganmann/quantum-agent-bench/blob/main/data/audits/codex-replication-progress.json">Open the audit <span aria-hidden="true">↗</span></a>
-          </aside>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Development results, scroll horizontally on narrow screens">
+          <table>
+            <caption>Error-correction development task pass rates</caption>
+            <thead><tr><th scope="col">Model</th><th scope="col">Low</th><th scope="col">Medium</th><th scope="col">High</th><th scope="col">Very high</th><th scope="col">Maximum</th><th scope="col">Ultra</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">GPT-5.6-Luna</th><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>4.3%</td><td>13.0%</td><td>N/A</td></tr>
+              <tr><th scope="row">GPT-5.6-Sol</th><td>17.4%</td><td>17.4%</td><td>34.8%</td><td>30.4%</td><td>47.8%</td><td>30.4%</td></tr>
+              <tr><th scope="row">GPT-5.6-Terra</th><td>0.0%</td><td>0.0%</td><td>4.3%</td><td>8.7%</td><td>26.1%</td><td>30.4%</td></tr>
+              <tr><th scope="row">GPT-6-Astra</th><td>60.9%</td><td>56.5%</td><td>56.5%</td><td>43.5%</td><td>65.2%</td><td>60.9%</td></tr>
+            </tbody>
+          </table>
+          <p class="table-note">Ultra enables automatic delegation. N/A marks an unsupported setting.</p>
         </div>
       </div>
     </section>

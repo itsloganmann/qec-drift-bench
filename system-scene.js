@@ -322,6 +322,8 @@ function readoutTask(group) {
 }
 
 const animationBuilders = { control: pulseTask, qec: surfaceTask, readout: readoutTask };
+const phaseSeconds = 2.5;
+const phaseCount = 3;
 
 function makeCutaway(scene, id, build) {
   const module = modules[id];
@@ -388,6 +390,7 @@ export function createScene(canvas, view, onFrame) {
   let elapsed = 0;
   let last = 0;
   let playing = true;
+  let playOnce = false;
   let onscreen = true;
   let transition;
   const pose = { ...overviewPose, target: overviewPose.target.clone(), offset: overviewPose.offset.clone() };
@@ -435,23 +438,26 @@ export function createScene(canvas, view, onFrame) {
 
   function draw() {
     let phase = 0;
+    let finished = false;
     system.update(elapsed);
     if (mode === "animation") {
-      const cycle = elapsed / 2.5;
-      phase = Math.floor(cycle) % 3;
-      details[part].update(phase, cycle % 1);
+      const cycle = elapsed / phaseSeconds;
+      finished = playOnce && cycle >= phaseCount;
+      phase = finished ? phaseCount - 1 : Math.floor(cycle) % phaseCount;
+      details[part].update(phase, finished ? 1 : cycle % 1);
     }
     renderer.render(scene, camera);
-    onFrame(phase, Boolean(transition));
+    onFrame(phase, Boolean(transition), finished);
   }
 
   function frame(now) {
     const frameTime = Math.max(0, now - (last || now));
     if (transition) {
-      const displayedFrameTime = Math.min(frameTime, 45);
-      transition.elapsed += displayedFrameTime;
-      moveCamera(Math.min(1, transition.elapsed / transition.duration));
-      draw();
+      if (!playOnce || (playing && onscreen)) {
+        transition.elapsed += Math.min(frameTime, 45);
+        moveCamera(Math.min(1, transition.elapsed / transition.duration));
+        draw();
+      }
     } else if (onscreen && playing) {
       elapsed += Math.min(.08, frameTime / 1000);
       draw();
@@ -465,16 +471,17 @@ export function createScene(canvas, view, onFrame) {
   resize();
 
   return {
-    show(viewMode, environment, play, reduce) {
+    show(viewMode, environment, options) {
       const changed = mode !== viewMode || (viewMode === "animation" && part !== environment);
       mode = viewMode;
       part = environment;
-      playing = play;
+      playing = options.play;
+      playOnce = options.playOnce;
       if (changed) {
         elapsed = 0;
         transition = {
           elapsed: 0,
-          duration: reduce ? 420 : 1180,
+          duration: options.reduceMotion ? 420 : 1180,
           from: { ...pose, target: pose.target.clone(), offset: pose.offset.clone() },
           to: mode === "system" ? overviewPose : insidePoses[part],
           closed: { ...openings },
@@ -486,7 +493,7 @@ export function createScene(canvas, view, onFrame) {
       draw();
     },
     play(value) { playing = value; },
-    step(index) { elapsed = index * 2.5 + 2.49; draw(); },
+    step(index) { elapsed = (index + 1) * phaseSeconds - .01; draw(); },
     hit(clientX, clientY) {
       if (mode !== "system" || transition) return null;
       const bounds = canvas.getBoundingClientRect();
