@@ -1,10 +1,18 @@
-# QEC-Drift
+# Quantum Bench
 
-The agent gets a baseline quantum circuit in Stim and sample measurements from before and after a possible noise change. It diagnoses the change and writes a decoder that predicts whether each new run has a logical error. The grader measures how much the decoder reduces errors on a separate hidden test set.
+Quantum Bench tests whether AI agents can diagnose and repair drift in three simulated stages of a superconducting quantum computer. Explore the [interactive walkthrough](https://itsloganmann.github.io/qec-drift-bench/) or open the [Kaggle notebook](https://www.kaggle.com/code/loganmann24/quantum-bench-three-environments).
 
-Stim simulates the noisy quantum circuits. PyMatching provides the matching algorithm for the reference decoders. [Stim](https://github.com/quantumlib/Stim) and [PyMatching](https://pymatching.readthedocs.io/en/stable/).
+## Three environments
 
-## Results
+| Environment | What the agent sees | What it submits | How it is scored |
+|---|---|---|---|
+| [Control pulses](https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/pulse_wrong_model/TASK.md) | A nominal transmon model, a control pulse, and calibration traces | A drift diagnosis and a revised X-gate pulse | Gate error on the simulated device |
+| [Error correction](https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/qec_drift_d3/TASK.md) | A Stim surface-code circuit and detector samples before and after a possible change | A diagnosis and a Stim detector error model for a fixed decoder | Diagnosis and logical error recovery on held-out shots |
+| [Readout](https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/readout_drift/TASK.md) | Labeled calibration measurements and eight unlabeled IQ batches | A drift diagnosis and Gaussian discriminator parameters | State assignment error on held-out measurements |
+
+The structured-output tasks are in the [public mismatch-track draft](https://github.com/pkarakala/qec-drift-bench/pull/1). The original error-correction track uses Stim and PyMatching and asks the agent to write a decoder. See the [Kaggle port status](docs/kaggle-benchmarks-port.md) for the proposed hosted evaluation.
+
+## Error-correction results
 
 **Task pass rate (%).** Every scored cell uses the same 23 tasks selected during development. A task passes when the diagnosis is correct and the decoder meets the recovery thresholds on held-out measurements.
 

@@ -1,4 +1,8 @@
-# Porting QEC-Drift to Kaggle Benchmarks (plan, updated 2026-11-08)
+# Quantum Bench on Kaggle
+
+The [three-environment walkthrough](https://itsloganmann.github.io/qec-drift-bench/) covers control pulses, error correction, and readout. The [draft mismatch track](https://github.com/pkarakala/qec-drift-bench/pull/1) grades structured outputs for all three: pulse samples, detector error models, and Gaussian discriminators. A hosted pilot would first validate a fixed submission against the local grader and confirm that scored test inputs stay outside the model-facing data.
+
+## Original error-correction port plan (November 8, 2026)
 
 **Status: scored deployment is blocked on isolation and run limits.** The API harness
 (`src/qec_drift/agent/decoder_run.py`) can supply the tool loop and score rules. Two points
@@ -35,7 +39,7 @@ The SDK source and launch post describe:
 
 ## How the parts map
 
-| QEC-Drift (API harness) | Kaggle Benchmarks |
+| Error correction (API harness) | Kaggle Benchmarks |
 |---|---|
 | Task files: `nominal.stim`, `train.npz`, `val.npz`, `deploy.npz` | Files in an attached dataset, copied into a fresh work folder for each run |
 | `run_python(code)` in a macOS `sandbox-exec` profile | A function tool backed by a verified isolated worker, with the same 120 s timeout and 5,000-character output limit; hosted worker not yet available |
