@@ -1,4 +1,4 @@
-# Quantum Bench failure mode atlas
+# Quantum Agent Bench failure mode atlas
 
 Snapshot: 2026-11-10T23:31:10.554169+00:00. Status: **complete**.
 

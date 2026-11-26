@@ -1,6 +1,6 @@
-# Quantum Bench
+# Quantum Agent Bench
 
-Quantum Bench tests whether AI agents can diagnose and repair drift in three simulated stages of a superconducting quantum computer. Explore the [interactive walkthrough](https://quantum-bench.pages.dev/) or open the [Kaggle notebook](https://www.kaggle.com/code/loganmann24/quantum-bench-three-environments).
+Quantum Agent Bench tests whether AI agents can diagnose and repair drift in three simulated stages of a superconducting quantum computer. Explore the [interactive walkthrough](https://quantum-agent-bench.pages.dev/) or open the [Kaggle notebook](https://www.kaggle.com/code/loganmann24/quantum-agent-bench).
 
 ## Three environments
 

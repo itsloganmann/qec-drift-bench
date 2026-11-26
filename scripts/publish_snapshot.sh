@@ -1,8 +1,8 @@
 #!/bin/bash
-# Publish the committed tree (HEAD) as the public snapshot, itsloganmann/quantum-bench.
+# Publish the committed tree (HEAD) as the public snapshot, itsloganmann/quantum-agent-bench.
 set -euo pipefail
 cd "$(dirname "$0")/.." || exit 1
-PUBLIC=https://github.com/itsloganmann/quantum-bench.git
+PUBLIC=https://github.com/itsloganmann/quantum-agent-bench.git
 pub=.cache/public_snapshot
 push=1
 [ "${1:-}" = --no-push ] && push=0
@@ -47,7 +47,7 @@ fi
 echo "publish_snapshot: secret scan clean ($(echo "$scan" | sed -n 2p))"
 if [ "$push" -eq 1 ]; then
   git -C "$pub" push -q origin HEAD:main
-  echo "publish_snapshot: pushed $(git -C "$pub" rev-parse --short HEAD) to quantum-bench"
+  echo "publish_snapshot: pushed $(git -C "$pub" rev-parse --short HEAD) to quantum-agent-bench"
 else
   echo "publish_snapshot: --no-push, the commit stays local in $pub"
 fi
