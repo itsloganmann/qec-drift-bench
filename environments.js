@@ -1,0 +1,62 @@
+const fork = "https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/";
+const original = "https://github.com/itsloganmann/qec-drift-bench/blob/main/docs/benchmark-spec-2026-11-01.md";
+
+export const environments = {
+  control: {
+    name: "Control pulses",
+    title: "Calibrate a control pulse",
+    status: "Draft environment",
+    summary: "A drive pulse should flip the qubit from |0⟩ to |1⟩. Drift can change the rotation it actually delivers.",
+    given: "A transmon model, a nominal pulse, and Rabi, Ramsey, and repeated-pulse calibration traces.",
+    response: "A drift diagnosis and 12 in-phase and quadrature samples for a 6 ns X gate.",
+    score: "How well the pulse implements the target X gate on the simulated device.",
+    tooltip: "Deliver the calibrated signal that drives the qubit.",
+    phases: ["Nominal pulse", "Drive changes", "Recalibrated pulse"],
+    explanations: [
+      "The shaped pulse drives a half-turn from |0⟩ to |1⟩.",
+      "A weaker drive delivers less rotation. The qubit stops short of |1⟩.",
+      "An updated pulse restores the target half-turn.",
+    ],
+    labels: ["Drive amplitude", "Qubit state on a Bloch sphere"],
+    links: [["Task specification", fork + "pulse_wrong_model/TASK.md"]],
+    color: 0xffc27c,
+  },
+  qec: {
+    name: "Error correction",
+    title: "Update the error model",
+    status: "Draft environment · QEC",
+    summary: "Repeated checks reveal changes in where and when errors occur. A decoder uses those checks to infer logical errors.",
+    given: "A distance-3 Stim surface-code circuit and detector samples from before and after a possible noise change.",
+    response: "A diagnosis and updated Stim detector error model. In the original QEC benchmark, the agent writes a decoder.",
+    score: "The diagnosis and logical error reduction when a decoder uses the updated model on the simulated device.",
+    tooltip: "Use repeated checks to infer errors on the quantum processor.",
+    phases: ["Baseline checks", "Detector pattern shifts", "Updated decoder weights"],
+    explanations: [
+      "Each layer is a measurement round. The highlighted check stays in one region.",
+      "The pattern shifts across rounds, away from the error model’s expected region.",
+      "The updated model gives the decoder different weights for likely error paths.",
+    ],
+    labels: ["Detector positions across three rounds", "Time runs upward"],
+    links: [["Draft task", fork + "qec_drift_d3/TASK.md"], ["Original QEC benchmark", original]],
+    color: 0x88f4ca,
+  },
+  readout: {
+    name: "Readout",
+    title: "Recalibrate the readout",
+    status: "Draft environment",
+    summary: "The readout signal forms two clouds of points for states |0⟩ and |1⟩. Drift can put shots on the wrong side of the old decision boundary.",
+    given: "Labeled calibration measurements and eight batches of unlabeled in-phase and quadrature (IQ) measurements.",
+    response: "A drift diagnosis and a classifier described by Gaussian components.",
+    score: "State assignment error on hidden, balanced measurements from each batch.",
+    tooltip: "Turn measured analog signals into classical bits.",
+    phases: ["Calibrated IQ clouds", "Clouds shift", "Refit classification boundary"],
+    explanations: [
+      "A calibrated boundary separates the two clouds of measured shots.",
+      "The clouds drift. Orange points are assigned the wrong state by the old boundary.",
+      "A refitted boundary follows the shifted clouds and reduces wrong assignments.",
+    ],
+    labels: ["|0⟩ shots", "|1⟩ shots", "Wrong assignment"],
+    links: [["Task specification", fork + "readout_drift/TASK.md"]],
+    color: 0xbcb2ff,
+  },
+};
