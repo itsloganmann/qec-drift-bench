@@ -1,4 +1,4 @@
-const auditUrl = "https://raw.githubusercontent.com/itsloganmann/qec-drift-bench/main/data/audits/codex-replication-progress.json";
+const auditUrl = "https://raw.githubusercontent.com/itsloganmann/quantum-bench/main/data/audits/codex-replication-progress.json";
 
 async function refreshAudit() {
   const response = await fetch(auditUrl, { credentials: "omit", signal: AbortSignal.timeout(6000) });

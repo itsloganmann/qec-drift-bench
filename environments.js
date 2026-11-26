@@ -1,5 +1,5 @@
 const fork = "https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/";
-const original = "https://github.com/itsloganmann/qec-drift-bench/blob/main/docs/benchmark-spec-2026-11-01.md";
+const original = "https://github.com/itsloganmann/quantum-bench/blob/main/docs/benchmark-spec-2026-11-01.md";
 
 export const environments = {
   control: {
