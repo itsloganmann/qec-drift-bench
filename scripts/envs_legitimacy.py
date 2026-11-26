@@ -1,7 +1,7 @@
 """Check that each data-out task rewards the skill it claims, not a shortcut.
 
     uv run python scripts/envs_legitimacy.py            # every task in envs/
-    uv run python scripts/envs_legitimacy.py --task flux_distortion
+    uv run python scripts/envs_legitimacy.py --task readout_drift
 
 Three checks per task, each graded by the task's own evaluate.py:
 

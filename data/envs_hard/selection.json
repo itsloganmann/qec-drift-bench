@@ -3,7 +3,13 @@
  "config": "envs-v1-2026-11-26",
  "tasks": [
   {
-   "task": "flux_distortion",
+   "task": "pulse_wrong_model",
+   "status": "pending",
+   "best": null,
+   "best_pass": null
+  },
+  {
+   "task": "readout_drift",
    "status": "pending",
    "best": null,
    "best_pass": null
