@@ -1,4 +1,4 @@
-import { environments } from "./environments.js";
+import { environments } from "./environments.js?v=scored-pilot";
 
 const byId = id => document.getElementById(id);
 const viewport = byId("viewport");

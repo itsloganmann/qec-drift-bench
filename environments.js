@@ -1,12 +1,13 @@
 const fork = "https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/";
 const original = "https://github.com/itsloganmann/quantum-agent-bench/blob/main/docs/benchmark-spec-2026-11-01.md";
+const kaggleTasks = "https://www.kaggle.com/benchmarks/tasks/loganmann24/";
 
 export const environments = {
   control: {
     name: "Control pulses",
     module: "Inside the pulse generator",
     title: "Calibrate a control pulse",
-    status: "Draft environment",
+    status: "Kaggle pilot",
     summary: "A drive pulse should flip the qubit from |0⟩ to |1⟩. Drift can change the rotation it actually delivers.",
     given: "A transmon model, a nominal pulse, and Rabi, Ramsey, and repeated-pulse calibration traces.",
     response: "A drift diagnosis and 12 in-phase and quadrature samples for a 6 ns X gate.",
@@ -19,14 +20,14 @@ export const environments = {
       "An updated pulse restores the target half-turn.",
     ],
     labels: ["Drive amplitude", "Qubit state on a Bloch sphere"],
-    links: [["Task specification", fork + "pulse_wrong_model/TASK.md"]],
+    links: [["Task specification", fork + "pulse_wrong_model/TASK.md"], ["Scored Kaggle task", kaggleTasks + "quantum-bench-control-pulses-pilot/2"]],
     color: 0xffc27c,
   },
   qec: {
     name: "Error correction",
     module: "Inside the quantum processor",
     title: "Update the error model",
-    status: "Draft environment · QEC",
+    status: "Kaggle pilot",
     summary: "Repeated checks reveal changes in where and when errors occur. A decoder uses those checks to infer logical errors.",
     given: "A distance-3 Stim surface-code circuit and detector samples from before and after a possible noise change.",
     response: "A diagnosis and updated Stim detector error model. In the original QEC benchmark, the agent writes a decoder.",
@@ -39,14 +40,14 @@ export const environments = {
       "The updated model gives the decoder different weights for likely error paths.",
     ],
     labels: ["Detector positions across three rounds", "Time runs upward"],
-    links: [["Draft task", fork + "qec_drift_d3/TASK.md"], ["Original QEC benchmark", original]],
+    links: [["Task specification", fork + "qec_drift_d3/TASK.md"], ["Scored Kaggle task", kaggleTasks + "quantum-bench-error-correction-pilot/2"], ["Executable-decoder track", original]],
     color: 0x88f4ca,
   },
   readout: {
     name: "Readout",
     module: "Inside the readout electronics",
     title: "Recalibrate the readout",
-    status: "Draft environment",
+    status: "Kaggle pilot",
     summary: "The readout signal forms two clouds of points for states |0⟩ and |1⟩. Drift can put shots on the wrong side of the old decision boundary.",
     given: "Labeled calibration measurements and eight batches of unlabeled in-phase and quadrature (IQ) measurements.",
     response: "A drift diagnosis and a classifier described by Gaussian components.",
@@ -59,7 +60,7 @@ export const environments = {
       "A refitted boundary follows the shifted clouds and reduces wrong assignments.",
     ],
     labels: ["|0⟩ shots", "|1⟩ shots", "Wrong assignment"],
-    links: [["Task specification", fork + "readout_drift/TASK.md"]],
+    links: [["Task specification", fork + "readout_drift/TASK.md"], ["Scored Kaggle task", kaggleTasks + "quantum-bench-readout-pilot/2"]],
     color: 0xbcb2ff,
   },
 };

@@ -11,7 +11,7 @@
   <title>Quantum Agent Bench</title>
   <link rel="stylesheet" href="style.css">
   <script src="site.js" defer></script>
-  <script type="module" src="explore.js?v=animated-cutaway"></script>
+  <script type="module" src="explore.js?v=scored-pilot"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -79,7 +79,7 @@
             </div>
           </div>
           <section class="task-pane" id="task-panel" aria-labelledby="task-title" data-active="control">
-            <p class="task-status" id="task-status">Draft environment</p>
+            <p class="task-status" id="task-status">Kaggle pilot</p>
             <h2 id="task-title" aria-live="polite">Calibrate a control pulse</h2>
             <p class="task-summary" id="task-summary">A drive pulse should flip the qubit from |0⟩ to |1⟩. Drift can change the rotation it actually delivers.</p>
             <dl class="task-spec">
@@ -89,6 +89,7 @@
             </dl>
             <div class="task-links" id="task-links">
               <a href="https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/pulse_wrong_model/TASK.md">Task specification ↗</a>
+              <a href="https://www.kaggle.com/benchmarks/tasks/loganmann24/quantum-bench-control-pulses-pilot/2">Scored Kaggle task ↗</a>
             </div>
           </section>
         </div>
@@ -114,13 +115,14 @@
       <div class="wrap">
         <div class="section-intro">
           <p class="eyebrow">Evaluations</p>
-          <h2>QEC benchmark results</h2>
-          <p>Development pass rates use the same 23 decoder tasks. The ongoing QEC replication uses 85 tasks across 23 model and effort configurations. The three draft mismatch tasks have a separate evaluation.</p>
+          <h2>Benchmark results</h2>
+          <p>The hosted pilot scored Gemini 3.8 Flash on control pulses (0.375), error correction (0.575), and readout (0.601). Each task uses its own rubric. <a href="https://github.com/itsloganmann/quantum-agent-bench/blob/main/docs/kaggle-benchmarks-port.md">View hosted results ↗</a></p>
+          <p>The executable-decoder study uses 23 development tasks. The ongoing error-correction replication uses 85 tasks across 23 model and effort configurations.</p>
         </div>
         <div class="result-layout">
           <div class="table-scroll" tabindex="0" role="region" aria-label="Development results, scroll horizontally on narrow screens">
             <table>
-              <caption>Development task pass rates</caption>
+              <caption>Error-correction development task pass rates</caption>
               <thead><tr><th scope="col">Model</th><th scope="col">Low</th><th scope="col">Medium</th><th scope="col">High</th><th scope="col">Very high</th><th scope="col">Maximum</th><th scope="col">Ultra</th></tr></thead>
               <tbody>
                 <tr><th scope="row">GPT-5.6-Luna</th><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>4.3%</td><td>13.0%</td><td>N/A</td></tr>
