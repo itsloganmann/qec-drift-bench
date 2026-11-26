@@ -6,8 +6,8 @@
   <meta name="description" content="Explore three simulated stages of a superconducting quantum computer and see what each evaluation asks an AI agent to diagnose and repair.">
   <meta name="theme-color" content="#101c19">
   <meta property="og:title" content="Quantum Agent Bench">
-  <meta property="og:url" content="https://quantum-bench.pages.dev/">
-  <link rel="canonical" href="https://quantum-bench.pages.dev/">
+  <meta property="og:url" content="https://quantum-agent-bench.pages.dev/">
+  <link rel="canonical" href="https://quantum-agent-bench.pages.dev/">
   <title>Quantum Agent Bench</title>
   <link rel="stylesheet" href="style.css">
   <script src="site.js" defer></script>
@@ -18,12 +18,12 @@
   <header class="top">
     <div class="wrap">
       <nav aria-label="Main navigation">
-        <a class="wordmark" href="./"><span aria-hidden="true"></span> Quantum Bench</a>
+        <a class="wordmark" href="./"><span aria-hidden="true"></span> Quantum Agent Bench</a>
         <div class="nav-links">
           <a href="#benchmark">Environments</a>
           <a href="#results">Results</a>
           <a href="analysis/">Failure analysis</a>
-          <a href="https://github.com/itsloganmann/quantum-bench">GitHub <span aria-hidden="true">↗</span></a>
+          <a href="https://github.com/itsloganmann/quantum-agent-bench">GitHub <span aria-hidden="true">↗</span></a>
         </div>
       </nav>
     </div>
@@ -38,7 +38,7 @@
           </div>
           <div class="hero-summary">
             <p>Follow a signal through a simulated superconducting quantum computer. Explore what agents are given, what they must repair, and how each task is scored.</p>
-            <a href="https://github.com/itsloganmann/quantum-bench/blob/main/paper/workshop-20261111/QEC_Drift_Workshop_Paper.pdf">Read the QEC paper <span aria-hidden="true">↗</span></a>
+            <a href="https://github.com/itsloganmann/quantum-agent-bench/blob/main/paper/workshop-20261111/QEC_Drift_Workshop_Paper.pdf">Read the QEC paper <span aria-hidden="true">↗</span></a>
           </div>
         </div>
 
@@ -47,12 +47,12 @@
             <div class="model-toolbar">
               <div class="view-control" role="group" aria-label="Visualization view">
                 <button type="button" id="show-system" aria-pressed="true">System</button>
-                <button type="button" id="show-animation" aria-pressed="false">Task animation</button>
+                <button type="button" id="show-animation" aria-pressed="false">Inside module</button>
               </div>
               <button class="playback" type="button" id="playback" hidden>Pause</button>
             </div>
             <div class="viewport" id="viewport">
-              <canvas id="quantum-canvas" aria-label="Interactive 3D model of pulse control, error correction and readout. Environment buttons follow."></canvas>
+              <canvas id="quantum-canvas" aria-label="Select a 3D module to zoom in and explore its simulation. Environment buttons follow."></canvas>
               <div id="system-fallback" class="system-fallback">
                 <div><span class="fallback-icon" aria-hidden="true">∿</span>Control pulses</div>
                 <div><span class="fallback-icon" aria-hidden="true">▦</span>Error correction</div>
@@ -64,10 +64,11 @@
                 <span data-part="qec">Quantum processor</span>
                 <span data-part="readout">Readout electronics</span>
               </div>
+              <span id="cutaway-label" class="cutaway-label" hidden></span>
               <div id="animation-labels" class="animation-labels" aria-hidden="true" hidden></div>
             </div>
             <div class="model-caption">
-              <span id="model-note">Select a component to see its task.</span>
+              <span id="model-note">Select a module to zoom in and see how its task works.</span>
               <span id="model-key">Illustrative system</span>
             </div>
             <div class="phases" id="phases" role="group" aria-label="Animation steps" hidden></div>
@@ -135,7 +136,7 @@
             <p class="progress-text"><strong id="completed">1,338</strong> / <span id="planned">1,955</span></p>
             <progress id="progress" value="1338" max="1955" aria-label="Audited replication progress"></progress>
             <p id="audit-date">Audit from November 26, 2026</p>
-            <a href="https://github.com/itsloganmann/quantum-bench/blob/main/data/audits/codex-replication-progress.json">Open the audit <span aria-hidden="true">↗</span></a>
+            <a href="https://github.com/itsloganmann/quantum-agent-bench/blob/main/data/audits/codex-replication-progress.json">Open the audit <span aria-hidden="true">↗</span></a>
           </aside>
         </div>
       </div>
@@ -147,18 +148,18 @@
         <p>The notebook walks through all three environments and reproduces the published error-correction results.</p>
       </div>
       <div class="resource-links">
-        <a href="https://github.com/itsloganmann/quantum-bench">Benchmark repository <span aria-hidden="true">↗</span></a>
-        <a href="https://www.kaggle.com/code/loganmann24/quantum-bench-three-environments">Open the Kaggle notebook <span aria-hidden="true">↗</span></a>
-        <a href="quantum-bench.ipynb" download>Download the notebook <span aria-hidden="true">↓</span></a>
+        <a href="https://github.com/itsloganmann/quantum-agent-bench">Benchmark repository <span aria-hidden="true">↗</span></a>
+        <a href="https://www.kaggle.com/code/loganmann24/quantum-agent-bench">Open the Kaggle notebook <span aria-hidden="true">↗</span></a>
+        <a href="quantum-agent-bench.ipynb" download>Download the notebook <span aria-hidden="true">↓</span></a>
         <a href="https://github.com/pkarakala/qec-drift-bench/pull/1">Three-environment draft <span aria-hidden="true">↗</span></a>
-        <a href="https://github.com/itsloganmann/quantum-bench/blob/main/docs/runbook.md">Reproduction guide <span aria-hidden="true">↗</span></a>
-        <a href="https://github.com/itsloganmann/quantum-bench/blob/main/docs/benchmark-spec-2026-11-01.md">Scoring specification <span aria-hidden="true">↗</span></a>
+        <a href="https://github.com/itsloganmann/quantum-agent-bench/blob/main/docs/runbook.md">Reproduction guide <span aria-hidden="true">↗</span></a>
+        <a href="https://github.com/itsloganmann/quantum-agent-bench/blob/main/docs/benchmark-spec-2026-11-01.md">Scoring specification <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   </main>
   <footer class="wrap">
-    <span>Quantum Bench · Logan Mann and Pranav Reddy</span>
-    <a href="mailto:loganmann@ucsb.edu?subject=Quantum%20Bench">Contact the team <span aria-hidden="true">↗</span></a>
+    <span>Quantum Agent Bench · Logan Mann and Pranav Reddy</span>
+    <a href="mailto:loganmann@ucsb.edu?subject=Quantum%20Agent%20Bench">Contact the team <span aria-hidden="true">↗</span></a>
   </footer>
 </body>
 </html>

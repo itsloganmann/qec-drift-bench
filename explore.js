@@ -6,6 +6,7 @@ const canvas = byId("quantum-canvas");
 const fallback = byId("system-fallback");
 const tooltip = byId("part-tooltip");
 const modelLabels = byId("model-labels");
+const cutawayLabel = byId("cutaway-label");
 const animationLabels = byId("animation-labels");
 const phaseList = byId("phases");
 const systemButton = byId("show-system");
@@ -46,11 +47,21 @@ function updateTask() {
 }
 
 function updatePlayback() {
-  playback.hidden = !scene || view !== "animation";
+  playback.hidden = !scene || view !== "animation" || viewport.dataset.scene === "zooming";
   playback.textContent = playing ? "Pause" : "Play";
 }
 
-function updateFrame(phase) {
+function updateFrame(phase, moving) {
+  const frameView = moving ? "zooming" : view;
+  if (viewport.dataset.scene !== frameView) {
+    viewport.dataset.scene = frameView;
+    modelLabels.hidden = frameView !== "system";
+    cutawayLabel.hidden = animationLabels.hidden = phaseList.hidden = frameView !== "animation";
+    labelSize = "";
+    updatePlayback();
+  }
+  if (moving) return;
+
   if (view === "system" && scene) {
     const size = viewport.clientWidth + "x" + viewport.clientHeight;
     if (size === labelSize) return;
@@ -80,6 +91,7 @@ function clearHover() {
 
 function setView(next) {
   view = failed ? "system" : next;
+  viewport.dataset.scene = "";
   activePhase = -1;
   labelSize = "";
   const task = environments[selected];
@@ -87,8 +99,11 @@ function setView(next) {
   clearHover();
   systemButton.setAttribute("aria-pressed", String(!taskView));
   animationButton.setAttribute("aria-pressed", String(taskView));
+  systemButton.textContent = taskView ? "Back to system" : "System";
   if (taskView) {
     modelLabels.hidden = true;
+    cutawayLabel.textContent = task.module;
+    cutawayLabel.dataset.environment = selected;
     animationLabels.dataset.environment = selected;
     animationLabels.replaceChildren(...task.labels.map(label => {
       const chip = document.createElement("span");
@@ -111,13 +126,12 @@ function setView(next) {
     modelLabels.hidden = false;
   }
 
-  animationLabels.hidden = !scene || !taskView;
-  phaseList.hidden = !scene || !taskView;
+  cutawayLabel.hidden = animationLabels.hidden = phaseList.hidden = !scene || !taskView;
   byId("model-note").textContent = failed
     ? "3D unavailable on this device. Explore the task details below."
-    : taskView ? task.explanations[0] : "Hover for details. Select a component to see its task.";
-  byId("model-key").textContent = taskView ? "Illustrative animation" : "Illustrative system";
-  scene?.show(view, selected, playing);
+    : taskView ? task.explanations[0] : "Select a module to zoom in and see how its task works.";
+  byId("model-key").textContent = taskView ? "Illustrative simulation" : "Illustrative system";
+  scene?.show(view, selected, playing, motion.matches);
   updatePlayback();
 }
 
@@ -141,6 +155,7 @@ playback.addEventListener("click", () => {
 
 motion.addEventListener("change", () => {
   playing = !motion.matches;
+  scene?.reduceMotion(motion.matches);
   scene?.play(playing);
   updatePlayback();
 });
@@ -169,6 +184,10 @@ canvas.addEventListener("pointerleave", clearHover);
 canvas.addEventListener("click", event => {
   const hit = scene?.hit(event.clientX, event.clientY);
   if (hit) select(hit);
+});
+modelLabels.addEventListener("click", event => {
+  const part = event.target.closest("[data-part]");
+  if (scene && part) select(part.dataset.part);
 });
 
 updateTask();

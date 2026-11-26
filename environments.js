@@ -1,9 +1,10 @@
 const fork = "https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/";
-const original = "https://github.com/itsloganmann/quantum-bench/blob/main/docs/benchmark-spec-2026-11-01.md";
+const original = "https://github.com/itsloganmann/quantum-agent-bench/blob/main/docs/benchmark-spec-2026-11-01.md";
 
 export const environments = {
   control: {
     name: "Control pulses",
+    module: "Inside the pulse generator",
     title: "Calibrate a control pulse",
     status: "Draft environment",
     summary: "A drive pulse should flip the qubit from |0⟩ to |1⟩. Drift can change the rotation it actually delivers.",
@@ -23,6 +24,7 @@ export const environments = {
   },
   qec: {
     name: "Error correction",
+    module: "Inside the quantum processor",
     title: "Update the error model",
     status: "Draft environment · QEC",
     summary: "Repeated checks reveal changes in where and when errors occur. A decoder uses those checks to infer logical errors.",
@@ -42,6 +44,7 @@ export const environments = {
   },
   readout: {
     name: "Readout",
+    module: "Inside the readout electronics",
     title: "Recalibrate the readout",
     status: "Draft environment",
     summary: "The readout signal forms two clouds of points for states |0⟩ and |1⟩. Drift can put shots on the wrong side of the old decision boundary.",

@@ -6,6 +6,35 @@ const violet = 0xbcb2ff;
 const amber = 0xffc27c;
 const fault = 0xff8a71;
 const vector = (x, y, z) => new THREE.Vector3(x, y, z);
+const modules = {
+  control: { x: -5.25, color: amber, frame: [4.05, 1.58, 3], scale: [.27, .27, .27],
+    target: [0, 1.08, 0], offset: [2, 7.6, 18.8], width: 5, height: 2.75 },
+  qec: { x: 0, color: mint, frame: [3.9, 3.4, 3.1], scale: [.35, .81, .46],
+    target: [0, 1.85, 0], offset: [3.1, 5.5, 18.8], width: 4.8, height: 3.9 },
+  readout: { x: 5.25, color: violet, frame: [4.05, 1.55, 3.3], scale: [.35, .56, .46],
+    target: [0, .82, 0], offset: [1.2, 14.5, 15.7], width: 5, height: 3.15 },
+};
+
+function fadeGroup(group) {
+  const copies = new Map();
+  group.traverse(object => {
+    if (!object.material) return;
+    const original = object.material;
+    if (!copies.has(original)) copies.set(original, original.clone());
+    object.material = copies.get(original);
+  });
+  let previous;
+  return opacity => {
+    if (previous === opacity) return;
+    previous = opacity;
+    group.visible = opacity > .001;
+    for (const [original, material] of copies) {
+      material.opacity = original.opacity * opacity;
+      material.transparent = original.transparent || opacity < .999;
+      material.depthWrite = original.depthWrite && opacity > .985;
+    }
+  };
+}
 
 function standard(color, metalness = .18, roughness = .38) {
   return new THREE.MeshStandardMaterial({ color, metalness, roughness });
@@ -126,24 +155,26 @@ function cryostat(parent) {
 }
 
 function makeOverview(group) {
-  const positions = { control: -5.25, qec: 0, readout: 5.25 };
-  const colors = { control: amber, qec: mint, readout: violet };
   const targets = [];
   const markers = {};
   const focus = {};
+  const shells = {};
   drawGrid(group, 18, 8, .5, 0, 0x294239);
-  instrument(group, positions.control, amber, false);
-  cryostat(group);
-  instrument(group, positions.readout, violet, true);
 
-  for (const [id, x] of Object.entries(positions)) {
+  for (const [id, { x, color }] of Object.entries(modules)) {
     const center = id === "qec";
+    const shell = new THREE.Group();
+    shell.position.x = x;
+    group.add(shell);
+    if (center) cryostat(shell);
+    else instrument(shell, 0, color, id === "readout");
+    shells[id] = fadeGroup(shell);
     const target = box(group, [center ? 4.4 : 3.8, center ? 4.33 : 2.04, 3.5],
       [x, center ? 2.22 : 1.02, 0], new THREE.MeshBasicMaterial({ visible: false }));
     target.userData.part = id;
     targets.push(target);
     markers[id] = vector(x, center ? 4.65 : 2.25, .35);
-    focus[id] = box(group, [center ? 4.55 : 3.95, .024, 3.8], [x, .014, 0], luminous(colors[id]));
+    focus[id] = box(group, [center ? 4.55 : 3.95, .024, 3.8], [x, .014, 0], luminous(color));
     focus[id].visible = false;
   }
 
@@ -152,7 +183,7 @@ function makeOverview(group) {
   const pulses = [sphere(group, .12, [0, 0, 0], luminous(amber)), sphere(group, .12, [0, 0, 0], luminous(violet))];
 
   return {
-    targets, markers,
+    targets, markers, shells,
     highlight(id) {
       for (const [part, edge] of Object.entries(focus)) edge.visible = id === part;
     },
@@ -254,8 +285,6 @@ function readoutTask(group) {
   const boundary = box(group, [.045, .025, 5.9], [0, .04, 0], luminous(mint));
   const old = box(group, [.035, .022, 5.9], [0, .03, 0], luminous(0x708e84));
   const colors = [violet, mint];
-  const materials = colors.map(luminous);
-  const wrong = luminous(fault);
   let seed = 6537;
   function random() {
     seed = (1664525 * seed + 1013904223) >>> 0;
@@ -268,7 +297,7 @@ function readoutTask(group) {
     const radius = Math.min(2.15, Math.sqrt(-2 * Math.log(random())));
     const x = (label ? 1.76 : -1.76) + Math.cos(angle) * radius * .69;
     const z = Math.sin(angle) * radius * .72;
-    const point = mesh(group, geometry, materials[label]);
+    const point = mesh(group, geometry, luminous(colors[label]));
     return { label, x, z, point };
   });
 
@@ -283,7 +312,7 @@ function readoutTask(group) {
       const pz = -sine * x + cosine * z;
       const decision = phase === 2 ? cosine * (px - cut) - sine * pz : px;
       point.position.set(px, .14, pz);
-      point.material = (decision > 0) === Boolean(label) ? materials[label] : wrong;
+      point.material.color.setHex((decision > 0) === Boolean(label) ? colors[label] : fault);
     }
     boundary.position.x = cut;
     boundary.rotation.y = phase === 2 ? angle : 0;
@@ -293,6 +322,44 @@ function readoutTask(group) {
 }
 
 const animationBuilders = { control: pulseTask, qec: surfaceTask, readout: readoutTask };
+
+function makeCutaway(scene, id, build) {
+  const module = modules[id];
+  const [width, height, depth] = module.frame;
+  const group = new THREE.Group();
+  group.position.set(module.x, .34, 0);
+  scene.add(group);
+
+  const figure = new THREE.Group();
+  figure.position.y = .14;
+  figure.scale.set(...module.scale);
+  group.add(figure);
+  const update = build(figure);
+
+  box(group, [width, .09, depth], [0, .01, 0], darkSteel);
+  const frameShape = new THREE.BoxGeometry(width, height, depth);
+  const outline = new THREE.LineSegments(new THREE.EdgesGeometry(frameShape),
+    new THREE.LineBasicMaterial({ color: module.color, transparent: true, opacity: .38 }));
+  frameShape.dispose();
+  outline.position.y = height / 2;
+  group.add(outline);
+
+  for (const x of [-width / 2, width / 2]) {
+    box(group, [.075, height, .075], [x, height / 2, -depth / 2], darkSteel);
+    trace(group, [[x, .09, depth / 2], [x, .09, -depth / 2], [x, height, -depth / 2]], module.color, .73);
+  }
+
+  const fade = fadeGroup(group);
+  fade(0);
+  return { update, fade };
+}
+
+const overviewPose = { target: vector(0, 1.68, 0), offset: vector(4.2, 7.02, 18.8), width: 16.7, height: 6.4 };
+const insidePoses = Object.fromEntries(Object.entries(modules).map(([id, module]) => {
+  const [x, y, z] = module.target;
+  return [id, { target: vector(module.x + x, y, z), offset: vector(...module.offset),
+    width: module.width, height: module.height }];
+}));
 
 export function createScene(canvas, view, onFrame) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
@@ -310,12 +377,8 @@ export function createScene(canvas, view, onFrame) {
   const overview = new THREE.Group();
   scene.add(overview);
   const system = makeOverview(overview);
-  const details = Object.fromEntries(Object.entries(animationBuilders).map(([id, build]) => {
-    const group = new THREE.Group();
-    group.visible = false;
-    scene.add(group);
-    return [id, { group, update: build(group) }];
-  }));
+  const details = Object.fromEntries(Object.entries(animationBuilders).map(([id, build]) =>
+    [id, makeCutaway(scene, id, build)]));
   const camera = new THREE.OrthographicCamera();
   const ray = new THREE.Raycaster();
   let mode = "system";
@@ -326,22 +389,41 @@ export function createScene(canvas, view, onFrame) {
   let last = 0;
   let playing = true;
   let onscreen = true;
+  let reducedMotion = false;
+  let transition;
+  const pose = { ...overviewPose, target: overviewPose.target.clone(), offset: overviewPose.offset.clone() };
+  const openings = Object.fromEntries(Object.keys(modules).map(id => [id, 0]));
 
   function placeCamera() {
-    const overviewMode = mode === "system";
     const aspect = width / height;
-    const horizontal = overviewMode ? 16.7 : part === "control" ? 13.9 : 11;
-    const vertical = Math.max(overviewMode ? 6.4 : 5.9, horizontal / aspect);
+    const vertical = Math.max(pose.height, pose.width / aspect);
     camera.left = -vertical * aspect / 2;
     camera.right = vertical * aspect / 2;
     camera.top = vertical / 2;
     camera.bottom = -vertical / 2;
     camera.near = .1;
     camera.far = 100;
-    camera.position.set(overviewMode ? 4.2 : 4.3, overviewMode ? 8.7 : 8.4, 18.8);
-    camera.lookAt(0, overviewMode ? 1.68 : 1.17, 0);
+    camera.position.copy(pose.target).add(pose.offset);
+    camera.lookAt(pose.target);
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld();
+  }
+
+  function moveCamera(progress) {
+    const { from, to, closed, opened } = transition;
+    const eased = THREE.MathUtils.smoothstep(progress, 0, 1);
+    pose.target.lerpVectors(from.target, to.target, eased);
+    pose.offset.lerpVectors(from.offset, to.offset, eased);
+    pose.width = THREE.MathUtils.lerp(from.width, to.width, eased);
+    pose.height = THREE.MathUtils.lerp(from.height, to.height, eased);
+    for (const id of Object.keys(modules)) {
+      const opening = THREE.MathUtils.lerp(closed[id], Number(opened === id), eased);
+      openings[id] = opening;
+      system.shells[id](1 - THREE.MathUtils.smoothstep(opening, .34, .94));
+      details[id].fade(THREE.MathUtils.smoothstep(opening, .42, 1));
+    }
+    if (progress === 1) transition = undefined;
+    placeCamera();
   }
 
   function resize() {
@@ -354,19 +436,21 @@ export function createScene(canvas, view, onFrame) {
 
   function draw() {
     let phase = 0;
-    if (mode === "system") {
-      system.update(elapsed);
-    } else {
+    system.update(elapsed);
+    if (mode === "animation") {
       const cycle = elapsed / 2.5;
       phase = Math.floor(cycle) % 3;
       details[part].update(phase, cycle % 1);
     }
     renderer.render(scene, camera);
-    onFrame(phase);
+    onFrame(phase, Boolean(transition));
   }
 
   function frame(now) {
-    if (onscreen && playing) {
+    if (transition) {
+      moveCamera(Math.min(1, (now - transition.start) / 1050));
+      draw();
+    } else if (onscreen && playing) {
       elapsed += Math.min(.08, (now - (last || now)) / 1000);
       draw();
     }
@@ -379,23 +463,37 @@ export function createScene(canvas, view, onFrame) {
   resize();
 
   return {
-    show(viewMode, environment, play) {
+    show(viewMode, environment, play, reduce) {
+      const changed = mode !== viewMode || (viewMode === "animation" && part !== environment);
       mode = viewMode;
       part = environment;
       playing = play;
-      elapsed = 0;
-      overview.visible = mode === "system";
-      for (const [id, detail] of Object.entries(details)) {
-        detail.group.visible = mode === "animation" && id === part;
+      reducedMotion = reduce;
+      if (changed) {
+        elapsed = 0;
+        transition = {
+          start: performance.now(),
+          from: { ...pose, target: pose.target.clone(), offset: pose.offset.clone() },
+          to: mode === "system" ? overviewPose : insidePoses[part],
+          closed: { ...openings },
+          opened: mode === "animation" ? part : null,
+        };
+        moveCamera(reducedMotion ? 1 : 0);
       }
       system.highlight(null);
-      placeCamera();
       draw();
     },
     play(value) { playing = value; },
+    reduceMotion(value) {
+      reducedMotion = value;
+      if (reducedMotion && transition) {
+        moveCamera(1);
+        draw();
+      }
+    },
     step(index) { elapsed = index * 2.5 + 2.49; draw(); },
     hit(clientX, clientY) {
-      if (mode !== "system") return null;
+      if (mode !== "system" || transition) return null;
       const bounds = canvas.getBoundingClientRect();
       ray.setFromCamera(new THREE.Vector2(
         2 * (clientX - bounds.left) / bounds.width - 1,

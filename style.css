@@ -92,7 +92,12 @@ button { font: inherit; cursor: pointer; }
 .fallback-icon { display: grid; place-items: center; width: min(100%, 5.8rem); aspect-ratio: 1; border: 1px solid #708e7b; border-radius: .75rem; color: var(--mint); background: #244536; font-size: 2.7rem; }
 .part-tooltip { position: absolute; z-index: 2; max-width: min(16rem, 95%); padding: .55rem .7rem; border: 1px solid #658779; border-radius: .4rem; background: #081914f5; color: #eff8f2; font-size: .77rem; line-height: 1.35; pointer-events: none; }
 .model-labels { position: absolute; inset: 0; pointer-events: none; }
-.model-labels span { position: absolute; top: 0; left: 0; white-space: nowrap; padding: .35rem .52rem; border: 1px solid #58786a; border-radius: .32rem; color: #edf5f0; background: #12251ee8; font: 600 clamp(.55rem, .9vw, .69rem)/1.2 ui-monospace, monospace; }
+.model-labels span, .cutaway-label { position: absolute; white-space: nowrap; padding: .35rem .52rem; border: 1px solid #58786a; border-radius: .32rem; color: #edf5f0; background: #12251ee8; font: 600 clamp(.61rem, .9vw, .72rem)/1.2 ui-monospace, monospace; }
+.model-labels span { top: 0; left: 0; pointer-events: auto; cursor: pointer; }
+.model-labels span:hover { background: #29483b; }
+.cutaway-label { top: .58rem; left: .62rem; color: #ffc27c; pointer-events: none; }
+.cutaway-label[data-environment="qec"] { color: #88f4ca; }
+.cutaway-label[data-environment="readout"] { color: #bcb2ff; }
 .viewport:not([data-ready]) .model-labels { display: none; }
 .animation-labels { position: absolute; inset: auto .75rem .65rem; display: flex; gap: .4rem; flex-wrap: wrap; pointer-events: none; }
 .animation-labels span { padding: .32rem .44rem; border-radius: .3rem; background: #0b2119dc; color: #cfe2d7; font: 600 .68rem/1.25 ui-monospace, monospace; }
