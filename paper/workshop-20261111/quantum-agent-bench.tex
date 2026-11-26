@@ -1,0 +1,118 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype,graphicx,booktabs,tabularx,amsmath}
+\usepackage[hyperfootnotes=false]{hyperref}
+\usepackage[preprint]{icml2026}
+\usepackage{caption,balance}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\hypersetup{pdftitle={Quantum Agent Bench},pdfauthor={Logan Mann and Pranav Reddy}}
+\icmltitlerunning{Quantum Agent Bench}
+\begin{document}
+\twocolumn[
+\icmltitle{Quantum Agent Bench: Diagnosing and Repairing Quantum Hardware Drift}
+\begin{icmlauthorlist}
+\icmlauthor{Logan Mann}{ucsb}
+\icmlauthor{Pranav Reddy}{ucsb}
+\end{icmlauthorlist}
+\icmlaffiliation{ucsb}{University of California, Santa Barbara}
+\icmlcorrespondingauthor{Logan Mann}{loganmann@ucsb.edu}
+\icmlcorrespondingauthor{Pranav Reddy}{preddy@ucsb.edu}
+\icmlkeywords{scientific agents, superconducting quantum hardware, calibration, quantum error correction, readout}
+\vskip 0.3in
+]
+\printAffiliationsAndNotice{}
+\begin{abstract}
+Quantum Agent Bench evaluates whether a model can diagnose and repair drift in three simulated stages of a superconducting quantum computer: control pulses, error correction, and readout. Each environment presents nominal calibration and fresh observations. Models submit pulse samples, detector error models, or Gaussian readout discriminators, which the graders use to measure gate error, logical error, and state assignment error, respectively. Graders also check diagnoses against the planted change. We report a hosted pilot of the structured tasks and verify that a fixed readout submission produces identical case scores locally and on Kaggle. The earlier executable-decoder study supplies additional evidence on the gap between diagnosis and repair in error correction.
+\end{abstract}
+
+\section{Introduction}
+A superconducting quantum computer must deliver a calibrated control signal, preserve information through repeated checks, and convert a measurement into a classical bit. A change in the drive, noise process, or measurement chain invalidates a different part of that pipeline. Each stage calls for a different repair, such as a new pulse, a new model for decoding detector events, or a new rule for assigning measured states. Established transmon control, circuit QED, and adaptive decoding methods motivate these choices~\citep{koch,motzoi,blais,spitz,dgr}.
+
+\textbf{Quantum Agent Bench} asks whether a model can infer what changed from limited observations and return a repair that works on fresh simulated data. A no-change control rewards recognizing when to keep the existing calibration. A planted departure provides a known diagnosis. The measured effect of applying the repair provides a second outcome. The three environments share this evaluation framework, and each uses its own physics, observations, and scoring anchors~\citep{draftbench}.
+
+\begin{table*}[t]
+\centering\small
+\caption{Three environments in the structured-submission track. Each grader applies the intervention to simulator state and evaluation inputs outside the model-facing observations.}
+\label{tab:environments}
+\begin{tabularx}{\textwidth}{@{}lXXX@{}}
+\toprule
+Environment & Model-facing observations & Submission & Physical objective \\
+\midrule
+Control pulses & Nominal transmon and $X$ pulse, Rabi and Ramsey traces, repeated-pulse measurements & Updated in-phase and quadrature samples and a drift diagnosis & Coherent gate error on the simulated transmon \\
+Error correction & Nominal detector error model, detector coordinates, calibration and deployment statistics & Stim detector error model and a structured diagnosis & Logical decoding error with PyMatching \\
+Readout & Labeled calibration moments and eight time-ordered unlabeled IQ batches & Gaussian discriminator components and a drift diagnosis & State assignment error on balanced evaluation shots \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\section{Three task environments}
+The structured track follows a design, observation, and intervention sequence. The nominal device and submitted data fields follow the public draft specification at commit \texttt{7c3804ca5e02}~\citep{draftbench}. Table~\ref{tab:environments} describes the hosted inputs, which summarize part of the draft's original array interface. All three settings in this paper use synthetic devices.
+
+\subsection{Control pulses}
+The control task models a weakly anharmonic fixed-frequency transmon with a four-level Hamiltonian. A nominal derivative-removal-by-adiabatic-gate (DRAG) pulse targets an $X$ gate, which exchanges the computational basis states. The agent receives a Rabi amplitude sweep and a Ramsey trace to estimate changes in drive strength and transition frequency. The hard setting gives a repeated pulse sequence whose behavior also helps distinguish a drive distortion outside the nominal parameterization~\citep{koch,motzoi,draftbench}.
+
+The submission contains twelve pairs of in-phase and quadrature amplitudes for a six-nanosecond gate, together with a change flag and inferred parameters. A model can use an unlisted-change flag when the observations support a departure outside the stated form. The grader propagates the bounded waveform through the planted device, evaluates gate error on the computational block, and checks the diagnosis under the draft tolerances. A control case gives credit for preserving gate quality, allowing a conservatively chosen repair when the change signal is weak. The frequency fit explains the calibration traces, and the simulated gate error measures how well the proposed pulse works.
+
+\subsection{Error correction}
+A distance-three rotated surface-code memory yields detection events across three rounds of stabilizer measurements. The model sees a nominal detector error model and pre-change and recent detector statistics. The hosted adapter gives per-detector rates, ten time windows, and the largest pair-rate changes. This makes drift localization and timing possible without sending a full binary shot matrix. Changes in the draft include local faults and switches, along with an unlisted correlation mechanism in the hard setting. Stim supplies the circuit and detector models, and PyMatching supplies the fixed decoding method~\citep{stim,sparse,draftbench}.
+
+The model reports whether the device changed and proposes a detector error model or uses the supplied nominal model. The grader applies matching with the chosen weights and computes logical error on its evaluator-side distribution. It scores a repair gap when its prespecified reference condition is met. Cases with small gaps can instead assess diagnosis and guard against harmful changes. An executable-decoder track uses larger surface codes and lets the agent implement its own decoder. Its scoring contract and results are reported separately in Section~\ref{sec:decoder}.
+
+\subsection{Readout}
+Dispersive readout maps each integrated measurement to a point in the in-phase and quadrature (IQ) plane. A classifier learned at calibration can become stale when the clouds rotate, gain changes, noise grows, or the readout chain changes its transfer characteristics~\citep{blais,draftbench}. The task supplies labeled pre-change calibration and eight later unlabeled batches. The populations in the later batches are unknown, so a shift in class mix can resemble a change to an undifferentiated distribution.
+
+Models submit one Gaussian mixture per batch or a shared mixture across batches, with component means, covariances, positive weights, and state labels. The original grader checks the submission and applies it to separately sampled balanced measurements. Equal class priors in grading make state assignment error comparable across batches with different observed population mixes. A single change flag and a set of inferred drift kinds accompany the discriminator. The hosted interface transmits labeled calibration moments and the new IQ samples rounded to five decimal places. This observation format is part of the pilot and should accompany any reported score.
+
+\section{Scoring and hosted pilot}
+Across tasks, the grader uses a planted change to score diagnosis and a loss function to measure the repair. For positive and meaningful reference gaps, an illustrative recovery quantity is
+\[
+G=\operatorname{clip}_{[0,1]}\!\left(\frac{L_{\mathrm{stale}}-L_{\mathrm{new}}}
+ {L_{\mathrm{stale}}-L_{\mathrm{ref}}}\right).
+\]
+Each rubric defines its own denominator, eligibility rule, and tolerances. A no-harm component covers cases where preserving a good nominal intervention is appropriate. This design prevents a small change in raw error from being interpreted as reliable recovery when the available gap is tiny. Malformed submissions receive zero case credit. The published weights and the reported aggregate belong to the task version that produced them~\citep{draftbench}.
+
+\begin{table}[t]
+\centering\small
+\caption{Gemini 3.8 Flash hosted pilot measurements. Scores use separate hard-tier rubrics and case sets.}
+\label{tab:pilot}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Environment & Cases & Valid & Score \\
+\midrule
+Control pulses & 8 & Pending & Pending \\
+Error correction & 4 & 4 & 0.575 \\
+Readout & 8 & 6 & 0.601 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Kaggle executes each grader with a fixed case set. The model receives a separate chat per case, with an explicit allowlist of observation fields and a structured response contract. The grader processes the returned data without running model-authored code. Its test data and generator seeds remain in the grading process. The collected run artifacts are checked against the allowed observation fields. The public walkthrough shows representative failure and repair phases, and the hosted tasks operate on their own fixed synthetic cases.
+
+A fixed calibration-only readout submission scored 0.5000 on the eight-case public smoke suite. The local and hosted graders agreed on every case report after excluding runtime. This check establishes parity for the reference submission on those eight cases.
+
+Table~\ref{tab:pilot} shows the three hosted tasks and the results available at the time of writing. In the four-case error-correction run, the change-call accuracy was 3/4. Its case set had no qualifying recovery-gap case, so its score reflects the applicable diagnosis and no-harm terms. The readout run recorded 6/8 valid outputs and change-call accuracy of 6/8, with invalid outputs counted as failures. The case counts support a feasibility demonstration. Reliable claims about model rankings or transfer to real hardware would require more cases, multiple models, and matched, predeclared comparisons.
+
+\balance
+\section{Evidence from the executable-decoder track}
+\label{sec:decoder}
+The original error-correction study asks an agent to write a Python decoder. It receives a nominal circuit, labeled calibration and validation samples, and time-ordered recent detector events. The evaluator runs the submitted decoder on hidden shots and checks whether it meets the frozen logical-error recovery thresholds. A structured diagnosis also has to match the planted scope and stationarity. In local and moving faults, the changed-qubit set has to satisfy the recorded overlap threshold. The executable interface lets the agent change the decoding algorithm itself.
+
+On 533 recorded development episodes, 322 diagnoses were correct (60.4\%), and 144 jointly passed (27.0\%). Among the 321 scored episodes with correct diagnosis, 177 failed the repair criterion (55.1\%). In a recorded moving-fault example, the agent found the change and closed 10.2\% of the frozen nominal recovery gap. The strongest recorded configuration scored 15/23 (65.2\%) on the selected development tasks. The task set was chosen after interim results, and every configuration on that set shares the same tasks. These counts describe the older QEC corpus.
+
+The original audit also links stored decoders and score-selected trajectories. Its failure taxonomy distinguishes diagnosis, execution and delivery, and repair. A correct explanation can coexist with a shape error in validation, a stale decoder, or incorrect regime dispatch. The model-assisted transcript judgments retain scores and some scaffold clues. The measured diagnosis and repair outcomes provide the primary quantitative evidence, and the transcript review supports interpretation. The linked executable-decoder study gives the complete taxonomy, agreement checks, exclusions, and fresh-seed protocol.
+
+\section{Reproducibility and limitations}
+The benchmark uses separate simulators to isolate drift at each stage. A joint study of interactions among pulse quality, syndrome generation, and measurement would require a coupled device model. Drift amplitudes stress the task generators and are meaningful within the stated assumptions. The scoring anchors use privileged information inside the graders, and recovery credit is relative to those anchors. Generalization to hardware would require data with independent calibration provenance and matched operating conditions.
+
+The public release includes the task specifications, the earlier executable-decoder evidence, a three-environment walkthrough, and a notebook that reproduces the historical QEC table. It also records the hosted pilot's interface and separates the public smoke fixture from the fixed evaluation sets. For independent checks, reproduce the fixed reference on its public cases before testing a new model. Larger studies should lock the available model versions, case mix, and rubric before opening scores and report each environment's diagnosis and repair metrics alongside the aggregate.
+
+\paragraph{Artifacts.} \href{https://quantum-agent-bench.pages.dev/}{Project walkthrough}, \href{https://github.com/itsloganmann/quantum-agent-bench}{benchmark repository}, and \href{https://www.kaggle.com/code/loganmann24/quantum-agent-bench}{reproducibility notebook}. The project repository includes the earlier executable-decoder manuscript and its evidence.
+
+\label{sec:main-end}
+\clearpage
+\small
+\balance
+\bibliographystyle{icml2026}
+\bibliography{references,quantum-agent-bench}
+\end{document}

@@ -27,9 +27,10 @@ Columns show reasoning settings. Ultra enables automatic delegation. N/A marks a
 
 The replication is in progress. It covers the same 85 tasks for each of 23 supported configurations, for 1,955 evaluations. [Latest audited progress](data/audits/codex-replication-progress.json).
 
-## Paper and analysis
+## Papers and analysis
 
-- [Paper PDF: four main pages, plus references and appendix](paper/workshop-20261111/QEC_Drift_Workshop_Paper.pdf), by Logan Mann and Pranav Reddy, University of California, Santa Barbara.
+- [Quantum Agent Bench paper](paper/workshop-20261111/Quantum_Agent_Bench.pdf) covers control pulses, error correction, and readout.
+- [Original error-correction paper](paper/workshop-20261111/QEC_Drift_Workshop_Paper.pdf) documents the executable-decoder study.
 - [LaTeX source and build instructions](paper/workshop-20261111/README.md).
 - [Interactive failure taxonomy and trace analysis](docs/failure-analysis/README.md) and [failure-analysis plots](docs/failure-atlas-20261110/index.md).
 - [Early replication results](docs/fresh-seed-results-20261110.md) and [literature review](paper/workshop-20261111/LITERATURE_AND_NOVELTY_AUDIT.md).

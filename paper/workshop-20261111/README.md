@@ -1,4 +1,13 @@
-# QEC-Drift workshop manuscript
+# Quantum Agent Bench papers
+
+[Quantum Agent Bench](Quantum_Agent_Bench.pdf) covers control pulses, error correction, readout, and the hosted pilot. Its editable source is `quantum-agent-bench.tex` and `quantum-agent-bench.bib`. Build it using the same TeX Live and vendored ICML style described below.
+
+```sh
+latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=build quantum-agent-bench.tex
+cp build/quantum-agent-bench.pdf Quantum_Agent_Bench.pdf
+```
+
+## Original error-correction manuscript
 
 Four pages of main text, one page of references, and three appendix pages (eight pages in one PDF). The main figures show the L1/L2/L3 failure hierarchy with raw trajectory-review counts and a verified quoted tool-action example. Written in the official ICML2026 preprint style. Authors: Logan Mann and Pranav Reddy. School-only affiliation: University of California, Santa Barbara. The PDF lists loganmann@ucsb.edu and preddy@ucsb.edu. This is a named circulation preprint, with no submission or acceptance claim.
 
