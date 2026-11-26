@@ -49,6 +49,13 @@ passed 95% or more of the instances.
 - Files under 600 lines, numpy and scipy only, the reference's full evaluation under 10 minutes
   on one core.
 
+## Checks before a task counts
+
+- `scripts/envs_legitimacy.py`: every lazy and leak solution in `checks/` scores at most
+  trivial + 0.05, the reference on swapped data falls to that bar, and the reference beats it.
+- `scripts/select_tasks.py`: the best agent model passes under 75% of the instances, averaged
+  over its rollouts. A task at or above that bar leaves (docs/envs-results.md).
+
 ## Run it
 
 See [docs/runbook.md](../docs/runbook.md), section 6. Seeds are in [config.json](config.json).

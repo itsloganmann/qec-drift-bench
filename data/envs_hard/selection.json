@@ -1,0 +1,12 @@
+{
+ "threshold": 0.75,
+ "config": "envs-v1-2026-11-26",
+ "tasks": [
+  {
+   "task": "flux_distortion",
+   "status": "pending",
+   "best": null,
+   "best_pass": null
+  }
+ ]
+}

@@ -81,6 +81,16 @@ rate and native score into the arm table, and ends with the failure modes
 `eval/_isolate.py`, not under `sandbox-exec`, so grade in a container or a throwaway VM. About
 2 minutes per seed per solution on one core.
 
+Before a task counts, and after any change to it:
+
+```bash
+uv run python scripts/envs_legitimacy.py     # lazy, leak and data-ablation checks
+uv run python scripts/select_tasks.py        # keep a task if the best agent passes under 75%
+```
+
+They write [envs-legitimacy.md](envs-legitimacy.md) and [envs-selection.md](envs-selection.md).
+Retired tasks are in [envs-results.md](envs-results.md).
+
 ## Budget notes
 
 A Sonnet 5.5 high episode costs $0.2 to $2.2; an Opus 5.5 medium episode $0.6 to $1.9. Every arm

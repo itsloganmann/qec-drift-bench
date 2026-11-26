@@ -12,6 +12,7 @@ wheels/
 # qec-drift data and results (regenerable; large); the reference tables are kept
 data/*/*
 !data/*/references.json
+!data/envs_hard/selection.json
 !data/audits/development-closeout-20261109.json
 !data/audits/fresh-seed-closeout-20261110.json
 !data/audits/codex-replication-progress.json
