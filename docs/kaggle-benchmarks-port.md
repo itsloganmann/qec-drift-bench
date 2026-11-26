@@ -1,6 +1,6 @@
 # Quantum Bench on Kaggle
 
-The [three-environment walkthrough](https://itsloganmann.github.io/qec-drift-bench/) covers control pulses, error correction, and readout. The [draft mismatch track](https://github.com/pkarakala/qec-drift-bench/pull/1) grades structured outputs for all three: pulse samples, detector error models, and Gaussian discriminators. A hosted pilot would first validate a fixed submission against the local grader and confirm that scored test inputs stay outside the model-facing data.
+The [three-environment walkthrough](https://itsloganmann.github.io/quantum-bench/) covers control pulses, error correction, and readout. The [draft mismatch track](https://github.com/pkarakala/qec-drift-bench/pull/1) grades structured outputs for all three: pulse samples, detector error models, and Gaussian discriminators. A hosted pilot would first validate a fixed submission against the local grader and confirm that scored test inputs stay outside the model-facing data.
 
 ## Original error-correction port plan (November 8, 2026)
 
