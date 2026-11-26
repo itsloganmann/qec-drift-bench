@@ -9,9 +9,9 @@
   <meta property="og:url" content="https://quantum-agent-bench.pages.dev/">
   <link rel="canonical" href="https://quantum-agent-bench.pages.dev/">
   <title>Quantum Agent Bench</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=module-navigation">
   <script src="site.js" defer></script>
-  <script type="module" src="explore.js?v=scored-pilot"></script>
+  <script type="module" src="explore.js?v=module-navigation"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -44,38 +44,33 @@
 
         <div class="explorer">
           <div class="model-pane">
-            <div class="model-toolbar">
-              <div class="view-control" role="group" aria-label="Visualization view">
-                <button type="button" id="show-system" aria-pressed="true">System</button>
-                <button type="button" id="show-animation" aria-pressed="false">Inside module</button>
-              </div>
-              <button class="playback" type="button" id="playback" hidden>Pause</button>
-            </div>
             <div class="viewport" id="viewport">
-              <canvas id="quantum-canvas" aria-label="Select a 3D module to zoom in and explore its simulation. Environment buttons follow."></canvas>
-              <div id="system-fallback" class="system-fallback">
-                <div><span class="fallback-icon" aria-hidden="true">∿</span>Control pulses</div>
-                <div><span class="fallback-icon" aria-hidden="true">▦</span>Error correction</div>
-                <div><span class="fallback-icon" aria-hidden="true">⋮</span>Readout</div>
+              <canvas id="quantum-canvas" aria-label="3D model of a superconducting quantum computer"></canvas>
+              <div id="system-fallback" class="system-fallback" role="group" aria-label="Benchmark modules">
+                <button type="button" data-part="control" aria-pressed="true"><span class="fallback-icon" aria-hidden="true">∿</span>Control pulses</button>
+                <button type="button" data-part="qec" aria-pressed="false"><span class="fallback-icon" aria-hidden="true">▦</span>Error correction</button>
+                <button type="button" data-part="readout" aria-pressed="false"><span class="fallback-icon" aria-hidden="true">⋮</span>Readout</button>
               </div>
               <div id="part-tooltip" class="part-tooltip" aria-hidden="true" hidden></div>
-              <div id="model-labels" class="model-labels" aria-hidden="true">
-                <span data-part="control">Pulse generator</span>
-                <span data-part="qec">Quantum processor</span>
-                <span data-part="readout">Readout electronics</span>
+              <div id="model-labels" class="model-labels" role="group" aria-label="Benchmark modules">
+                <button type="button" data-part="control">Pulse generator</button>
+                <button type="button" data-part="qec">Quantum processor</button>
+                <button type="button" data-part="readout">Readout electronics</button>
               </div>
-              <span id="cutaway-label" class="cutaway-label" hidden></span>
+              <div class="module-actions" id="module-actions" role="group" hidden>
+                <button type="button" id="show-system"><span aria-hidden="true">←</span> Back to system</button>
+                <button type="button" id="playback">Pause</button>
+              </div>
               <div id="animation-labels" class="animation-labels" aria-hidden="true" hidden></div>
             </div>
-            <div class="model-caption">
-              <span id="model-note">Select a module to zoom in and see how its task works.</span>
-              <span id="model-key">Illustrative system</span>
-            </div>
-            <div class="phases" id="phases" role="group" aria-label="Animation steps" hidden></div>
-            <div class="environments" role="group" aria-label="Benchmark environments">
-              <button type="button" class="environment" data-environment="control" aria-pressed="true"><span class="part-dot"></span>Control pulses</button>
-              <button type="button" class="environment" data-environment="qec" aria-pressed="false"><span class="part-dot"></span>Error correction</button>
-              <button type="button" class="environment" data-environment="readout" aria-pressed="false"><span class="part-dot"></span>Readout</button>
+            <p class="system-note" id="system-note">Select a module to see how it works.</p>
+            <div class="stepper" id="stepper" role="group" aria-label="Simulation steps" hidden>
+              <button type="button" id="previous-step" aria-label="Previous step"><span aria-hidden="true">‹</span></button>
+              <div class="step-copy" id="step-copy" aria-live="off">
+                <p class="step-title" id="step-title"></p>
+                <p id="step-note"></p>
+              </div>
+              <button type="button" id="next-step" aria-label="Next step"><span aria-hidden="true">›</span></button>
             </div>
           </div>
           <section class="task-pane" id="task-panel" aria-labelledby="task-title" data-active="control">

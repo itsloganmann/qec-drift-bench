@@ -6,23 +6,23 @@ const canvas = byId("quantum-canvas");
 const fallback = byId("system-fallback");
 const tooltip = byId("part-tooltip");
 const modelLabels = byId("model-labels");
-const cutawayLabel = byId("cutaway-label");
 const animationLabels = byId("animation-labels");
-const phaseList = byId("phases");
+const moduleActions = byId("module-actions");
+const systemNote = byId("system-note");
+const stepper = byId("stepper");
+const stepCopy = byId("step-copy");
 const systemButton = byId("show-system");
-const animationButton = byId("show-animation");
 const playback = byId("playback");
-const buttons = [...document.querySelectorAll("[data-environment]")];
 const motion = matchMedia("(prefers-reduced-motion: reduce)");
 
 let selected = "control";
 let view = "system";
 let scene;
-let failed = false;
 let playing = !motion.matches;
 let activePhase = -1;
 let labelSize = "";
 let hovered = null;
+let restoreFocus = false;
 
 function link(label, href) {
   const anchor = document.createElement("a");
@@ -41,14 +41,16 @@ function updateTask() {
   byId("task-return").textContent = task.response;
   byId("task-score").textContent = task.score;
   byId("task-links").replaceChildren(...task.links.map(([label, href]) => link(label, href)));
-  for (const button of buttons) {
-    button.setAttribute("aria-pressed", String(button.dataset.environment === selected));
+  for (const button of fallback.children) {
+    button.setAttribute("aria-pressed", String(button.dataset.part === selected));
   }
 }
 
-function updatePlayback() {
-  playback.hidden = !scene || view !== "animation" || viewport.dataset.scene === "zooming";
+function setPlaying(next) {
+  playing = next;
+  scene?.play(playing);
   playback.textContent = playing ? "Pause" : "Play";
+  stepCopy.setAttribute("aria-live", playing ? "off" : "polite");
 }
 
 function updateFrame(phase, moving) {
@@ -56,9 +58,8 @@ function updateFrame(phase, moving) {
   if (viewport.dataset.scene !== frameView) {
     viewport.dataset.scene = frameView;
     modelLabels.hidden = frameView !== "system";
-    cutawayLabel.hidden = animationLabels.hidden = phaseList.hidden = frameView !== "animation";
+    animationLabels.hidden = stepper.hidden = frameView !== "animation";
     labelSize = "";
-    updatePlayback();
   }
   if (moving) return;
 
@@ -71,14 +72,16 @@ function updateFrame(phase, moving) {
       const left = Math.max(label.offsetWidth / 2 + 3, Math.min(viewport.clientWidth - label.offsetWidth / 2 - 3, x));
       label.style.transform = "translate(" + (left - label.offsetWidth / 2) + "px," + Math.max(7, y - label.offsetHeight) + "px)";
     }
+    if (restoreFocus) {
+      modelLabels.querySelector(`[data-part="${selected}"]`).focus({ preventScroll: true });
+      restoreFocus = false;
+    }
   }
 
   if (view === "animation" && phase !== activePhase) {
     activePhase = phase;
-    byId("model-note").textContent = environments[selected].explanations[phase];
-    for (const [index, button] of [...phaseList.children].entries()) {
-      button.setAttribute("aria-pressed", String(index === phase));
-    }
+    byId("step-title").textContent = environments[selected].phases[phase];
+    byId("step-note").textContent = environments[selected].explanations[phase];
   }
 }
 
@@ -90,74 +93,49 @@ function clearHover() {
 }
 
 function setView(next) {
-  view = failed ? "system" : next;
+  view = next;
   viewport.dataset.scene = "";
   activePhase = -1;
   labelSize = "";
   const task = environments[selected];
   const taskView = view === "animation";
   clearHover();
-  systemButton.setAttribute("aria-pressed", String(!taskView));
-  animationButton.setAttribute("aria-pressed", String(taskView));
-  systemButton.textContent = taskView ? "Back to system" : "System";
+  moduleActions.hidden = !taskView;
+  systemNote.hidden = taskView;
   if (taskView) {
-    modelLabels.hidden = true;
-    cutawayLabel.textContent = task.module;
-    cutawayLabel.dataset.environment = selected;
+    moduleActions.setAttribute("aria-label", task.module);
     animationLabels.dataset.environment = selected;
     animationLabels.replaceChildren(...task.labels.map(label => {
       const chip = document.createElement("span");
       chip.textContent = label;
       return chip;
     }));
-    phaseList.replaceChildren(...task.phases.map((label, index) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = label;
-      button.addEventListener("click", () => {
-        playing = false;
-        scene?.play(false);
-        scene?.step(index);
-        updatePlayback();
-      });
-      return button;
-    }));
-  } else {
-    modelLabels.hidden = false;
   }
 
-  cutawayLabel.hidden = animationLabels.hidden = phaseList.hidden = !scene || !taskView;
-  byId("model-note").textContent = failed
-    ? "3D unavailable on this device. Explore the task details below."
-    : taskView ? task.explanations[0] : "Select a module to zoom in and see how its task works.";
-  byId("model-key").textContent = taskView ? "Illustrative simulation" : "Illustrative system";
-  scene?.show(view, selected, playing, motion.matches);
-  updatePlayback();
+  scene.show(view, selected, playing, motion.matches);
 }
 
 function select(environment) {
   selected = environment;
   updateTask();
-  setView("animation");
+  if (scene) setView("animation");
 }
 
-for (const button of buttons) {
-  button.addEventListener("click", () => select(button.dataset.environment));
+function moveStep(offset) {
+  const count = environments[selected].phases.length;
+  setPlaying(false);
+  scene.step((activePhase + offset + count) % count);
 }
 
-systemButton.addEventListener("click", () => setView("system"));
-animationButton.addEventListener("click", () => setView("animation"));
-playback.addEventListener("click", () => {
-  playing = !playing;
-  scene?.play(playing);
-  updatePlayback();
+systemButton.addEventListener("click", event => {
+  restoreFocus = event.detail === 0;
+  setView("system");
 });
+playback.addEventListener("click", () => setPlaying(!playing));
+byId("previous-step").addEventListener("click", () => moveStep(-1));
+byId("next-step").addEventListener("click", () => moveStep(1));
 
-motion.addEventListener("change", () => {
-  playing = !motion.matches;
-  scene?.play(playing);
-  updatePlayback();
-});
+motion.addEventListener("change", () => setPlaying(!motion.matches));
 
 canvas.addEventListener("pointermove", event => {
   if (!scene || view !== "system" || event.pointerType === "touch") return;
@@ -184,20 +162,24 @@ canvas.addEventListener("click", event => {
   const hit = scene?.hit(event.clientX, event.clientY);
   if (hit) select(hit);
 });
-modelLabels.addEventListener("click", event => {
-  const part = event.target.closest("[data-part]");
-  if (scene && part) select(part.dataset.part);
-});
+for (const group of [modelLabels, fallback]) {
+  group.addEventListener("click", event => {
+    const part = event.target.closest("[data-part]");
+    if (!part) return;
+    select(part.dataset.part);
+    if (scene && event.detail === 0) systemButton.focus({ preventScroll: true });
+  });
+}
 
 updateTask();
 
 import("./system-scene.js?v=animated-cutaway").then(({ createScene }) => {
   scene = createScene(canvas, viewport, updateFrame);
   viewport.dataset.ready = "true";
+  restoreFocus = fallback.contains(document.activeElement);
   fallback.hidden = true;
+  setPlaying(playing);
   setView(view);
 }).catch(() => {
-  failed = true;
-  animationButton.disabled = true;
-  setView("system");
+  systemNote.textContent = "Choose a module to see its benchmark task.";
 });
