@@ -1,4 +1,4 @@
-import { environments } from "./environments.js?v=scored-pilot";
+import { environments } from "./environments.js?v=task-details";
 
 const byId = id => document.getElementById(id);
 const viewport = byId("viewport");
@@ -40,6 +40,7 @@ function updateTask() {
   byId("task-status").textContent = task.status;
   byId("task-title").textContent = task.title;
   byId("task-summary").textContent = task.summary;
+  byId("task-faults").textContent = task.faults;
   byId("task-given").textContent = task.given;
   byId("task-return").textContent = task.response;
   byId("task-score").textContent = task.score;
@@ -174,27 +175,38 @@ motion.addEventListener("change", () => {
   if (tourStage < 0) setPlaying(!motion.matches);
 });
 
-canvas.addEventListener("pointermove", event => {
-  if (!scene || view !== "system" || event.pointerType === "touch") return;
-  const hit = scene.hit(event.clientX, event.clientY);
-  if (!hit) {
-    clearHover();
-    return;
-  }
-  if (hit !== hovered) {
-    hovered = hit;
-    scene.highlight(hit);
-    tooltip.textContent = environments[hit].tooltip;
+function showHover(part, clientX, clientY) {
+  if (part !== hovered) {
+    hovered = part;
+    scene.highlight(part);
+    tooltip.textContent = environments[part].tooltip;
     tooltip.hidden = false;
     canvas.style.cursor = "pointer";
   }
   const bounds = viewport.getBoundingClientRect();
-  const x = Math.max(4, Math.min(bounds.width - tooltip.offsetWidth - 5, event.clientX - bounds.left + 12));
-  const y = Math.max(4, Math.min(bounds.height - tooltip.offsetHeight - 5, event.clientY - bounds.top + 14));
+  const x = Math.max(4, Math.min(bounds.width - tooltip.offsetWidth - 5, clientX - bounds.left + 12));
+  const y = Math.max(4, Math.min(bounds.height - tooltip.offsetHeight - 5, clientY - bounds.top + 14));
   tooltip.style.transform = "translate(" + x + "px," + y + "px)";
+}
+
+canvas.addEventListener("pointermove", event => {
+  if (!scene || view !== "system" || event.pointerType === "touch") return;
+  const hit = scene.hit(event.clientX, event.clientY);
+  if (hit) showHover(hit, event.clientX, event.clientY);
+  else clearHover();
 });
 
 canvas.addEventListener("pointerleave", clearHover);
+for (const label of modelLabels.children) {
+  const part = label.dataset.part;
+  label.setAttribute("aria-description", environments[part].tooltip);
+  label.addEventListener("pointerenter", event => {
+    if (scene && view === "system" && event.pointerType !== "touch") {
+      showHover(part, event.clientX, event.clientY);
+    }
+  });
+  label.addEventListener("pointerleave", clearHover);
+}
 canvas.addEventListener("click", event => {
   const hit = scene?.hit(event.clientX, event.clientY);
   if (hit) select(hit);

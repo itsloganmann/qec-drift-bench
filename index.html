@@ -10,7 +10,7 @@
   <link rel="canonical" href="https://quantum-agent-bench.pages.dev/">
   <title>Quantum Agent Bench</title>
   <link rel="stylesheet" href="style.css?v=walkthrough">
-  <script type="module" src="explore.js?v=walkthrough"></script>
+  <script type="module" src="explore.js?v=task-details"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -36,7 +36,7 @@
             <h1 id="hero-title">Can an agent repair a drifting quantum system?</h1>
           </div>
           <div class="hero-summary">
-            <p>Follow a signal through a simulated superconducting quantum computer. Explore what agents are given, what they must repair, and how each task is scored.</p>
+            <p>Follow a signal through a hypothetical superconducting quantum computer. Each part opens a 3D animation and a benchmark task for that stage.</p>
             <a href="https://github.com/itsloganmann/quantum-agent-bench/blob/main/paper/workshop-20261111/Quantum_Agent_Bench.pdf">Read the paper <span aria-hidden="true">↗</span></a>
           </div>
         </div>
@@ -77,9 +77,10 @@
             <h2 id="task-title" aria-live="polite">Calibrate a control pulse</h2>
             <p class="task-summary" id="task-summary">A drive pulse should flip the qubit from |0⟩ to |1⟩. Drift can change the rotation it actually delivers.</p>
             <dl class="task-spec">
-              <div><dt>Given</dt><dd id="task-given">A transmon model, a nominal pulse, and calibration traces.</dd></div>
-              <div><dt>Return</dt><dd id="task-return">A diagnosis and revised in-phase and quadrature pulse samples.</dd></div>
-              <div><dt>Scored on</dt><dd id="task-score">How well the pulse implements the target X gate on the simulated device.</dd></div>
+              <div><dt>Example faults</dt><dd id="task-faults">Changes in drive strength, distortion at high amplitudes, or shifts in the qubit frequency.</dd></div>
+              <div><dt>Given</dt><dd id="task-given">A transmon model, a nominal pulse, and Rabi, Ramsey, and repeated-pulse calibration traces.</dd></div>
+              <div><dt>Return</dt><dd id="task-return">A drift diagnosis and 12 pairs of in-phase and quadrature values for a 6 ns X gate.</dd></div>
+              <div><dt>Scored on</dt><dd id="task-score">Diagnosis accuracy and how well the submitted pulse implements the X gate.</dd></div>
             </dl>
             <div class="task-links" id="task-links">
               <a href="https://github.com/pkarakala/qec-drift-bench/blob/7c3804ca5e02063c8e378926e0d2830d945e7161/mismatch/pulse_wrong_model/TASK.md">Task specification ↗</a>
