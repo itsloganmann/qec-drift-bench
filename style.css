@@ -85,7 +85,7 @@ button { font: inherit; cursor: pointer; }
 .view-control button:hover, .playback:hover { color: white; background: #2a483c; }
 .playback { border-color: #446459; }
 .viewport { height: clamp(285px, 30vw, 410px); position: relative; overflow: hidden; isolation: isolate; border: 1px solid #345146; border-radius: .64rem; background: radial-gradient(ellipse at 50% 37%, #2c493c, #0e1e19 76%); }
-.viewport canvas { display: block; width: 100%; height: 100%; }
+.viewport canvas { display: block; width: 100%; height: 100%; touch-action: manipulation; }
 .viewport:not([data-ready]) canvas { visibility: hidden; }
 .system-fallback { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); place-content: center; gap: .75rem; padding: 1rem; }
 .system-fallback > div { display: grid; justify-items: center; gap: .5rem; color: #e0eae4; font-size: .74rem; text-align: center; }

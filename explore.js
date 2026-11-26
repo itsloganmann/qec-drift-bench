@@ -155,7 +155,6 @@ playback.addEventListener("click", () => {
 
 motion.addEventListener("change", () => {
   playing = !motion.matches;
-  scene?.reduceMotion(motion.matches);
   scene?.play(playing);
   updatePlayback();
 });
@@ -192,7 +191,7 @@ modelLabels.addEventListener("click", event => {
 
 updateTask();
 
-import("./system-scene.js").then(({ createScene }) => {
+import("./system-scene.js?v=animated-cutaway").then(({ createScene }) => {
   scene = createScene(canvas, viewport, updateFrame);
   viewport.dataset.ready = "true";
   fallback.hidden = true;

@@ -389,7 +389,6 @@ export function createScene(canvas, view, onFrame) {
   let last = 0;
   let playing = true;
   let onscreen = true;
-  let reducedMotion = false;
   let transition;
   const pose = { ...overviewPose, target: overviewPose.target.clone(), offset: overviewPose.offset.clone() };
   const openings = Object.fromEntries(Object.keys(modules).map(id => [id, 0]));
@@ -447,11 +446,14 @@ export function createScene(canvas, view, onFrame) {
   }
 
   function frame(now) {
+    const frameTime = Math.max(0, now - (last || now));
     if (transition) {
-      moveCamera(Math.min(1, (now - transition.start) / 1050));
+      const displayedFrameTime = Math.min(frameTime, 45);
+      transition.elapsed += displayedFrameTime;
+      moveCamera(Math.min(1, transition.elapsed / transition.duration));
       draw();
     } else if (onscreen && playing) {
-      elapsed += Math.min(.08, (now - (last || now)) / 1000);
+      elapsed += Math.min(.08, frameTime / 1000);
       draw();
     }
     last = now;
@@ -468,29 +470,22 @@ export function createScene(canvas, view, onFrame) {
       mode = viewMode;
       part = environment;
       playing = play;
-      reducedMotion = reduce;
       if (changed) {
         elapsed = 0;
         transition = {
-          start: performance.now(),
+          elapsed: 0,
+          duration: reduce ? 420 : 1180,
           from: { ...pose, target: pose.target.clone(), offset: pose.offset.clone() },
           to: mode === "system" ? overviewPose : insidePoses[part],
           closed: { ...openings },
           opened: mode === "animation" ? part : null,
         };
-        moveCamera(reducedMotion ? 1 : 0);
+        moveCamera(0);
       }
       system.highlight(null);
       draw();
     },
     play(value) { playing = value; },
-    reduceMotion(value) {
-      reducedMotion = value;
-      if (reducedMotion && transition) {
-        moveCamera(1);
-        draw();
-      }
-    },
     step(index) { elapsed = index * 2.5 + 2.49; draw(); },
     hit(clientX, clientY) {
       if (mode !== "system" || transition) return null;
