@@ -33,7 +33,7 @@ export const environments = {
     phases: ["Baseline checks", "Detector pattern shifts", "Updated decoder weights"],
     explanations: [
       "Each layer is a measurement round. The highlighted check stays in one region.",
-      "The pattern shifts across rounds, away from the error model’s expected region.",
+      "A later batch of shots shows a different detector pattern. The old model still expects the original pattern.",
       "The updated model gives the decoder different weights for likely error paths.",
     ],
     labels: ["Detector positions across three rounds", "Time runs upward"],
