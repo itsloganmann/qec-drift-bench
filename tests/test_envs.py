@@ -17,12 +17,8 @@ from qec_drift.agent import envs_run as er
 from qec_drift.agent import isolation
 from qec_drift.scoring import failure_modes_envs as fm
 
-TASK = "flux_distortion"
-SOLUTION = (
-    "def solve(data):\n"
-    "    return {'filters': data['nominal_stages'], 'fir': [1.0],\n"
-    "            'diagnosis': {'changed': False, 'kinds': {}}}  # edited by the agent\n"
-)
+TASK = "readout_drift"
+SOLUTION = (kit.ENVS / TASK / "sandbox" / "solution.py").read_text() + "# edited by the agent\n"
 
 
 @pytest.fixture(scope="module")
@@ -90,6 +86,15 @@ def test_episode_saves_the_solution_and_a_row(tmp_path, monkeypatch, kits):
     assert modes.leaf.tolist() == ["never_changed"]
 
 
+@pytest.mark.parametrize("task", sorted(kit.TASKS))
+def test_hard_dev_data_leaves_out_every_out_of_model_instance(task):
+    out_of_model = kit.TASKS[task][2]
+    families = [fam for fam, _ in kit.instances(task, "hard")]
+    kept = sum(not out_of_model(fam) for fam in families)
+    assert 0 < kept < len(families)  # the hard tier has such instances, and they are dropped
+    assert len(kit.public_data(task, "hard")) == kept
+
+
 def test_the_pass_rule_is_awareness_passed_per_instance():
     base = dict(truth_changed=True, said=True, diag=0.5, fix=0.5)
     assert eg.passed(base)
@@ -106,7 +111,7 @@ def test_the_starter_scores_the_floor_on_the_public_seed(tmp_path, monkeypatch):
     sol = tmp_path / "solution.py"
     sol.write_text(SOLUTION)
     rows = eg.instance_rows(TASK, sol, "starter")
-    assert len(rows) == 32 and not any(r["error"] for r in rows)
+    assert len(rows) == 30 and not any(r["error"] for r in rows)
     controls = [r for r in rows if not r["truth_changed"]]
     assert all(r["passed"] for r in controls) and not any(
         r["passed"] for r in rows if r["truth_changed"]
