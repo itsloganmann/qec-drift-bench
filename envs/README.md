@@ -14,7 +14,6 @@ QEC-Drift pass rule (`agent/awareness.py`) applies to each instance
 
 | task | part of the device | what the agent gets | what it returns | instances per seed |
 |---|---|---|---|---|
-| `pulse_wrong_model` | drive line of a fixed-frequency transmon, 6 ns X gate | Rabi, Ramsey and DRAG-check traces | the pulse samples, the fitted drive numbers, the diagnosis | 32 (16 controls) |
 | `readout_drift` | dispersive readout | labelled calibration shots, then a few hundred unlabelled IQ shots in 8 batches | a discriminator (one per batch if you like), the diagnosis | 30 (15 controls) |
 
 Only the hard tier is here. On the standard tiers, Claude Opus 5.5 passed 95% or more of the
@@ -53,7 +52,7 @@ notice a broken model without having seen an example of it.
   the kind `"other"`. Only noticing it is graded.
 - Every TASK.md ends with a canary line, so a leak into training data can be found.
 - Files under 600 lines, numpy and scipy only, the reference's full evaluation under 10 minutes
-  on one core. The pulse reference is the slowest: about 7 minutes per seed.
+  on one core.
 
 ## Run it
 

@@ -78,8 +78,8 @@ on the Claude Code or Codex scaffold, and saves each `solution.py` under
 and the paper seeds (`envs/config.json`), applies the pass rule per instance, writes the pass
 rate and native score into the arm table, and ends with the failure modes
 (`scoring/failure_modes_envs.py`). Grading runs agent code through the task's
-`eval/_isolate.py`, not under `sandbox-exec`, so grade in a container or a throwaway VM. On one
-core, a seed takes about 2 minutes for readout and up to 7 for pulse, per solution.
+`eval/_isolate.py`, not under `sandbox-exec`, so grade in a container or a throwaway VM. About
+2 minutes per seed per solution on one core.
 
 ## Budget notes
 
