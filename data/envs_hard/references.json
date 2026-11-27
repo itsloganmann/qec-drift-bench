@@ -2,18 +2,6 @@
  "config": "envs-v1-2026-11-26",
  "tier": "hard",
  "tasks": {
-  "pulse_wrong_model": {
-   "trivial": {
-    "pass_rate": 0.5,
-    "score": 0.5,
-    "instances": 160
-   },
-   "reference": {
-    "pass_rate": 0.6125,
-    "score": 0.62330636516212,
-    "instances": 160
-   }
-  },
   "readout_drift": {
    "trivial": {
     "pass_rate": 0.5,

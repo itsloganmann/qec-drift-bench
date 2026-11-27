@@ -3,32 +3,24 @@
  "config": "envs-v1-2026-11-26",
  "tasks": [
   {
-   "task": "pulse_wrong_model",
-   "status": "included",
-   "best": "claude-sonnet-5-5",
-   "best_pass": 0.6458,
-   "models": {
-    "claude-opus-5-5": {
-     "pass_rate": 0.625,
-     "score": 0.7867,
-     "rollouts": 3
-    },
-    "claude-sonnet-5-5": {
-     "pass_rate": 0.6458,
-     "score": 0.8149,
-     "rollouts": 3
-    }
-   }
-  },
-  {
    "task": "readout_drift",
    "status": "included",
-   "best": "claude-opus-5-5",
-   "best_pass": 0.56,
+   "best": "claude-fable-5-2-xhigh",
+   "best_pass": 0.64,
    "models": {
+    "claude-fable-5-2-xhigh": {
+     "pass_rate": 0.64,
+     "score": 0.7957,
+     "rollouts": 1
+    },
     "claude-opus-5-5": {
      "pass_rate": 0.56,
      "score": 0.7423,
+     "rollouts": 3
+    },
+    "claude-opus-5-5-xhigh": {
+     "pass_rate": 0.4244,
+     "score": 0.644,
      "rollouts": 3
     },
     "claude-sonnet-5-5": {
