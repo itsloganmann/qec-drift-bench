@@ -112,16 +112,21 @@ function renderLeaderboard() {
   const parts = ids.map((id) => `${f2(comp[id].mean)} for ${name[id]}`)
   const agents = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : parts[0]
   const changed = shipped.flatMap((f) => ids.map((id) => results.tasks[ENV[f]].pass[id].split.changed.rate))
-  const beat = comp[best].mean > ref.mean
-  const on = shipped.length === 1 ? `on ${TASKS[shipped[0]].short}, the one shipped task,` : 'on the shipped tasks'
-  $('#lead').textContent = `${beat ? `${name[best]} leads the scripted reference method` : 'No agent beats the scripted reference method yet'}: ${on} the reference passes ${f2(ref.mean)}, against ${agents}. On devices that really changed, the agents pass only ${pct(Math.min(...changed))} to ${pct(Math.max(...changed))} of instances.`
+  const bestResult = comp[best]
+  const conclusion = bestResult.ci[0] > ref.ci[1]
+    ? `${name[best]} has a higher pass rate than the reference method`
+    : bestResult.ci[1] < ref.ci[0]
+      ? 'The reference method has a higher pass rate than any agent'
+      : 'The leading agent and reference method have overlapping intervals'
+  const on = shipped.length === 1 ? `on ${TASKS[shipped[0]].short}, the one selected task,` : 'on the selected tasks'
+  $('#lead').textContent = `${conclusion}. ${on[0].toUpperCase() + on.slice(1)} the reference passes ${f2(ref.mean)}, against ${agents}. On devices that really changed, the agents pass only ${pct(Math.min(...changed))} to ${pct(Math.max(...changed))} of instances.`
   const walls = ORDER.flatMap((f) => MODELS.flatMap((m) => results.tasks[ENV[f]].pass[m.id]?.wall_min ?? []))
-  const heldWhy = held.map((f) => `${TASKS[f].short}: ${clear(f) ? 'its best agent passes above the 75% bar, so it will return as a harder version' : 'a close call, its best agent is just above the 75% bar and the interval crosses it'}.`).join(' ')
+  const heldWhy = held.map((f) => `${TASKS[f].short}: ${clear(f) ? `its best agent passes above the ${pct(results.threshold)} bar, so it will return as a harder version` : `a close call, its best agent is just above the ${pct(results.threshold)} bar and the interval crosses it`}.`).join(' ')
   const short = ORDER.flatMap((f) => MODELS.filter((m) => rollouts(f, m.id) > 0 && rollouts(f, m.id) < 3).map((m) => `${m.name} on ${TASKS[f].short} (${rollouts(f, m.id)} of 3)`))
   const [d0, d1] = results.scored
   $('#lbnote').innerHTML = `Pass rate: the mean over ${shipped.map((f) => TASKS[f].short).join(' and ')} of the share of instances that pass the <a href="#defs">pass rule</a>. Interval: approximate 95%, from a bootstrap over the ${results.composite.clusters} seed clusters and the instances in each. Rank: 1 plus the number of agents whose interval sits wholly above. Held-back tasks do not count. ${heldWhy} ${short.length ? `<sup>a</sup>Fewer than 3 rollouts finished: ${short.join(', ')}. ` : ''}All agents ran in Claude Code, headless, with no network and the grader out of reach, on ${d0 === d1 ? day(d0) : `${day(d0)} to ${day(d1)}`}; episodes took ${Math.round(Math.min(...walls))} to ${Math.round(Math.max(...walls))} minutes. Pending models also appear on the <a href="https://www.kaggle.com/benchmarks/loganmann24/quantum-bench/leaderboard">Kaggle leaderboard</a>, scored there with each task's own rubric, not this pass rule.`
   $('#stamp-date').textContent = `Scored ${day(d1)}`
-  $('#stamp-tasks').textContent = `${shipped.length} of ${ORDER.length} tasks shipped`
+  $('#stamp-tasks').textContent = `${shipped.length} of ${ORDER.length} tasks selected`
 }
 
 function renderCard(f) {
@@ -135,13 +140,13 @@ function renderCard(f) {
   card.innerHTML = `
     <div class="tabs" role="group" aria-label="Choose a task">${ORDER.map((g) => `<button type="button" data-f="${g}" aria-pressed="${g === f}" style="--c:var(--l-${g})">${TASKS[g].short}</button>`).join('')}</div>
     <div class="card-head"><span class="num">${ORDER.indexOf(f) + 1}</span><h2>${t.name}</h2>
-      <span class="chipstat ${shipped ? 'in' : 'out'}">${shipped ? 'Shipped' : 'Held back'}</span></div>
+      <span class="chipstat ${shipped ? 'in' : 'out'}">${shipped ? 'Selected' : 'Held back'}</span></div>
     <p class="q">${t.q}</p>
     <dl>
       <div><dt>Agent gets</dt><dd>${t.gets}</dd></div>
       <div><dt>Agent returns</dt><dd>${t.returns}</dd></div>
       <div><dt>What can change</dt><dd>${t.changes}</dd></div>
-      <div><dt>Best agent</dt><dd>${who} passes <span class="mono">${f2(best.rate)} [${f2(best.ci[0])}, ${f2(best.ci[1])}]</span>${shipped ? '.' : clear(f) ? '. That is above the 75% bar, so the task is held back until a harder version is ready.' : '. That is above the 75% bar, but the interval crosses it, so the task is held back as a close call.'}</dd></div>
+      <div><dt>Best agent</dt><dd>${who} passes <span class="mono">${f2(best.rate)} [${f2(best.ci[0])}, ${f2(best.ci[1])}]</span>${shipped ? '.' : clear(f) ? `. That is above the ${pct(results.threshold)} bar, so the task is held back until a harder version is ready.` : `. That is above the ${pct(results.threshold)} bar, but the interval crosses it, so the task is held back as a close call.`}</dd></div>
     </dl>
     <div><div class="label">Pass rate on this task</div><div id="cardplot" class="mini"></div></div>
     <p class="src">Physics: ${t.sources.map(([n, id]) => `<a href="${ARXIV(id)}">${n}</a>`).join(', ')}. Full citations in the task's TASK.md.</p>
@@ -156,7 +161,7 @@ function renderTable() {
     const shipped = results.tasks[ENV[f]].status === 'included'
     return `<tr data-f="${f}" style="--c:var(--l-${f})"${f === current ? ' aria-current="true"' : ''} class="${shipped ? '' : 'held'}">
       <td><button type="button" class="fam" data-f="${f}"><span class="sw" style="--c:var(--l-${f})"></span>${t.name}</button><div class="mono env">${ENV[f]}</div></td>
-      <td>${t.part}</td><td>${t.gets}</td><td>${t.returns}</td><td><span class="chipstat ${shipped ? 'in' : 'out'}">${shipped ? 'Shipped' : 'Held back'}</span></td></tr>`
+      <td>${t.part}</td><td>${t.gets}</td><td>${t.returns}</td><td><span class="chipstat ${shipped ? 'in' : 'out'}">${shipped ? 'Selected' : 'Held back'}</span></td></tr>`
   }).join('')
   $('#bom').querySelectorAll('tr[data-f]').forEach((tr) => tr.addEventListener('click', () => select(tr.dataset.f, true, true)))
 }
@@ -268,8 +273,16 @@ async function loadChip() {
   }
 }
 
+async function loadData(path) {
+  const response = await fetch(path)
+  if (!response.ok) throw new Error(`Could not load ${path} (${response.status})`)
+  return response.json()
+}
+
 async function main() {
-  results = await (await fetch('data/results.json')).json()
+  results = await loadData('data/results.json')
+  document.querySelectorAll('[data-selection-bar]').forEach((el) => { el.textContent = pct(results.threshold) })
+  document.querySelectorAll('[data-clusters]').forEach((el) => { el.textContent = results.composite.clusters })
   MODELS = results.models.map((id) => ({ id, name: NAMES[id]?.[0] ?? id, short: NAMES[id]?.[1] ?? id }))
   renderLeaderboard()
   renderTable()
@@ -286,8 +299,9 @@ async function main() {
   if (!fromHash()) select('readout', false)
   window.addEventListener('hashchange', fromHash)
   loadChip()
-  instances = await (await fetch('data/instances.json')).json()
+  instances = await loadData('data/instances.json')
   renderViewer()
+  $('#vreveal').disabled = false
   let raf = 0
   let lastW = 0
   const redraw = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { renderViewer(); renderCharts() }) }
@@ -295,4 +309,7 @@ async function main() {
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redraw)
   new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
 }
-main()
+main().catch((error) => {
+  console.error('Benchmark data could not load:', error)
+  $('#load-error').hidden = false
+})

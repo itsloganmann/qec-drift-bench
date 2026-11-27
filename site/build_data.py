@@ -1,6 +1,6 @@
 """Rebuild site/data/ from a mismatch-envs checkout.
 
-usage: python site/build_data.py --envs PATH/TO/mismatch-envs [--out site/data]
+usage: uv run python site/build_data.py --envs PATH/TO/mismatch-envs [--out site/data]
 
 Reads the scored results the benchmark already wrote (experiments/results/selection.json,
 summary_hard.json, the held-out episode folders) and the public development instances of each
@@ -149,7 +149,7 @@ def harness(root: Path, env: str):
     return h
 
 
-def instances(root: Path, per: int = 5) -> dict:
+def instances(root: Path, readout_examples: int = 5) -> dict:
     """A few public hard-tier development instances per task, one per kind of change, in-model only."""
     r = lambda a, k=3: [round(float(x), k) for x in a]
     out = {}
@@ -157,7 +157,7 @@ def instances(root: Path, per: int = 5) -> dict:
     ro, seen = [], set()
     for s, spec in h.instance_list(tier="hard"):
         kinds = tuple(sorted(k for k, _ in spec))
-        if not set(kinds) <= set(h.KINDS) or kinds in seen or len(ro) >= per:
+        if not set(kinds) <= set(h.KINDS) or kinds in seen or len(ro) >= readout_examples:
             continue
         seen.add(kinds)
         x = h.make_instance(s, spec, tier="hard")[0]

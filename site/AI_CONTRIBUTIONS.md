@@ -1,7 +1,5 @@
 # AI contributions to the site
 
-People reviewed and accepted every change listed here.
-
 | date | tool | contribution |
 |---|---|---|
 | 2026-11-26 | Claude, through Claude Code | Site design and code, data rebuild script, survey of benchmark sites |

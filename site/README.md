@@ -11,7 +11,7 @@ The public site and leaderboard. Plain static files: no build step, no framework
 ## Preview
 
 ```
-cd site && python -m http.server 8000
+uv run python -m http.server 8000 --directory site
 ```
 
 Then open http://localhost:8000. Opening `index.html` as a file does not work, because the page
@@ -20,7 +20,7 @@ fetches its data.
 ## Rebuild the data
 
 ```
-python site/build_data.py --envs ../mismatch-envs
+uv run python site/build_data.py --envs ../mismatch-envs
 ```
 
 Run it in the mismatch-envs environment (numpy, scipy, stim, pymatching). It reads the scored
@@ -28,13 +28,13 @@ results that the benchmark already wrote and does not run any agent. Commit both
 
 ## Deploy
 
-Cloudflare Pages: set the build command to none and the output directory to `site`. Any static
-host works the same way.
+Cloudflare Pages uses Direct Upload. Deploy the static files in `site/` to the existing project
+after testing the merged commit. No build command is needed.
 
 ## Rules for this folder
 
-- Every number comes from `build_data.py`. Do not type a result into the page.
+- Read benchmark results from the generated data.
 - Never show, plot or name a task's unlisted change. The data viewer only gets instances whose
   change fits the task's own model, as agents do.
 - Keep the canary string in `index.html` and in every task file.
-- Keep each file under 600 lines (AGENTS.md rule 7).
+- Keep source files under 600 lines (AGENTS.md rule 7). Generated data is exempt.

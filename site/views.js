@@ -238,4 +238,3 @@ export function drawQec(canvas, inst) {
   g.stroke()
   g.lineWidth = 1
 }
-

@@ -71,7 +71,7 @@ nav a:hover { color: var(--ink) }
 .tabs button { font: 500 13px var(--f-text); background: transparent; color: var(--ink-2); border: 1px solid var(--rule); border-bottom: 3px solid var(--c); padding: 4px 10px; cursor: pointer }
 .tabs button[aria-pressed="true"] { color: var(--ink); border-color: var(--ink); border-bottom-color: var(--c); font-weight: 600 }
 .mini svg { display: block; overflow: visible }
-.card { padding: 20px 22px; display: grid; gap: 14px; align-content: start; min-width: 0 }
+.card { padding: 20px 22px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-content: start; min-width: 0 }
 .card-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap }
 .card-head .num { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--ink); display: grid; place-items: center; font: 600 12px/1 var(--f-mono) }
 .card h2 { font: 700 22px/1.15 var(--f-wide); font-variation-settings: "wdth" 110; margin: 0; flex: 1 1 auto }
@@ -180,7 +180,7 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
 
 @media (max-width: 860px) {
   .cite { grid-template-columns: minmax(0, 1fr) }
-  .sheet-body { grid-template-columns: 1fr }
+  .sheet-body { grid-template-columns: minmax(0, 1fr) }
   .stage { min-height: 380px; border-right: 0; border-bottom: 1px solid var(--rule) }
   .steps { grid-template-columns: 1fr }
   .hint { display: none }
@@ -211,10 +211,12 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
 
   <section id="leaderboard" aria-labelledby="lb-h" class="first">
     <h2 id="lb-h">Leaderboard</h2>
-    <p class="lead"><span id="lead"></span> These agents also decided which tasks ship, so their scores here are biased low. New models are the fair test.</p>
+    <p class="note">Preview results for four tasks. Readout is selected for the first tagged release. <a href="https://github.com/itsloganmann/quantum-agent-bench/pull/2">Readout task code</a></p>
+    <p id="load-error" class="note" role="alert" hidden>Some benchmark data did not load. Reload the page to try again.</p>
+    <p class="lead"><span id="lead"></span> The scores shown here were used to select tasks. Performance on new models will test how well those results generalize.</p>
     <div class="scroll"><table id="lb"><thead></thead><tbody></tbody></table></div>
     <p class="note" id="lbnote"></p>
-    <div class="chart"><h3>Pass rate on the shipped tasks</h3><p class="def">Higher is better. Each bar is the mean over the shipped tasks; the coloured ticks show each task on its own.</p><div id="composite"></div></div>
+    <div class="chart"><h3>Pass rate on selected tasks</h3><p class="def">Higher is better. Each bar is the mean over the selected tasks; the coloured ticks show each task on its own.</p><div id="composite"></div></div>
   </section>
 
   <h2 class="sheet-h" id="tasks-h">Tasks</h2>
@@ -231,7 +233,7 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
 
   <section aria-labelledby="bom-h">
     <h2 id="bom-h">All tasks</h2>
-    <p class="sub">Hard tier. A task ships when the best agent passes under 75% of its instances.</p>
+    <p class="sub">Hard tier. A task ships when the best agent passes under <span data-selection-bar>the selection threshold</span> of its instances.</p>
     <div class="scroll"><table class="bom" id="bom"><thead><tr><th>Task</th><th>Part on the chip</th><th>Agent gets</th><th>Agent returns</th><th>Status</th></tr></thead><tbody></tbody></table></div>
   </section>
 
@@ -240,7 +242,7 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
     <p class="sub">Real public development instances, drawn from exactly the arrays an agent receives. Instances with the unlisted change stay hidden here, as they do from agents.</p>
     <div class="viewer">
       <div class="vbar"><span class="label" id="vname"></span><span class="label">Example</span><div class="seg" id="vpick" role="group" aria-label="Choose an example instance"></div>
-        <button class="btn" id="vreveal" type="button" aria-pressed="false">Show the hidden change</button><span class="truth" id="vtruth" aria-live="polite"></span></div>
+        <button class="btn" id="vreveal" type="button" aria-pressed="false" disabled>Show the hidden change</button><span class="truth" id="vtruth" aria-live="polite"></span></div>
       <canvas id="vcanvas" role="img" aria-label="Plot of the selected instance's data"></canvas>
       <p class="note" id="vcap" style="margin:0"></p>
     </div>
@@ -249,18 +251,18 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
   <section id="breakdown" aria-labelledby="bd-h">
     <h2 id="bd-h">Breakdown</h2>
     <p class="sub">Every task, shipped or held back, with the reference method and the floor for scale.</p>
-    <div class="chart"><h3>Pass rate by task</h3><p class="def">Higher is better. Point: pass rate. Line: approximate 95% interval. Shaded: above the 75% bar, too easy to ship.</p><div id="forest"></div>
+    <div class="chart"><h3>Pass rate by task</h3><p class="def">Higher is better. Point: pass rate. Line: approximate 95% interval. Shaded: above the <span data-selection-bar>selection threshold</span>, too easy to ship.</p><div id="forest"></div>
       <div class="legend"><span><i style="background:var(--ink)"></i>agent</span><span><i class="sq" style="border:1.5px solid var(--ink);transform:rotate(45deg) scale(0.8)"></i>reference method</span><span><i style="background:var(--muted)"></i>floor</span></div></div>
     <div class="chart"><h3>Controls and changed devices</h3><p class="def">Pass rate on each half of the instances.</p>
       <div class="scroll"><table id="split"><thead></thead><tbody></tbody></table></div><p class="note" id="splitnote" style="margin:10px 0 0"></p></div>
-    <div class="chart"><h3>Pass rate against time</h3><p class="def">Up is better, left is faster. Point: median of 3 episodes. Horizontal line: fastest to slowest episode. Vertical line: approximate 95% interval.</p><div id="scatter"></div></div>
+    <div class="chart"><h3>Pass rate against time</h3><p class="def">Up is better, left is faster. Point: median of finished episodes. Horizontal line: fastest to slowest episode. Vertical line: approximate 95% interval.</p><div id="scatter"></div></div>
   </section>
 
   <section id="method" aria-labelledby="gr-h">
     <h2 id="gr-h">Method</h2>
     <p class="sub">Grading takes three steps, the same for every task.</p>
     <div class="steps">
-      <div><h3><span>1</span>A hidden device</h3><p>A secret seed draws the true device: about half are controls with only normal wander, the rest carry a drift from the task's list or an unlisted change.</p></div>
+      <div><h3><span>1</span>A hidden device</h3><p>A seed draws the true device. About half are controls with normal wander. The rest carry a listed drift or an unlisted change. The scores on this page use public seeds.</p></div>
       <div><h3><span>2</span>An isolated solver</h3><p>The agent's <code>solve(data)</code> runs in a separate process that sees only the data dictionary. Truth never enters that process.</p></div>
       <div><h3><span>3</span>A simulated test</h3><p>The answer is graded on the true device: the changed call, the diagnosis, and how much of the gap its fix closes. Fixed rubric, versioned in the repo.</p></div>
     </div>
@@ -270,13 +272,13 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
       <div>
         <h3 class="minor">Definitions</h3>
         <dl>
-          <dt>Pass rate</dt><dd>The share of instances that pass the pass rule. The leaderboard shows the mean over the shipped tasks.</dd>
-          <dt>Pass rule</dt><dd>An instance passes when the changed call is right, a changed instance earns at least half the diagnosis credit, and a graded fix closes at least half the gap between the stale model and the true one. It is the same rule as the original QEC-Drift tasks.</dd>
+          <dt>Pass rate</dt><dd>The share of instances that pass the pass rule. The leaderboard shows the mean over the selected tasks.</dd>
+          <dt>Pass rule</dt><dd>An instance passes when the changed call is right, a changed instance earns at least half the diagnosis credit, and a graded fix closes at least half the gap between the stale model and the true one.</dd>
           <dt>Rubric score</dt><dd>Each instance also gets a number from 0 to 1 for the changed call, the diagnosis and the fix. The shortcut checks use it. Half the instances are controls, so answering "no change" every time gives 0.50 on both measures.</dd>
           <dt>Hard tier</dt><dd>Smaller drifts, and devices that can change in a way the task's own model does not describe. The agent must notice the model has broken.</dd>
           <dt>Unseen change</dt><dd>The development data given to agents leaves out every instance with the unlisted change, so an agent cannot copy its form from an example.</dd>
-          <dt>Shipped</dt><dd>A task joins the benchmark only when the best agent passes under 75%. A close call is a task just above the bar whose interval crosses it; it is held back.</dd>
-          <dt>Interval</dt><dd>An approximate 95% interval from a bootstrap over 5 seed clusters and the instances in each. With 5 clusters it is a rough guide.</dd>
+          <dt>Selected</dt><dd>A task joins the benchmark only when the best agent passes under <span data-selection-bar>the selection threshold</span>. A close call is a task just above the bar whose interval crosses it; it is held back.</dd>
+          <dt>Interval</dt><dd>An approximate 95% interval from a bootstrap over the seed clusters and the instances in each. The small number of clusters makes it a rough guide.</dd>
           <dt>Reference method</dt><dd>A scripted solver written by the task authors from published methods.</dd>
         </dl>
       </div>
@@ -284,9 +286,9 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
         <h3 class="minor">Limits</h3>
         <ul class="limits">
           <li>The devices are simulated from cited physics, not measured on hardware.</li>
-          <li>Tasks were selected with the same agents shown here, so their scores on the shipped tasks are biased low.</li>
+          <li>Tasks were selected with the same agents shown here, so their scores on the selected tasks are biased low.</li>
           <li>Claude models only so far, up to 3 rollouts each, one harness. More models and harnesses are next.</li>
-          <li>5 frozen seed clusters per task. Some differences between models are inside the noise.</li>
+          <li><span data-clusters></span> frozen seed clusters per task. Some differences between models are inside the noise.</li>
           <li>The reference method was written by the people who wrote the tasks.</li>
         </ul>
       </div>
@@ -296,15 +298,15 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
         <h3 class="minor">How a run works</h3>
         <ul>
           <li>One episode per task, model and rollout: the agent gets the task folder, 45 minutes of wall-clock time, no network, and no copy of the grader.</li>
-          <li>3 rollouts per task and model. Scores use the frozen seed clusters above.</li>
-          <li>The seeds are public with the task code. A hidden seed set, scored only by the maintainers, follows the first tagged release.</li>
+          <li>Up to 3 rollouts per task and model. Scores use the frozen seed clusters above.</li>
+          <li>The reported scores use public seeds. A separate hidden seed set is planned for verified results.</li>
           <li>Outside submissions open with that release, <span class="mono">tasks-v0.1</span>. The plan is in <span class="mono">docs/release-plan.md</span>.</li>
         </ul>
       </div>
       <div>
         <h3 class="minor">Rebuild every number</h3>
         <p class="note" style="margin:8px 0 0">The page reads only <span class="mono">site/data/results.json</span> and <span class="mono">instances.json</span>. One command writes both from the scored runs:</p>
-        <pre>python site/build_data.py --envs ../mismatch-envs</pre>
+        <pre>uv run python site/build_data.py --envs ../mismatch-envs</pre>
       </div>
     </div>
     <div class="canary">
