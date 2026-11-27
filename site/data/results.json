@@ -1,0 +1,634 @@
+{
+ "source": "mismatch-envs experiments/results (selection.json, summary_hard.json), hard tier, examples held out, paper seeds",
+ "threshold": 0.75,
+ "tasks": {
+  "qec_drift_d3": {
+   "status": "excluded",
+   "best": "claude-opus-5-5",
+   "native": {
+    "floor": [
+     0.5,
+     0.4,
+     0.6
+    ],
+    "reference": [
+     0.732,
+     0.652,
+     0.808
+    ]
+   },
+   "cheats": {
+    "never": 0.5,
+    "always": 0.275,
+    "other": 0.325,
+    "const": 0.171,
+    "malformed": 0.0,
+    "frames": 0.171,
+    "import": 0.0,
+    "swapped": 0.368
+   },
+   "pass": {
+    "trivial": {
+     "n": 100,
+     "rate": 0.5,
+     "ci": [
+      0.4,
+      0.6
+     ],
+     "score": 0.5,
+     "split": {
+      "changed": {
+       "n": 50,
+       "rate": 0.0
+      },
+      "controls": {
+       "n": 50,
+       "rate": 1.0
+      }
+     }
+    },
+    "reference": {
+     "n": 100,
+     "rate": 0.67,
+     "ci": [
+      0.58,
+      0.76
+     ],
+     "score": 0.735,
+     "split": {
+      "changed": {
+       "n": 50,
+       "rate": 0.34
+      },
+      "controls": {
+       "n": 50,
+       "rate": 1.0
+      }
+     }
+    },
+    "claude-opus-5-5": {
+     "n": 300,
+     "rate": 0.777,
+     "ci": [
+      0.713,
+      0.837
+     ],
+     "score": 0.805,
+     "wall_min": [
+      12.6,
+      12.9,
+      17.5
+     ],
+     "split": {
+      "changed": {
+       "n": 150,
+       "rate": 0.627
+      },
+      "controls": {
+       "n": 150,
+       "rate": 0.927
+      }
+     }
+    },
+    "claude-sonnet-5-5": {
+     "n": 300,
+     "rate": 0.457,
+     "ci": [
+      0.383,
+      0.527
+     ],
+     "score": 0.527,
+     "wall_min": [
+      9.3,
+      17.9,
+      24.9
+     ],
+     "split": {
+      "changed": {
+       "n": 150,
+       "rate": 0.447
+      },
+      "controls": {
+       "n": 150,
+       "rate": 0.467
+      }
+     }
+    }
+   }
+  },
+  "readout_drift": {
+   "status": "included",
+   "best": "claude-fable-5-2-xhigh",
+   "native": {
+    "floor": [
+     0.5,
+     0.42,
+     0.58
+    ],
+    "reference": [
+     0.742,
+     0.679,
+     0.801
+    ]
+   },
+   "cheats": {
+    "never": 0.5,
+    "always": 0.276,
+    "other": 0.163,
+    "const": 0.114,
+    "malformed": 0.0,
+    "frames": 0.112,
+    "import": 0.111,
+    "swapped": 0.177
+   },
+   "pass": {
+    "trivial": {
+     "n": 150,
+     "rate": 0.5,
+     "ci": [
+      0.42,
+      0.58
+     ],
+     "score": 0.5,
+     "split": {
+      "controls": {
+       "n": 75,
+       "rate": 1.0
+      },
+      "changed": {
+       "n": 75,
+       "rate": 0.0
+      }
+     }
+    },
+    "reference": {
+     "n": 150,
+     "rate": 0.647,
+     "ci": [
+      0.567,
+      0.72
+     ],
+     "score": 0.742,
+     "split": {
+      "controls": {
+       "n": 75,
+       "rate": 0.973
+      },
+      "changed": {
+       "n": 75,
+       "rate": 0.32
+      }
+     }
+    },
+    "claude-fable-5-2-xhigh": {
+     "n": 150,
+     "rate": 0.64,
+     "ci": [
+      0.56,
+      0.72
+     ],
+     "score": 0.796,
+     "wall_min": [
+      14.1
+     ],
+     "split": {
+      "controls": {
+       "n": 75,
+       "rate": 0.947
+      },
+      "changed": {
+       "n": 75,
+       "rate": 0.333
+      }
+     }
+    },
+    "claude-opus-5-5": {
+     "n": 450,
+     "rate": 0.56,
+     "ci": [
+      0.482,
+      0.633
+     ],
+     "score": 0.742,
+     "wall_min": [
+      12.4,
+      14.0,
+      26.5
+     ],
+     "split": {
+      "controls": {
+       "n": 225,
+       "rate": 0.796
+      },
+      "changed": {
+       "n": 225,
+       "rate": 0.324
+      }
+     }
+    },
+    "claude-opus-5-5-xhigh": {
+     "n": 450,
+     "rate": 0.424,
+     "ci": [
+      0.373,
+      0.476
+     ],
+     "score": 0.644,
+     "wall_min": [
+      15.6,
+      16.8,
+      17.7
+     ],
+     "split": {
+      "controls": {
+       "n": 225,
+       "rate": 0.596
+      },
+      "changed": {
+       "n": 225,
+       "rate": 0.253
+      }
+     }
+    },
+    "claude-sonnet-5-5": {
+     "n": 450,
+     "rate": 0.553,
+     "ci": [
+      0.471,
+      0.64
+     ],
+     "score": 0.709,
+     "wall_min": [
+      12.4,
+      16.1,
+      21.7
+     ],
+     "split": {
+      "controls": {
+       "n": 225,
+       "rate": 0.791
+      },
+      "changed": {
+       "n": 225,
+       "rate": 0.316
+      }
+     }
+    }
+   }
+  },
+  "pulse_wrong_model": {
+   "status": "excluded",
+   "best": "claude-fable-5-2-xhigh",
+   "native": {
+    "floor": [
+     0.5,
+     0.419,
+     0.575
+    ],
+    "reference": [
+     0.626,
+     0.551,
+     0.7
+    ]
+   },
+   "cheats": {
+    "never": 0.5,
+    "always": 0.079,
+    "other": 0.075,
+    "const": 0.0,
+    "malformed": 0.0,
+    "frames": 0.5,
+    "import": 0.0,
+    "swapped": 0.371
+   },
+   "pass": {
+    "trivial": {
+     "n": 160,
+     "rate": 0.5,
+     "ci": [
+      0.425,
+      0.575
+     ],
+     "score": 0.5,
+     "split": {
+      "controls": {
+       "n": 80,
+       "rate": 1.0
+      },
+      "changed": {
+       "n": 80,
+       "rate": 0.0
+      }
+     }
+    },
+    "reference": {
+     "n": 160,
+     "rate": 0.613,
+     "ci": [
+      0.537,
+      0.688
+     ],
+     "score": 0.623,
+     "split": {
+      "controls": {
+       "n": 80,
+       "rate": 0.975
+      },
+      "changed": {
+       "n": 80,
+       "rate": 0.25
+      }
+     }
+    },
+    "claude-fable-5-2-xhigh": {
+     "n": 320,
+     "rate": 0.872,
+     "ci": [
+      0.825,
+      0.916
+     ],
+     "score": 0.893,
+     "wall_min": [
+      12.9,
+      37.1
+     ],
+     "split": {
+      "controls": {
+       "n": 160,
+       "rate": 0.994
+      },
+      "changed": {
+       "n": 160,
+       "rate": 0.75
+      }
+     }
+    },
+    "claude-opus-5-5": {
+     "n": 480,
+     "rate": 0.625,
+     "ci": [
+      0.583,
+      0.669
+     ],
+     "score": 0.787,
+     "wall_min": [
+      10.5,
+      13.5,
+      22.2
+     ],
+     "split": {
+      "controls": {
+       "n": 240,
+       "rate": 0.992
+      },
+      "changed": {
+       "n": 240,
+       "rate": 0.258
+      }
+     }
+    },
+    "claude-opus-5-5-xhigh": {
+     "n": 480,
+     "rate": 0.621,
+     "ci": [
+      0.577,
+      0.665
+     ],
+     "score": 0.732,
+     "wall_min": [
+      15.2,
+      15.5,
+      15.5
+     ],
+     "split": {
+      "controls": {
+       "n": 240,
+       "rate": 0.992
+      },
+      "changed": {
+       "n": 240,
+       "rate": 0.25
+      }
+     }
+    },
+    "claude-sonnet-5-5": {
+     "n": 480,
+     "rate": 0.646,
+     "ci": [
+      0.6,
+      0.692
+     ],
+     "score": 0.815,
+     "wall_min": [
+      15.1,
+      15.9,
+      17.8
+     ],
+     "split": {
+      "controls": {
+       "n": 240,
+       "rate": 1.0
+      },
+      "changed": {
+       "n": 240,
+       "rate": 0.292
+      }
+     }
+    }
+   }
+  },
+  "flux_distortion": {
+   "status": "excluded",
+   "best": "claude-opus-5-5",
+   "native": {
+    "floor": [
+     0.5,
+     0.425,
+     0.575
+    ],
+    "reference": [
+     0.796,
+     0.753,
+     0.838
+    ]
+   },
+   "cheats": {
+    "never": 0.5,
+    "always": 0.3,
+    "other": 0.117,
+    "const": 0.066,
+    "malformed": 0.0,
+    "frames": 0.023,
+    "import": 0.065,
+    "swapped": 0.139
+   },
+   "pass": {
+    "trivial": {
+     "n": 160,
+     "rate": 0.5,
+     "ci": [
+      0.425,
+      0.575
+     ],
+     "score": 0.5,
+     "split": {
+      "changed": {
+       "n": 80,
+       "rate": 0.0
+      },
+      "controls": {
+       "n": 80,
+       "rate": 1.0
+      }
+     }
+    },
+    "reference": {
+     "n": 160,
+     "rate": 0.662,
+     "ci": [
+      0.588,
+      0.738
+     ],
+     "score": 0.796,
+     "split": {
+      "changed": {
+       "n": 80,
+       "rate": 0.325
+      },
+      "controls": {
+       "n": 80,
+       "rate": 1.0
+      }
+     }
+    },
+    "claude-opus-5-5": {
+     "n": 480,
+     "rate": 0.771,
+     "ci": [
+      0.727,
+      0.815
+     ],
+     "score": 0.846,
+     "wall_min": [
+      12.8,
+      18.5,
+      21.0
+     ],
+     "split": {
+      "changed": {
+       "n": 240,
+       "rate": 0.542
+      },
+      "controls": {
+       "n": 240,
+       "rate": 1.0
+      }
+     }
+    },
+    "claude-sonnet-5-5": {
+     "n": 480,
+     "rate": 0.771,
+     "ci": [
+      0.723,
+      0.819
+     ],
+     "score": 0.825,
+     "wall_min": [
+      8.3,
+      9.2,
+      12.6
+     ],
+     "split": {
+      "changed": {
+       "n": 240,
+       "rate": 0.542
+      },
+      "controls": {
+       "n": 240,
+       "rate": 1.0
+      }
+     }
+    }
+   }
+  }
+ },
+ "scored": [
+  "2026-11-26",
+  "2026-11-26"
+ ],
+ "models": [
+  "claude-fable-5-2-xhigh",
+  "claude-opus-5-5",
+  "claude-opus-5-5-xhigh",
+  "claude-sonnet-5-5"
+ ],
+ "composite": {
+  "tasks": [
+   "readout_drift"
+  ],
+  "clusters": 5,
+  "method": "plain mean of per-task pass rates; 95% interval from independent seed-cluster bootstraps per task, averaged draw by draw",
+  "arms": {
+   "claude-fable-5-2-xhigh": {
+    "mean": 0.64,
+    "ci": [
+     0.56,
+     0.72
+    ],
+    "per": [
+     0.64
+    ]
+   },
+   "claude-opus-5-5": {
+    "mean": 0.56,
+    "ci": [
+     0.482,
+     0.633
+    ],
+    "per": [
+     0.56
+    ]
+   },
+   "claude-opus-5-5-xhigh": {
+    "mean": 0.424,
+    "ci": [
+     0.373,
+     0.476
+    ],
+    "per": [
+     0.424
+    ]
+   },
+   "claude-sonnet-5-5": {
+    "mean": 0.553,
+    "ci": [
+     0.471,
+     0.64
+    ],
+    "per": [
+     0.553
+    ]
+   },
+   "reference": {
+    "mean": 0.647,
+    "ci": [
+     0.567,
+     0.72
+    ],
+    "per": [
+     0.647
+    ]
+   },
+   "trivial": {
+    "mean": 0.5,
+    "ci": [
+     0.42,
+     0.58
+    ],
+    "per": [
+     0.5
+    ]
+   }
+  }
+ }
+}
