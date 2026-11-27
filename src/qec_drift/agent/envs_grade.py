@@ -87,23 +87,8 @@ def _readout(rep: dict) -> Iterator[dict]:
         )
 
 
-def _pulse(rep: dict) -> Iterator[dict]:
-    for r in rep["instances"]:
-        yield dict(
-            truth_changed=r["kind"] != "control",
-            said=r.get("changed"),
-            fix=r.get("fix"),
-            diag=r.get("diag"),
-            score=r["score"],
-            error="error" in r,
-        )
-
-
 # task -> its report's instances as (truth_changed, said, fix, diag, score, error)
-READERS: dict[str, Callable[[dict], Iterator[dict]]] = {
-    "pulse_wrong_model": _pulse,
-    "readout_drift": _readout,
-}
+READERS: dict[str, Callable[[dict], Iterator[dict]]] = {"readout_drift": _readout}
 
 
 def passed(row: dict) -> bool:

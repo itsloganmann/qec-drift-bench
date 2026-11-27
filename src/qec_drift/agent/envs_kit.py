@@ -33,16 +33,10 @@ def _readout(h: ModuleType, tier: str) -> list[tuple[str, dict]]:
     return out
 
 
-def _pulse(h: ModuleType, tier: str) -> list[tuple[str, dict]]:
-    h.use_tier(tier)
-    return [(inst["kind"], inst["data"]) for inst in h.build(h.TIERS[tier]["seed"], h.N_INSTANCES)]
-
-
 # task -> (time limit per instance in s, its public instances as (family, data), the families
 # whose change lies outside the model TASK.md states). One entry per task in envs/; each
 # harness builds its instances in its own way.
 TASKS: dict[str, tuple[int, Callable[[ModuleType, str], list], Callable[[str], bool]]] = {
-    "pulse_wrong_model": (120, _pulse, lambda fam: "drive12" in fam),
     "readout_drift": (120, _readout, lambda fam: "iq_stretch" in fam.split("+")),
 }
 
