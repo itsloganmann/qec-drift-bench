@@ -118,7 +118,7 @@
   },
   "readout_drift": {
    "status": "included",
-   "best": "claude-opus-5-5",
+   "best": "claude-fable-5-2-xhigh",
    "native": {
     "floor": [
      0.5,
@@ -180,6 +180,28 @@
       }
      }
     },
+    "claude-fable-5-2-xhigh": {
+     "n": 150,
+     "rate": 0.64,
+     "ci": [
+      0.56,
+      0.72
+     ],
+     "score": 0.796,
+     "wall_min": [
+      14.1
+     ],
+     "split": {
+      "controls": {
+       "n": 75,
+       "rate": 0.947
+      },
+      "changed": {
+       "n": 75,
+       "rate": 0.333
+      }
+     }
+    },
     "claude-opus-5-5": {
      "n": 450,
      "rate": 0.56,
@@ -201,6 +223,30 @@
       "changed": {
        "n": 225,
        "rate": 0.324
+      }
+     }
+    },
+    "claude-opus-5-5-xhigh": {
+     "n": 450,
+     "rate": 0.424,
+     "ci": [
+      0.373,
+      0.476
+     ],
+     "score": 0.644,
+     "wall_min": [
+      15.6,
+      16.8,
+      17.7
+     ],
+     "split": {
+      "controls": {
+       "n": 225,
+       "rate": 0.596
+      },
+      "changed": {
+       "n": 225,
+       "rate": 0.253
       }
      }
     },
@@ -231,8 +277,8 @@
    }
   },
   "pulse_wrong_model": {
-   "status": "included",
-   "best": "claude-sonnet-5-5",
+   "status": "excluded",
+   "best": "claude-fable-5-2-xhigh",
    "native": {
     "floor": [
      0.5,
@@ -294,6 +340,29 @@
       }
      }
     },
+    "claude-fable-5-2-xhigh": {
+     "n": 320,
+     "rate": 0.872,
+     "ci": [
+      0.825,
+      0.916
+     ],
+     "score": 0.893,
+     "wall_min": [
+      12.9,
+      37.1
+     ],
+     "split": {
+      "controls": {
+       "n": 160,
+       "rate": 0.994
+      },
+      "changed": {
+       "n": 160,
+       "rate": 0.75
+      }
+     }
+    },
     "claude-opus-5-5": {
      "n": 480,
      "rate": 0.625,
@@ -315,6 +384,30 @@
       "changed": {
        "n": 240,
        "rate": 0.258
+      }
+     }
+    },
+    "claude-opus-5-5-xhigh": {
+     "n": 480,
+     "rate": 0.621,
+     "ci": [
+      0.577,
+      0.665
+     ],
+     "score": 0.732,
+     "wall_min": [
+      15.2,
+      15.5,
+      15.5
+     ],
+     "split": {
+      "controls": {
+       "n": 240,
+       "rate": 0.992
+      },
+      "changed": {
+       "n": 240,
+       "rate": 0.25
       }
      }
     },
@@ -463,55 +556,76 @@
   "2026-11-26",
   "2026-11-26"
  ],
+ "models": [
+  "claude-fable-5-2-xhigh",
+  "claude-opus-5-5",
+  "claude-opus-5-5-xhigh",
+  "claude-sonnet-5-5"
+ ],
  "composite": {
   "tasks": [
-   "readout_drift",
-   "pulse_wrong_model"
+   "readout_drift"
   ],
   "clusters": 5,
   "method": "plain mean of per-task pass rates; 95% interval from independent seed-cluster bootstraps per task, averaged draw by draw",
   "arms": {
-   "claude-opus-5-5": {
-    "mean": 0.593,
+   "claude-fable-5-2-xhigh": {
+    "mean": 0.64,
     "ci": [
-     0.548,
-     0.635
+     0.56,
+     0.72
     ],
     "per": [
-     0.56,
-     0.625
+     0.64
+    ]
+   },
+   "claude-opus-5-5": {
+    "mean": 0.56,
+    "ci": [
+     0.482,
+     0.633
+    ],
+    "per": [
+     0.56
+    ]
+   },
+   "claude-opus-5-5-xhigh": {
+    "mean": 0.424,
+    "ci": [
+     0.373,
+     0.476
+    ],
+    "per": [
+     0.424
     ]
    },
    "claude-sonnet-5-5": {
-    "mean": 0.6,
+    "mean": 0.553,
     "ci": [
-     0.552,
-     0.648
+     0.471,
+     0.64
     ],
     "per": [
-     0.553,
-     0.646
+     0.553
     ]
    },
    "reference": {
-    "mean": 0.63,
+    "mean": 0.647,
     "ci": [
-     0.575,
-     0.682
+     0.567,
+     0.72
     ],
     "per": [
-     0.647,
-     0.613
+     0.647
     ]
    },
    "trivial": {
     "mean": 0.5,
     "ci": [
-     0.444,
-     0.555
+     0.42,
+     0.58
     ],
     "per": [
-     0.5,
      0.5
     ]
    }

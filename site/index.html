@@ -211,7 +211,7 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
 
   <section id="leaderboard" aria-labelledby="lb-h" class="first">
     <h2 id="lb-h">Leaderboard</h2>
-    <p class="lead"><span id="lead"></span> Both agents also helped choose which tasks ship, so their scores here are biased low. New models are the fair test.</p>
+    <p class="lead"><span id="lead"></span> These agents also decided which tasks ship, so their scores here are biased low. New models are the fair test.</p>
     <div class="scroll"><table id="lb"><thead></thead><tbody></tbody></table></div>
     <p class="note" id="lbnote"></p>
     <div class="chart"><h3>Pass rate on the shipped tasks</h3><p class="def">Higher is better. Each bar is the mean over the shipped tasks; the coloured ticks show each task on its own.</p><div id="composite"></div></div>
@@ -284,8 +284,8 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
         <h3 class="minor">Limits</h3>
         <ul class="limits">
           <li>The devices are simulated from cited physics, not measured on hardware.</li>
-          <li>Tasks were selected with the same two models shown here, so their scores on the shipped tasks are biased low.</li>
-          <li>Two models, 3 rollouts each, one harness. More models and harnesses are next.</li>
+          <li>Tasks were selected with the same agents shown here, so their scores on the shipped tasks are biased low.</li>
+          <li>Claude models only so far, up to 3 rollouts each, one harness. More models and harnesses are next.</li>
           <li>5 frozen seed clusters per task. Some differences between models are inside the noise.</li>
           <li>The reference method was written by the people who wrote the tasks.</li>
         </ul>
@@ -336,8 +336,8 @@ footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule);
   <section id="changes" aria-labelledby="ch-h">
     <h2 id="ch-h">Changelog</h2>
     <ul class="changes">
-      <li><time datetime="2026-11-27">27 Nov 2026</time><span>Public site preview: leaderboard with intervals, task pages, controls and changed devices, method and limits, canary string.</span></li>
-      <li><time datetime="2026-11-26">26 Nov 2026</time><span>Agents no longer see examples of the unlisted change. Readout and Pulse ship; Flux and QEC are held back as close calls. Flux line task added.</span></li>
+      <li><time datetime="2026-11-27">27 Nov 2026</time><span>Public site preview: leaderboard with intervals, task pages, controls and changed devices, method and limits, canary string. Fable 5.2 and Opus 5.5 at extra-high effort scored. Pulse is held back: the strongest agent passes above the bar, so it will return as a harder version.</span></li>
+      <li><time datetime="2026-11-26">26 Nov 2026</time><span>Agents no longer see examples of the unlisted change. Readout and Pulse pass the bar; Flux and QEC are held back as close calls. Flux line task added.</span></li>
       <li><time datetime="2026-11-19">19 Nov 2026</time><span>Hard tiers with an unlisted change, and a fixed versioned rubric per task.</span></li>
       <li><time datetime="2026-11-17">17 Nov 2026</time><span>Baselines and shortcut checks.</span></li>
     </ul>

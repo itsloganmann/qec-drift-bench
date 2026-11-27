@@ -24,7 +24,7 @@ import numpy as np
 
 ENVS = ["readout_drift", "pulse_wrong_model", "flux_distortion", "qec_drift_d3"]
 SHIPPED_ORDER = ["readout_drift", "pulse_wrong_model"]
-ARMS = ["claude-opus-5-5", "claude-sonnet-5-5", "reference", "trivial"]
+BASE = ["reference", "trivial"]  # scripted arms; agent arms are read from the results
 CHEATS = {  # strategy -> solution name per env, as in summary_hard.json
     "never": {"qec_drift_d3": "lazy_never_changed", "*": "lazy_blind_refit"},
     "always": {"qec_drift_d3": "lazy_always_changed", "pulse_wrong_model": "lazy_always_changed_robust",
@@ -53,7 +53,7 @@ def results(root: Path) -> dict:
     out = dict(source="mismatch-envs experiments/results (selection.json, summary_hard.json), hard tier, "
                "examples held out, paper seeds", threshold=sel["threshold"], tasks={})
     for t in sel["tasks"]:
-        if t["tier"] != "hard" or t["protocol"] != "examples held out":
+        if t["tier"] != "hard" or t["protocol"] != "examples held out" or t["env"] not in ENVS:
             continue
         e, s = t["env"], summ[t["env"]]
         out["tasks"][e] = dict(
@@ -67,7 +67,10 @@ def results(root: Path) -> dict:
     days = set()
     for f in glob.glob(str(res / "agent_solutions_hard" / "*-heldout" / "*" / "r*" / "done.json")):
         d = json.loads(Path(f).read_text())
-        p = out["tasks"][d["env"]]["pass"][d["model"]]
+        m = d["model"].replace("@", "-")  # "claude-fable-5-2@xhigh" is scored as "claude-fable-5-2-xhigh"
+        if d["env"] not in out["tasks"] or m not in out["tasks"][d["env"]]["pass"]:
+            continue
+        p = out["tasks"][d["env"]]["pass"][m]
         p.setdefault("wall_min", []).append(round(d["wall_s"] / 60, 1))
         days.add(d["started"][:10])
     for t in out["tasks"].values():
@@ -79,7 +82,11 @@ def results(root: Path) -> dict:
     for (e, lab), v in split.items():
         if e in out["tasks"] and lab in out["tasks"][e]["pass"]:
             out["tasks"][e]["pass"][lab]["split"] = {k: dict(n=len(x), rate=r3(np.mean(x))) for k, x in v.items()}
-    out["composite"] = composite(by, boot, [e for e in SHIPPED_ORDER if out["tasks"][e]["status"] == "included"])
+    agents = sorted({m for t in out["tasks"].values() for m in t["pass"] if m not in BASE})
+    out["models"] = agents
+    shipped = [e for e in SHIPPED_ORDER if out["tasks"][e]["status"] == "included"]
+    arms = [a for a in agents + BASE if all(a in out["tasks"][e]["pass"] for e in shipped)]
+    out["composite"] = composite(by, boot, shipped, arms)
     return out
 
 
@@ -106,11 +113,11 @@ def scored_rows(root: Path):
     return by, split, analyze.BOOT
 
 
-def composite(by: dict, boot: dict, shipped: list) -> dict:
+def composite(by: dict, boot: dict, shipped: list, arms_in: list) -> dict:
     """Mean pass rate over the shipped tasks. 95% interval: an independent seed-cluster bootstrap
     per task (the experiments' own resample count and seed), averaged draw by draw."""
     n, arms = boot["resamples"], {}
-    for lab in ARMS:
+    for lab in arms_in:
         rng = np.random.default_rng(boot["rng_seed"])
         draws, points = [], []
         for e in shipped:
@@ -126,7 +133,7 @@ def composite(by: dict, boot: dict, shipped: list) -> dict:
         m = np.mean(draws, axis=0)
         arms[lab] = dict(mean=r3(np.mean(points)), ci=[r3(x) for x in np.quantile(m, [0.025, 0.975])],
                          per=[r3(p) for p in points])
-    clusters = len(by[(shipped[0], ARMS[0])])
+    clusters = len(by[(shipped[0], "reference")])
     return dict(tasks=shipped, clusters=clusters, method="plain mean of per-task pass rates; 95% interval from "
                 "independent seed-cluster bootstraps per task, averaged draw by draw", arms=arms)
 

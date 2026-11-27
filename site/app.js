@@ -8,7 +8,15 @@ import { forestPlot, compositeBars, timeScatter } from './charts.js'
 const ORDER = ['readout', 'pulse', 'flux', 'qec']
 const ENV = { readout: 'readout_drift', pulse: 'pulse_wrong_model', flux: 'flux_distortion', qec: 'qec_drift_d3' }
 const PENDING = ['GPT-5.6 Sol', 'Gemini 3.8 Flash']
-const MODELS = [{ id: 'claude-opus-5-5', name: 'Claude Opus 5.5' }, { id: 'claude-sonnet-5-5', name: 'Claude Sonnet 5.5' }]
+// Display names for the agent arms in results.json. Agents with no name here show their id.
+const NAMES = {
+  'claude-fable-5-2-xhigh': ['Claude Fable 5.2, extra-high effort', 'Fable 5.2 x-high'],
+  'claude-opus-5-5-xhigh': ['Claude Opus 5.5, extra-high effort', 'Opus 5.5 x-high'],
+  'claude-opus-5-5': ['Claude Opus 5.5', 'Opus 5.5'],
+  'claude-sonnet-5-5': ['Claude Sonnet 5.5', 'Sonnet 5.5'],
+}
+let MODELS = []
+const BASE = ['reference', 'trivial']
 const ARXIV = (id) => `https://arxiv.org/abs/${id}`
 
 const TASKS = {
@@ -70,6 +78,8 @@ let chip = null
 let current = 'readout'
 let inst = 0
 
+const rollouts = (f, id) => { const p = results.tasks[ENV[f]].pass; return p[id] ? Math.round(p[id].n / p.reference.n) : 0 }
+const clear = (f) => { const r = results.tasks[ENV[f]]; return r.pass[r.best].ci[0] > results.threshold }
 const shippedEnvs = () => ORDER.filter((f) => results.tasks[ENV[f]].status === 'included')
 const names = () => Object.fromEntries(ORDER.map((f) => [ENV[f], { short: TASKS[f].short, fam: f }]))
 
@@ -84,12 +94,12 @@ function renderLeaderboard() {
   const held = ORDER.filter((f) => !shipped.includes(f))
   const cols = [...shipped, ...held]
   $('#lb thead').innerHTML = `<tr><th>Rank</th><th>Agent</th><th>Pass rate</th>${cols.map((f) => `<th class="${shipped.includes(f) ? '' : 'heldh'}">${TASKS[f].short}${shipped.includes(f) ? '' : '<span class="tag">held back</span>'}</th>`).join('')}</tr>`
-  const cell = (s) => (s ? `<span class="mono">${f2(s.rate)}</span><span class="iv">[${f2(s.ci[0])}, ${f2(s.ci[1])}]</span>` : '<span class="mono">-</span>')
-  const tasks = (id) => cols.map((f) => `<td class="${shipped.includes(f) ? '' : 'heldc'}">${cell(results.tasks[ENV[f]].pass[id])}</td>`).join('')
-  const ids = MODELS.map((m) => m.id).sort((a, b) => comp[b].mean - comp[a].mean)
+  const cell = (s, short) => (s ? `<span class="mono">${f2(s.rate)}${short ? '<sup>a</sup>' : ''}</span><span class="iv">[${f2(s.ci[0])}, ${f2(s.ci[1])}]</span>` : '<span class="mono">-</span>')
+  const tasks = (id) => cols.map((f) => `<td class="${shipped.includes(f) ? '' : 'heldc'}">${cell(results.tasks[ENV[f]].pass[id], !BASE.includes(id) && rollouts(f, id) < 3)}</td>`).join('')
+  const ids = MODELS.map((m) => m.id).filter((id) => comp[id]).sort((a, b) => comp[b].mean - comp[a].mean)
   const rk = ranks(ids, comp)
   const name = Object.fromEntries(MODELS.map((m) => [m.id, m.name]))
-  const rows = ids.map((id) => `<tr><td class="rank">${rk[id]}</td><td>${name[id]}</td><td class="score">${cell({ rate: comp[id].mean, ci: comp[id].ci })}</td>${tasks(id)}</tr>`)
+  const rows = ids.map((id) => `<tr><td class="rank">${rk[id]}</td><td>${name[id]}</td><td class="score">${cell({ rate: comp[id].mean, ci: comp[id].ci }, shipped.some((f) => rollouts(f, id) < 3))}</td>${tasks(id)}</tr>`)
   rows.push(`<tr class="pending"><td class="rank">-</td><td colspan="${2 + cols.length}">${PENDING.join(', ')}<span class="tag">pending</span> Not scored yet. They will run under the same rule and harness before the first release.</td></tr>`)
   for (const [id, label] of [['reference', 'Reference method'], ['trivial', 'Floor: always answer "no change"']]) {
     rows.push(`<tr class="base"><td class="rank"></td><td>${label}</td><td class="score">${cell({ rate: comp[id].mean, ci: comp[id].ci })}</td>${tasks(id)}</tr>`)
@@ -99,13 +109,17 @@ function renderLeaderboard() {
   // The sentences round the table, written from the same numbers.
   const best = ids[0]
   const ref = comp.reference
-  const agents = ids.map((id) => `${f2(comp[id].mean)} for ${name[id]}`).join(' and ')
-  const changed = shipped.flatMap((f) => MODELS.map((m) => results.tasks[ENV[f]].pass[m.id].split.changed.rate))
+  const parts = ids.map((id) => `${f2(comp[id].mean)} for ${name[id]}`)
+  const agents = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : parts[0]
+  const changed = shipped.flatMap((f) => ids.map((id) => results.tasks[ENV[f]].pass[id].split.changed.rate))
   const beat = comp[best].mean > ref.mean
-  $('#lead').textContent = `${beat ? `${name[best]} leads the scripted reference method` : 'No agent beats the scripted reference method yet'}: its pass rate on the shipped tasks is ${f2(ref.mean)}, against ${agents}, and the intervals overlap. On devices that really changed, the agents pass only ${pct(Math.min(...changed))} to ${pct(Math.max(...changed))} of instances.`
-  const walls = ORDER.flatMap((f) => MODELS.flatMap((m) => results.tasks[ENV[f]].pass[m.id].wall_min ?? []))
+  const on = shipped.length === 1 ? `on ${TASKS[shipped[0]].short}, the one shipped task,` : 'on the shipped tasks'
+  $('#lead').textContent = `${beat ? `${name[best]} leads the scripted reference method` : 'No agent beats the scripted reference method yet'}: ${on} the reference passes ${f2(ref.mean)}, against ${agents}. On devices that really changed, the agents pass only ${pct(Math.min(...changed))} to ${pct(Math.max(...changed))} of instances.`
+  const walls = ORDER.flatMap((f) => MODELS.flatMap((m) => results.tasks[ENV[f]].pass[m.id]?.wall_min ?? []))
+  const heldWhy = held.map((f) => `${TASKS[f].short}: ${clear(f) ? 'its best agent passes above the 75% bar, so it will return as a harder version' : 'a close call, its best agent is just above the 75% bar and the interval crosses it'}.`).join(' ')
+  const short = ORDER.flatMap((f) => MODELS.filter((m) => rollouts(f, m.id) > 0 && rollouts(f, m.id) < 3).map((m) => `${m.name} on ${TASKS[f].short} (${rollouts(f, m.id)} of 3)`))
   const [d0, d1] = results.scored
-  $('#lbnote').innerHTML = `Pass rate: the mean over ${shipped.map((f) => TASKS[f].short).join(' and ')} of the share of instances that pass the <a href="#defs">pass rule</a>. Interval: approximate 95%, from a bootstrap over the ${results.composite.clusters} seed clusters and the instances in each. Rank: 1 plus the number of agents whose interval sits wholly above. ${held.map((f) => TASKS[f].short).join(' and ')} are held back and do not count: their best agent is just above the 75% bar, but its interval crosses it. Both agents ran in Claude Code, headless, with no network and the grader out of reach, on ${d0 === d1 ? day(d0) : `${day(d0)} to ${day(d1)}`}; episodes took ${Math.round(Math.min(...walls))} to ${Math.round(Math.max(...walls))} minutes. Pending models also appear on the <a href="https://www.kaggle.com/benchmarks/loganmann24/quantum-bench/leaderboard">Kaggle leaderboard</a>, scored there with each task's own rubric, not this pass rule.`
+  $('#lbnote').innerHTML = `Pass rate: the mean over ${shipped.map((f) => TASKS[f].short).join(' and ')} of the share of instances that pass the <a href="#defs">pass rule</a>. Interval: approximate 95%, from a bootstrap over the ${results.composite.clusters} seed clusters and the instances in each. Rank: 1 plus the number of agents whose interval sits wholly above. Held-back tasks do not count. ${heldWhy} ${short.length ? `<sup>a</sup>Fewer than 3 rollouts finished: ${short.join(', ')}. ` : ''}All agents ran in Claude Code, headless, with no network and the grader out of reach, on ${d0 === d1 ? day(d0) : `${day(d0)} to ${day(d1)}`}; episodes took ${Math.round(Math.min(...walls))} to ${Math.round(Math.max(...walls))} minutes. Pending models also appear on the <a href="https://www.kaggle.com/benchmarks/loganmann24/quantum-bench/leaderboard">Kaggle leaderboard</a>, scored there with each task's own rubric, not this pass rule.`
   $('#stamp-date').textContent = `Scored ${day(d1)}`
   $('#stamp-tasks').textContent = `${shipped.length} of ${ORDER.length} tasks shipped`
 }
@@ -127,7 +141,7 @@ function renderCard(f) {
       <div><dt>Agent gets</dt><dd>${t.gets}</dd></div>
       <div><dt>Agent returns</dt><dd>${t.returns}</dd></div>
       <div><dt>What can change</dt><dd>${t.changes}</dd></div>
-      <div><dt>Best agent</dt><dd>${who} passes <span class="mono">${f2(best.rate)} [${f2(best.ci[0])}, ${f2(best.ci[1])}]</span>${shipped ? '.' : '. That is above the 75% bar, but the interval crosses it, so the task is held back as a close call.'}</dd></div>
+      <div><dt>Best agent</dt><dd>${who} passes <span class="mono">${f2(best.rate)} [${f2(best.ci[0])}, ${f2(best.ci[1])}]</span>${shipped ? '.' : clear(f) ? '. That is above the 75% bar, so the task is held back until a harder version is ready.' : '. That is above the 75% bar, but the interval crosses it, so the task is held back as a close call.'}</dd></div>
     </dl>
     <div><div class="label">Pass rate on this task</div><div id="cardplot" class="mini"></div></div>
     <p class="src">Physics: ${t.sources.map(([n, id]) => `<a href="${ARXIV(id)}">${n}</a>`).join(', ')}. Full citations in the task's TASK.md.</p>
@@ -189,11 +203,11 @@ function renderSplit() {
     <tr>${ORDER.map(() => '<th class="v">controls</th><th class="v">changed</th>').join('')}</tr>`
   const bar = (v) => `<span class="bar" style="width:${Math.round(v * 40)}px"></span>${f2(v)}`
   $('#split tbody').innerHTML = arms.map((a) => `<tr><td>${a.name}</td>${ORDER.map((f) => {
-    const s = results.tasks[ENV[f]].pass[a.id].split
-    return `<td class="v">${bar(s.controls.rate)}</td><td class="v">${bar(s.changed.rate)}</td>`
+    const s = results.tasks[ENV[f]].pass[a.id]?.split
+    return s ? `<td class="v">${bar(s.controls.rate)}</td><td class="v">${bar(s.changed.rate)}</td>` : '<td class="v">-</td><td class="v">-</td>'
   }).join('')}</tr>`).join('')
   const ro = results.tasks[ENV.readout].pass
-  const fa = MODELS.map((m) => 1 - ro[m.id].split.controls.rate)
+  const fa = MODELS.filter((m) => ro[m.id]).map((m) => 1 - ro[m.id].split.controls.rate)
   $('#splitnote').textContent = `Controls are devices with only normal wander; the right answer is "no change". The floor passes every control and no changed device. On Readout the agents raise a false alarm on ${pct(Math.min(...fa))} to ${pct(Math.max(...fa))} of controls, against ${pct(1 - ro.reference.split.controls.rate)} for the reference method.`
 }
 
@@ -256,6 +270,7 @@ async function loadChip() {
 
 async function main() {
   results = await (await fetch('data/results.json')).json()
+  MODELS = results.models.map((id) => ({ id, name: NAMES[id]?.[0] ?? id, short: NAMES[id]?.[1] ?? id }))
   renderLeaderboard()
   renderTable()
   renderCharts()

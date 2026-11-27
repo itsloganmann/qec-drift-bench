@@ -8,7 +8,7 @@ const width = (el) => Math.max(300, Math.floor(el.clientWidth || 760))
 const cls = (id) => (id === 'trivial' ? 'floor' : id === 'reference' ? 'ref' : 'agent')
 
 export function armNames(models, narrow) {
-  const n = Object.fromEntries(models.map((m) => [m.id, narrow ? m.name.replace('Claude ', '') : m.name]))
+  const n = Object.fromEntries(models.map((m) => [m.id, narrow ? m.short ?? m.name : m.name]))
   n.reference = narrow ? 'Reference' : 'Reference method'
   n.trivial = narrow ? 'Floor' : 'Floor (always "no change")'
   return n
@@ -26,7 +26,7 @@ export function forestPlot(el, results, envs, names, models, o = {}) {
   const W = width(el)
   const narrow = W < 560
   const label = armNames(models, narrow)
-  const left = narrow ? 104 : 200
+  const left = narrow ? 112 : 250
   const valW = narrow ? 36 : 120
   const rowH = 22
   const head = o.compact ? 22 : 44
@@ -41,12 +41,13 @@ export function forestPlot(el, results, envs, names, models, o = {}) {
     const shipped = t.status === 'included'
     if (!o.compact) {
       parts.push(`<rect x="0" y="${y + 3}" width="10" height="10" style="fill:var(--l-${names[e].fam})"/>`)
-      parts.push(`<text class="fp-task" x="16" y="${y + 12}">${names[e].short}<tspan class="fp-status ${shipped ? 'in' : 'out'}" dx="10">${shipped ? 'shipped' : 'held back, close call'}</tspan></text>`)
+      parts.push(`<text class="fp-task" x="16" y="${y + 12}">${names[e].short}<tspan class="fp-status ${shipped ? 'in' : 'out'}" dx="10">${shipped ? 'shipped' : t.pass[t.best].ci[0] > results.threshold ? 'held back, too easy' : 'held back, close call'}</tspan></text>`)
       y += rowH
     }
     for (const a of arms) {
       const s = t.pass[a]
       parts.push(`<text class="fp-arm" x="${o.compact ? 0 : 16}" y="${y + 12}">${label[a]}</text>`)
+      if (!s) parts.push(`<text class="fp-val" x="${W - 2}" y="${y + 12}" text-anchor="end">not run</text>`)
       if (s) {
         parts.push(`<line class="fp-ci ${cls(a)}" x1="${sx(Math.max(lo, s.ci[0]))}" x2="${sx(s.ci[1])}" y1="${y + 8}" y2="${y + 8}"/>`)
         parts.push(point(a, sx(s.rate), y + 8))
@@ -75,7 +76,7 @@ export function compositeBars(el, comp, models, fams, taskNames) {
   const W = width(el)
   const narrow = W < 560
   const label = armNames(models, narrow)
-  const left = narrow ? 92 : 200
+  const left = narrow ? 112 : 250
   const valW = narrow ? 36 : 120
   const rowH = 34
   const sx = (v) => left + v * (W - left - valW - 12)
@@ -102,11 +103,20 @@ export function compositeBars(el, comp, models, fams, taskNames) {
     <div class="legend"><span><i class="k-bar"></i>agent</span><span><i class="k-ref"></i>reference method</span><span><i class="k-floor"></i>floor</span><span><i class="k-ci"></i>95% interval</span>${key}</div>`
 }
 
+// One marker shape per agent, so the time scatter can show task by colour and agent by shape.
+function mark(j, x, y, c) {
+  const st = `fill:${c};stroke:var(--sheet);stroke-width:1.5`
+  if (j % 4 === 0) return `<circle cx="${x}" cy="${y}" r="5.5" style="${st}"/>`
+  if (j % 4 === 1) return `<rect x="${x - 5}" y="${y - 5}" width="10" height="10" style="${st}"/>`
+  if (j % 4 === 2) return `<path d="M${x} ${y - 6.5}L${x + 6} ${y + 4.5}L${x - 6} ${y + 4.5}Z" style="${st}"/>`
+  return `<path d="M${x} ${y - 6.5}L${x + 6.5} ${y}L${x} ${y + 6.5}L${x - 6.5} ${y}Z" style="${st}"/>`
+}
+
 // Pass rate against wall-clock minutes per episode: one point per model and task.
 export function timeScatter(el, results, envs, fams, models) {
   const W = width(el)
   const narrow = W < 560
-  const legendW = narrow ? 0 : 150
+  const legendW = 0
   const H = narrow ? 300 : 340
   const box = { x: 52, y: 16, w: W - 52 - legendW - 12, h: H - 60 }
   const walls = envs.flatMap((e) => models.flatMap((m) => results.tasks[e].pass[m.id]?.wall_min ?? []))
@@ -129,12 +139,10 @@ export function timeScatter(el, results, envs, fams, models) {
       const c = `var(--l-${fams[k]})`
       out.push(`<line x1="${sx(w[0])}" x2="${sx(w[w.length - 1])}" y1="${y}" y2="${y}" style="stroke:${c};stroke-opacity:0.5"/>`)
       out.push(`<line x1="${x}" x2="${x}" y1="${sy(s.ci[0])}" y2="${sy(s.ci[1])}" style="stroke:${c};stroke-width:1.5"/>`)
-      out.push(j === 0
-        ? `<circle cx="${x}" cy="${y}" r="5.5" style="fill:${c};stroke:var(--sheet);stroke-width:1.5"/>`
-        : `<rect x="${x - 5}" y="${y - 5}" width="10" height="10" style="fill:${c};stroke:var(--sheet);stroke-width:1.5"/>`)
+      out.push(mark(j, x, y, c))
     })
   })
   el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Pass rate against minutes per episode">${out.join('')}</svg>
     <div class="legend">${envs.map((e, k) => `<span><i class="sq" style="background:var(--l-${fams[k]})"></i>${results.tasks[e].label}</span>`).join('')}
-    <span><i style="background:var(--ink-2)"></i>${models[0].name.replace('Claude ', '')}</span><span><i class="sq" style="background:var(--ink-2)"></i>${models[1].name.replace('Claude ', '')}</span></div>`
+    ${models.map((m, j) => `<span><svg width="12" height="12" viewBox="-6 -6 12 12" style="display:inline-block;vertical-align:-1px;margin-right:5px">${mark(j, 0, 0, 'var(--ink-2)')}</svg>${m.short ?? m.name}</span>`).join('')}</div>`
 }
