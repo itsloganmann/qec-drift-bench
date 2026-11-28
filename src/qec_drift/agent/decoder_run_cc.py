@@ -173,16 +173,22 @@ def profile(workdir: Path, config_dir: Path) -> str:
 
 
 def run_cli(
-    workdir: Path, model: str, effort: str | None, max_usd: float, config_dir: Path
+    workdir: Path,
+    model: str,
+    effort: str | None,
+    max_usd: float,
+    config_dir: Path,
+    task_prompt: str | None = None,
 ) -> tuple[list[dict], int]:
-    """One headless Claude Code session in `workdir`. Returns the event stream and the exit code."""
+    """One headless Claude Code session in `workdir`. Returns the event stream and the exit code.
+    `task_prompt` replaces the decoder task's prompt (for tasks with their own prompt)."""
     cmd = [
         "sandbox-exec",
         "-p",
         profile(workdir, config_dir),
         str(CLAUDE),
         "-p",
-        prompt(),
+        task_prompt or prompt(),
         "--model",
         model,
         "--tools",
@@ -272,7 +278,8 @@ class Backend:
     trace_kind: str
     check: Callable[[], None]  # fail before the first episode when the CLI or login is missing
     prepare: Callable[[str], Path]  # the task's state directory, with a copy of the login
-    run: Callable[[Path, str, str | None, float, Path], tuple[list[dict], int]]
+    # (workdir, model, effort, max_usd, config_dir, task_prompt=None) -> (events, exit code)
+    run: Callable[..., tuple[list[dict], int]]
     release: Callable[[Path], None]  # take the login copy away
     turns: Callable[[list[dict]], int]
     summary: Callable[[list[dict], int], dict]

@@ -1,0 +1,10 @@
+env,model,rollout,outcome,pass_rate,score,instances
+pulse_wrong_model,claude-fable-5-2-xhigh,0,submitted,0.8,0.876262,160
+pulse_wrong_model,claude-fable-5-2-xhigh,1,submitted,0.94375,0.910695,160
+pulse_wrong_model,claude-opus-5-5-xhigh,0,submitted,0.6125,0.774664,160
+pulse_wrong_model,claude-opus-5-5-xhigh,1,submitted,0.625,0.764149,160
+pulse_wrong_model,claude-opus-5-5-xhigh,2,submitted,0.625,0.658523,160
+readout_drift,claude-fable-5-2-xhigh,0,submitted,0.64,0.795705,150
+readout_drift,claude-opus-5-5-xhigh,0,submitted,0.493333,0.720708,150
+readout_drift,claude-opus-5-5-xhigh,1,submitted,0.293333,0.483424,150
+readout_drift,claude-opus-5-5-xhigh,2,submitted,0.486667,0.727906,150

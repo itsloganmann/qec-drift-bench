@@ -10,6 +10,7 @@ import pytest
 from qec_drift.agent import decoder_run_cc as cc
 from qec_drift.agent import decoder_run_codex as cx
 from qec_drift.agent import decoder_task as dt
+from qec_drift.agent import isolation
 from tests.test_decoder_run_cc import DECODER
 
 
@@ -346,3 +347,14 @@ def test_a_here_document_works_in_the_sandboxed_episode_shell(tmp_path):
         check=False,
     )
     assert out.stdout.strip() == "heredoc ok", out.stderr
+
+
+def test_both_scaffolds_take_a_task_prompt_and_default_to_the_decoder_prompt(tmp_path, monkeypatch):
+    calls = []
+    monkeypatch.setattr(isolation, "stream", lambda cmd, *a, **k: (calls.append(cmd), ([], 0))[1])
+    cc.run_cli(tmp_path, "m", None, 1.0, tmp_path / "cfg", task_prompt="OTHER TASK")
+    assert calls[-1][calls[-1].index("-p", 3) + 1] == "OTHER TASK"
+    cc.run_cli(tmp_path, "m", None, 1.0, tmp_path / "cfg")
+    assert calls[-1][calls[-1].index("-p", 3) + 1] == cc.prompt()
+    assert cx.command(tmp_path, tmp_path / "cfg", "m", None, "OTHER TASK")[-1] == "OTHER TASK"
+    assert cx.command(tmp_path, tmp_path / "cfg", "m", None)[-1] == cc.prompt()

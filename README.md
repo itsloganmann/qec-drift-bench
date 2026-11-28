@@ -42,6 +42,6 @@ uv sync --all-groups
 uv run pytest -m "not slow"
 ```
 
-[Benchmark instructions](docs/runbook.md). [Original benchmark specification](docs/benchmark-spec-2026-11-01.md). [Score data and metric definition](paper/workshop-20261111/evidence/model-pass-rates.json).
+[Benchmark instructions](docs/runbook.md). [Data-out tasks](envs/README.md): the same diagnose-and-fix question on other parts of the device, where the agent returns data instead of code. [Original benchmark specification](docs/benchmark-spec-2026-11-01.md). [Score data and metric definition](paper/workshop-20261111/evidence/model-pass-rates.json).
 
 The public repository includes tasks, scoring, reference methods, aggregate results, and the paper. Public aggregates reproduce the figures. Full transcript replay requires private evidence.

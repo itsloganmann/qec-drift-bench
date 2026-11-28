@@ -63,6 +63,34 @@ uv run ruff check src tests scripts
 The suite runs scripted episodes through the real sandbox with small shot counts; no API key is
 needed.
 
+## 6. Data-out tasks (envs/)
+
+```bash
+uv run python -m qec_drift.agent.envs_grade --references        # trivial and reference
+uv run python -m qec_drift.agent.envs_run --backend claude-code --model claude-opus-5-5 \
+    --arm opus_5_5_cc --rollouts 3                                # episodes, on a subscription
+uv run python -m qec_drift.agent.envs_grade data/envs_hard/opus_5_5_cc.parquet
+```
+
+`envs_run` builds each task's kit (`agent/envs_kit.py`), runs one episode per task and rollout
+on the Claude Code or Codex scaffold, and saves each `solution.py` under
+`data/envs_hard/solutions/`. `envs_grade` runs each task's own `evaluate.py` on the public seed
+and the paper seeds (`envs/config.json`), applies the pass rule per instance, writes the pass
+rate and native score into the arm table, and ends with the failure modes
+(`scoring/failure_modes_envs.py`). Grading runs agent code through the task's
+`eval/_isolate.py`, not under `sandbox-exec`, so grade in a container or a throwaway VM. About
+2 minutes per seed per solution on one core.
+
+Before a task counts, and after any change to it:
+
+```bash
+uv run python scripts/envs_legitimacy.py     # lazy, leak and data-ablation checks
+uv run python scripts/select_tasks.py        # keep a task if the best agent passes under 75%
+```
+
+They write [envs-legitimacy.md](envs-legitimacy.md) and [envs-selection.md](envs-selection.md).
+Retired tasks are in [envs-results.md](envs-results.md).
+
 ## Budget notes
 
 A Sonnet 5.5 high episode costs $0.2 to $2.2; an Opus 5.5 medium episode $0.6 to $1.9. Every arm
