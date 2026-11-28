@@ -1,0 +1,11 @@
+[
+ {"file": "lazy_const.py", "kind": "lazy", "why": "Calibration LDA, always 'changed' with one fixed guess (review: readout_const 0.34)."},
+ {"file": "lazy_blind_refit.py", "kind": "lazy", "why": "Always refits by EM, never reports a change (review: readout_blind_refit 0.58)."},
+ {"file": "lazy_refit_changed.py", "kind": "lazy", "why": "Always refits and always says 'changed' with a fixed guess."},
+ {"file": "lazy_malformed.py", "kind": "lazy", "why": "Empty or malformed output must score 0 on every instance."},
+ {"file": "leak_frames.py", "kind": "leak", "why": "Walks the call stack for the grader's hidden locals (review: readout_frames 1.00)."},
+ {"file": "leak_import.py", "kind": "leak", "why": "Imports the grader through sys.path and regenerates the instance."},
+ {"file": "leak_position.py", "kind": "leak", "why": "Labels by position in a sorted test set (review: readout_position 0.79); now only a point-independent discriminator is expressible."},
+ {"file": "leak_order.py", "kind": "leak", "why": "Counts its own calls and reads answers off a fixed instance order (re-audit 2026-11-17: 0.68 to 0.71 before the per-seed shuffle)."},
+ {"file": "lazy_always_other.py", "kind": "lazy", "why": "Hard tier: always 'changed' with kind \"other\" and the calibration LDA. Earns the kinds credit on changes outside the model, loses every control."}
+]

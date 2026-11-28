@@ -115,8 +115,15 @@ def environment(config_dir: Path) -> dict[str, str]:
     return env
 
 
-def command(workdir: Path, config_dir: Path, model: str, effort: str | None) -> list[str]:
-    """The sandboxed `codex exec` command line of one episode."""
+def command(
+    workdir: Path,
+    config_dir: Path,
+    model: str,
+    effort: str | None,
+    task_prompt: str | None = None,
+) -> list[str]:
+    """The sandboxed `codex exec` command line of one episode; `task_prompt` replaces the
+    decoder task's prompt (for tasks with their own prompt)."""
     cmd = [
         "sandbox-exec",
         "-p",
@@ -141,7 +148,7 @@ def command(workdir: Path, config_dir: Path, model: str, effort: str | None) -> 
         cmd += ["--disable", feature]
     if effort:
         cmd += ["-c", f'model_reasoning_effort="{effort}"']
-    return cmd + [cc.prompt()]
+    return cmd + [task_prompt or cc.prompt()]
 
 
 def replied(line: str) -> bool:
@@ -151,10 +158,15 @@ def replied(line: str) -> bool:
 
 
 def run_cli(
-    workdir: Path, model: str, effort: str | None, _max_usd: float, config_dir: Path
+    workdir: Path,
+    model: str,
+    effort: str | None,
+    _max_usd: float,
+    config_dir: Path,
+    task_prompt: str | None = None,
 ) -> tuple[list[dict], int]:
     """One headless Codex session in `workdir`. Returns the event stream and the exit code."""
-    cmd = command(workdir, config_dir, model, effort)
+    cmd = command(workdir, config_dir, model, effort, task_prompt)
     return isolation.stream(
         cmd, workdir, environment(config_dir), login_file(config_dir), replied, tools=tool_starts
     )

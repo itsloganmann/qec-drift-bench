@@ -92,6 +92,21 @@ environment, network access to private services, and links left for the scorer. 
 must fail while a known-method decoder still runs and scores correctly. Keep the configuration
 and probe results with each runner version. A local test does not certify the hosted boundary.
 
+## Data-out tasks (envs/)
+
+The tasks in `envs/` ask for data, not a decoder: `solve(data)` returns numbers, and the task's
+grader applies them to hidden test data. The test data, its labels and the true device never
+reach model-written code. That narrows point 1 above but does not close it on its own:
+`solve()` still runs as model-written code inside the notebook, beside the grader's source and
+the process that holds the seed (`eval/_isolate.py` gives it a fresh `python -I` process in an
+empty folder, which is not confinement).
+
+A hosted run can close it. Each instance's `data` holds only what the agent may see, so the task
+function can hand the agent the `data` of fresh secret instances and take back the answers as
+JSON, one per instance. Grading then runs no model-written code at all. The grader, the truth
+and the seed stay in the trusted task function. This needs no isolated worker, at the cost of
+answers made per instance instead of one reusable `solve()`.
+
 ## Time and size
 
 - Budget per episode in the API harness: 40 tool calls, 120 s per `run_python`, 300 s to score.
